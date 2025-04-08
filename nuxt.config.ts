@@ -1,16 +1,34 @@
 export default defineNuxtConfig({
-  compatibilityDate: '2024-11-01',
   devtools: { enabled: true },
+  devServer: {
+    port: 3001,
+  },
   modules: [
     '@nuxt/eslint',
     '@nuxt/icon',
     '@nuxt/fonts',
-    '@nuxt/content',
     '@ant-design-vue/nuxt',
   ],
+
   antd: {
     extractStyle: true,
   },
+
+  vue: {
+    propsDestructure: true,
+  },
+  nitro: {
+    devStorage: {
+      cache: { driver: 'memory' }, // Использует RAM вместо файлового кеша
+    },
+  },
+  vite: {
+    server: {
+      hmr: { overlay: false }, // Отключить HMR overlay, если мешает
+    },
+  },
+  css: ['./public/app.scss'],
+
   app: {
     head: {
       title: 'ReadZone',
@@ -20,4 +38,6 @@ export default defineNuxtConfig({
       link: [{ rel: 'icon', type: 'image/png', href: '/head.png' }],
     },
   },
+
+  compatibilityDate: '2025-04-07',
 });
