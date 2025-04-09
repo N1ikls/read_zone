@@ -10,31 +10,49 @@ definePageMeta({
   },
 });
 
-const { signIn } = useAuth();
+const { signIn, status, data, signOut } = useAuth();
 
 const credentials = reactive({
-  username: '',
+  email: '',
   password: '',
 });
 
 const loading = ref(false);
+
+const handleSubmit = async () => {
+  try {
+    loading.value = true;
+    await signIn('credentials', {
+      ...credentials,
+      redirect: false,
+    });
+  } catch (error) {
+    message.error('Неверный логин или пароль');
+  } finally {
+    loading.value = false;
+  }
+};
 </script>
 
 <template>
   <div class="container">
+    {{ data }} {{ status }}
+
+    <a-button @click="signOut()">signOut</a-button>
     <a-form
       layout="vertical"
       :model="credentials"
+      @finish="handleSubmit"
       class="login-form"
     >
       <a-form-item
-        label="Имя пользователя"
-        name="username"
+        label="Email"
+        name="email"
         :rules="[{ required: true, message: 'Введите имя пользователя' }]"
       >
         <a-input
-          v-model:value="credentials.username"
-          placeholder="Username"
+          v-model:value="credentials.email"
+          placeholder="email"
         >
           <template #prefix>
             <UserOutlined />
