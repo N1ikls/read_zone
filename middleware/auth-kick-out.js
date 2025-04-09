@@ -1,8 +1,8 @@
 export default defineNuxtRouteMiddleware(async (to, from) => {
-  // if (import.meta.client) return
-  // const event = useRequestEvent()
-  // const user = await event.context.context.user()
-  // if (user) return navigateTo(`/users/${user.id}`)
+  if (import.meta.client) return;
+  const event = useRequestEvent();
+  const user = await event.context.context.user();
+  if (user) return navigateTo(`/users/${user.id}`);
 
   return to;
 });

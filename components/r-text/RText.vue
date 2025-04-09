@@ -11,13 +11,18 @@ const props = defineProps({
   },
 
   size: {
-    type: String as PropType<'normal' | 'default'>,
+    type: String as PropType<'normal' | 'default' | 'v-large'>,
     default: 'default',
   },
 
   color: {
     type: Boolean as PropType<boolean>,
     default: false,
+  },
+
+  icon: {
+    type: String as PropType<string>,
+    default: '',
   },
 
   ellipsis: {
@@ -44,20 +49,39 @@ const classes = computed(() => [
 
 <template>
   <div
-    class="m-text"
+    class="r-text"
     :class="classes"
   >
-    <slot />
+    <Icon
+      class="r-text__icon"
+      v-if="icon"
+      :name="icon"
+    />
+
+    <p>
+      <slot />
+    </p>
   </div>
 </template>
 
 <style lang="scss" scoped>
 .r-text {
-  margin: 0;
-  padding: 0;
-  color: #373737;
-  font-family: 'GolosTextWebRegular';
+  color: #050505;
+  font-family: 'Lato' sans-serif;
   word-break: break-word;
+
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  &__icon {
+    font-size: 22px;
+  }
+
+  p {
+    margin: 0;
+    padding: 0;
+  }
 
   &_ellipsis {
     overflow: hidden;
@@ -90,6 +114,7 @@ const classes = computed(() => [
 
   &_v-large {
     font-size: 20px;
+    font-weight: 700;
   }
 
   &_bold {

@@ -7,7 +7,7 @@ import { theme } from '@/shared/consts';
   <a-extract-style>
     <a-config-provider :theme="theme">
       <nuxt-layout name="default">
-        <template #header><AppHeader /></template>
+        <template #header><AppHeader /> </template>
         <NuxtPage />
       </nuxt-layout>
     </a-config-provider>

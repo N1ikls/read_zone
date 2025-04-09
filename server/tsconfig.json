@@ -2,8 +2,7 @@
   "extends": "../.nuxt/tsconfig.server.json",
   "compilerOptions": {
     "paths": {
-      "~/*": ["./*"],
-      "@/*": ["./*"]
+      "#auth": ["./.nuxt/types/auth"]
     }
   }
 }

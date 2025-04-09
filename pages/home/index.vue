@@ -1,8 +1,5 @@
 <script setup lang="ts">
-import { RHeader } from '@/shared/ui';
-definePageMeta({
-  key: (route) => route.fullPath,
-});
+import { RHeader } from '@/components';
 </script>
 
 <template>

@@ -15,6 +15,11 @@ const props = defineProps({
     default: false,
   },
 
+  bottom: {
+    type: String as PropType<string>,
+    default: '45px',
+  },
+
   center: {
     type: Boolean as PropType<boolean>,
     default: false,
@@ -29,10 +34,10 @@ const props = defineProps({
 const is = computed(() => `h${props.level}`);
 
 const classes = computed(() => ({
-  'm-header_bold': props.bold,
-  'm-header_medium': props.medium,
-  'm-header_center': props.center,
-  'm-header_inherit': props.inherit,
+  'r-header_bold': props.bold,
+  'r-header_medium': props.medium,
+  'r-header_center': props.center,
+  'r-header_inherit': props.inherit,
 }));
 </script>
 
@@ -51,6 +56,8 @@ const classes = computed(() => ({
   margin: 0;
   padding: 0;
   letter-spacing: 0.015em;
+  padding-bottom: v-bind(bottom);
+  font-family: 'Aspa', sans-serif;
 
   &_medium {
     font-weight: 600;
@@ -77,7 +84,7 @@ const classes = computed(() => ({
 
 h1 {
   font-size: 70px;
-  font-family: 'Aspa', sans-serif;
+
   color: #003386;
   font-weight: 700;
 }

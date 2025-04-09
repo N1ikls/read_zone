@@ -1,24 +1,35 @@
 <script setup lang="ts">
-import { RText } from '@/shared/ui';
+import { RText } from '@/components';
 const theme = ref(false);
 </script>
 
 <template>
   <div class="app-header">
     <div class="app-header__logo">
-      <img src="@/public/logo.svg" />
+      <Icon name="my-icons:logo" />
     </div>
 
     <nav class="app-header__nav">
-      <a-space warp>
-        <a-button type="link">
-          <r-text>Каталог</r-text>
-        </a-button>
+      <r-text
+        icon="my-icons:list"
+        size="v-large"
+      >
+        Каталог
+      </r-text>
 
-        <a-button type="link"> <r-text>Сообщество</r-text> </a-button>
+      <r-text
+        icon="my-icons:group"
+        size="v-large"
+      >
+        Сообщество
+      </r-text>
 
-        <a-button type="link"> <r-text>FAQ</r-text> </a-button>
-      </a-space>
+      <r-text
+        icon="my-icons:faq"
+        size="v-large"
+      >
+        FAQ
+      </r-text>
     </nav>
 
     <a-space
@@ -27,21 +38,13 @@ const theme = ref(false);
     >
       <NuxtLink to="/home"> Поиск </NuxtLink>
 
-      <a-switch
-        size="small"
-        v-model:checked="theme"
-      >
+      <a-switch v-model:checked="theme">
         <template #checkedChildren>
           <CheckOutlined />
         </template>
       </a-switch>
 
-      <a-button
-        size="small"
-        type="primary"
-      >
-        Вход / Регистрация
-      </a-button>
+      <a-button type="primary"> Вход / Регистрация </a-button>
     </a-space>
   </div>
 </template>
@@ -54,9 +57,16 @@ const theme = ref(false);
   flex: 1;
 
   &__nav {
-    button {
-      font-weight: 600;
-    }
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 40px;
+  }
+
+  &__logo {
+    display: flex;
+    align-items: center;
+    font-size: 38px;
   }
 }
 </style>

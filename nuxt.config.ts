@@ -8,8 +8,33 @@ export default defineNuxtConfig({
     '@nuxt/icon',
     '@nuxt/fonts',
     '@ant-design-vue/nuxt',
+    '@sidebase/nuxt-session',
+    '@sidebase/nuxt-auth',
   ],
-
+  session: {
+    session: {
+      name: 'session',
+      secret: 'asdf1234',
+      cookie: {
+        secure: false,
+        sameSite: 'lax',
+      },
+    },
+  },
+  auth: {
+    globalAppMiddleware: {
+      isEnabled: false,
+    },
+    provider: {
+      type: 'authjs',
+    },
+  },
+  components: [
+    {
+      path: '~/components',
+      pathPrefix: false,
+    },
+  ],
   antd: {
     extractStyle: true,
   },
@@ -19,16 +44,24 @@ export default defineNuxtConfig({
   },
   nitro: {
     devStorage: {
-      cache: { driver: 'memory' }, // Использует RAM вместо файлового кеша
+      cache: { driver: 'memory' },
     },
   },
   vite: {
     server: {
-      hmr: { overlay: false }, // Отключить HMR overlay, если мешает
+      hmr: { overlay: false },
     },
   },
   css: ['./public/app.scss'],
-
+  icon: {
+    provider: 'server',
+    customCollections: [
+      {
+        prefix: 'my-icons',
+        dir: './public/svg',
+      },
+    ],
+  },
   app: {
     head: {
       title: 'ReadZone',
