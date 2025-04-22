@@ -1,18 +1,16 @@
-export default defineApiHandler(async event => {
-  const {exclude_ids = '', text = ''} = getQuery(event)
+export default defineApiHandler(async (event) => {
+  const { exclude_ids = '', text = '' } = getQuery(event);
 
-  const storage = event.context.storage
+  const genres = await event.context.storage.genre;
 
-  const filter = []
+  // const filter = [];
 
-  const excludeIds = exclude_ids.split(',')
-  if (excludeIds.length) filter.push({id: {'!=': excludeIds}})
+  // const excludeIds = exclude_ids.split(',');
+  // if (excludeIds.length) filter.push({ id: { '!=': excludeIds } });
 
-  if (text.length) filter.push({name: {like: `%${text}%`}})
+  // if (text.length) filter.push({ name: { like: `%${text}%` } });
 
-  const genres = await storage.genre.find(filter, {limit: 10})
+  // const genres = await storage.genre.find(filter, { limit: 10 });
 
-  return {
-    genres: genres.map(genre => storage.genre.toPublic(genre))
-  }
-})
+  return genres;
+});

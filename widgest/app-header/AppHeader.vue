@@ -51,10 +51,10 @@ const theme = ref(false);
 
 <style lang="scss" scoped>
 .app-header {
+  height: var(--header-height);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  flex: 1;
 
   &__nav {
     display: flex;

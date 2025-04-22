@@ -1,8 +1,18 @@
 {
-  "extends": "../.nuxt/tsconfig.server.json",
+  "extends": ["../.nuxt/tsconfig.server.json"],
   "compilerOptions": {
+    "module": "ESNext",
+    "strict": true,
+    "noEmit": true,
+    "jsx": "preserve",
+    "lib": ["ES2016", "DOM", "DOM.Iterable"],
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "types": ["node", "nitropack"],
     "paths": {
       "#auth": ["./.nuxt/types/auth"]
     }
-  }
+  },
+  "exclude": ["node_modules"]
 }

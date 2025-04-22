@@ -6,9 +6,9 @@ const slots = useSlots();
   <div class="main-layout">
     <header
       v-if="slots.header"
-      class="m-page-layout__header"
+      class="r-page-layout__header"
     >
-      <div class="container-header">
+      <div class="wrapper">
         <slot name="header" />
       </div>
     </header>
@@ -17,14 +17,16 @@ const slots = useSlots();
       v-if="slots.default"
       class="r-page-layout__main"
     >
-      <slot />
+      <div class="wrapper">
+        <slot />
+      </div>
     </main>
 
     <footer
       v-if="slots.footer"
       class="r-page-layout__footer"
     >
-      <div class="container">
+      <div class="wrapper">
         <slot name="footer" />
       </div>
     </footer>
@@ -32,13 +34,39 @@ const slots = useSlots();
 </template>
 
 <style lang="scss" scoped>
+%transform {
+  transition: all 0.3s ease-in-out;
+}
+
 .main-layout {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
+  @extend %transform;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
   background-color: #e0eaff;
+}
+
+.wrapper {
+  @extend %transform;
+  margin: 0 auto;
+  padding: 0 16px;
+  max-width: 1200px;
+
+  @media (width > 500px) {
+    padding: 0 36px;
+  }
+
+  @media (width > 520px) {
+    padding: 0 56px;
+  }
+
+  @media (width > 630px) {
+    padding: 0 106px;
+  }
+
+  &_wide {
+    padding: 0;
+  }
 }
 
 header {
@@ -49,17 +77,11 @@ header {
   z-index: 1;
 }
 
-main {
-  margin-top: var(--header-height);
-  height: calc(100% - var(--header-height));
-  overflow: auto;
-}
-
-.container-header {
-  display: flex;
-  align-items: center;
-  height: 100%;
-}
+// main {
+//   margin-top: var(--header-height);
+//   height: calc(100% - var(--header-height));
+//   overflow: auto;
+// }
 
 %flex {
   display: flex;
@@ -74,10 +96,6 @@ main {
   &__header,
   &__extra {
     margin-bottom: 16px;
-  }
-
-  &__main {
-    flex: 1;
   }
 }
 </style>

@@ -12,18 +12,24 @@ const slots = useSlots();
     </div>
 
     <div class="r-thing-header-wrapper">
-      <div
-        v-if="slots?.default"
-        class="r-thing__header"
-      >
-        <div class="r-thing__header-title"><slot /></div>
+      <div class="r-thing__header">
+        <div class="r-thing__header-title">
+          <slot />
 
-        <div
-          v-if="slots?.extra"
-          class="r-thing__header-extra"
-        >
-          <slot name="extra" />
+          <div
+            v-if="slots?.extra"
+            class="r-thing__header-extra"
+          >
+            <slot name="extra" />
+          </div>
         </div>
+      </div>
+
+      <div
+        v-if="slots?.content"
+        class="r-thing__header-content"
+      >
+        <slot name="content" />
       </div>
 
       <div
@@ -51,15 +57,11 @@ const slots = useSlots();
   line-height: 20px;
 
   &-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
     &-wrapper {
       flex: 1;
       display: flex;
       flex-direction: column;
-      justify-content: space-evenly;
+      justify-content: space-between;
     }
 
     &-extra {
@@ -74,11 +76,31 @@ const slots = useSlots();
     margin-bottom: 4px;
     font-size: 20px;
     font-weight: 700;
+
+    &-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex: 1;
+    }
+
+    &-content {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
   }
 
   &__avatar {
     margin-right: 12px;
     margin-top: 2px;
+    :deep(img) {
+      width: 100px;
+      height: 132px;
+      border-radius: 5px;
+      object-fit: cover;
+    }
   }
 
   &__description {

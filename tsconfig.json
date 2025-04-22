@@ -1,11 +1,27 @@
 {
-  // https://nuxt.com/docs/guide/concepts/typescript
   "extends": "./.nuxt/tsconfig.json",
   "compilerOptions": {
-    "paths": {
-      "~/*": ["./*"],
-      "@/*": ["./*"],
-      "#auth": ["./.nuxt/types/auth"]
-    }
-  }
+    "moduleResolution": "bundler",
+    "module": "ESNext",
+    "strict": true,
+    "noEmit": true,
+    "jsx": "preserve",
+    "lib": ["ES2016", "DOM", "DOM.Iterable"]
+  },
+
+  "include": [
+    "**/*.ts",
+    "**/*.js",
+    "**/*.vue",
+    ".nuxt/**/*",
+    "components/**/*",
+    "composables/**/*",
+    "layouts/**/*",
+    "pages/**/*",
+    "plugins/**/*",
+    "server/**/*",
+    "app.vue",
+    "error.vue"
+  ],
+  "exclude": ["node_modules", "dist"]
 }

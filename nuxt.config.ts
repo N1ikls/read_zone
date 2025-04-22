@@ -1,5 +1,6 @@
 export default defineNuxtConfig({
   devtools: { enabled: true },
+
   devServer: {
     port: 3001,
   },
@@ -7,20 +8,10 @@ export default defineNuxtConfig({
     '@nuxt/eslint',
     '@nuxt/icon',
     '@nuxt/fonts',
-    '@ant-design-vue/nuxt',
     '@sidebase/nuxt-session',
     '@sidebase/nuxt-auth',
+    '@ant-design-vue/nuxt',
   ],
-  session: {
-    session: {
-      name: 'session',
-      secret: 'asdf1234',
-      cookie: {
-        secure: false,
-        sameSite: 'lax',
-      },
-    },
-  },
   auth: {
     globalAppMiddleware: {
       isEnabled: false,
@@ -38,7 +29,6 @@ export default defineNuxtConfig({
   antd: {
     extractStyle: true,
   },
-
   vue: {
     propsDestructure: true,
   },
