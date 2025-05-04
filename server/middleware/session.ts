@@ -15,7 +15,7 @@ const db = knex({
     port: 5432,
     host: '127.0.0.1',
     user: 'kiforenko_na',
-    database: 'db_test',
+    database: 'my_database',
   },
   migrations: {
     directory: __dirname + '/../migrations',

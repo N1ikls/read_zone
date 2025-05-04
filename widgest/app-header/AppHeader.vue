@@ -66,7 +66,7 @@ const theme = ref(false);
   &__logo {
     display: flex;
     align-items: center;
-    font-size: 38px;
+    font-size: var(--logo-size);
   }
 }
 </style>

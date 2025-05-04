@@ -23,6 +23,13 @@ const slots = useSlots();
             <slot name="extra" />
           </div>
         </div>
+
+        <div
+          v-if="slots?.text"
+          class="r-thing__header-text"
+        >
+          <slot name="text" />
+        </div>
       </div>
 
       <div
@@ -46,6 +53,15 @@ const slots = useSlots();
         </div>
       </div>
     </div>
+
+    <div
+      v-if="slots?.right"
+      class="r-thing-right"
+    >
+      <div class="r-thing-right__wrapper">
+        <slot name="right" />
+      </div>
+    </div>
   </div>
 </template>
 
@@ -55,6 +71,22 @@ const slots = useSlots();
   flex-wrap: nowrap;
   color: #131313;
   line-height: 20px;
+
+  &-right {
+    margin-left: 12px;
+    width: 120px;
+    height: 132px;
+
+    &__wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      background-color: #97bfff;
+      height: 100%;
+    }
+  }
 
   &-header {
     &-wrapper {
@@ -72,7 +104,7 @@ const slots = useSlots();
 
   &__header {
     display: flex;
-    align-items: center;
+    flex-direction: column;
     margin-bottom: 4px;
     font-size: 20px;
     font-weight: 700;
@@ -82,6 +114,14 @@ const slots = useSlots();
       align-items: center;
       justify-content: space-between;
       flex: 1;
+    }
+
+    &-text {
+      margin-top: 10px;
+      font-size: 12px;
+      line-height: 10px;
+      color: #000000;
+      font-weight: 400;
     }
 
     &-content {

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { AppHeader } from '@/widgest/app-header';
+import { AppFooter } from '@/widgest/app-footer';
 import { theme } from '@/shared/consts';
 </script>
 
@@ -8,7 +9,10 @@ import { theme } from '@/shared/consts';
     <a-config-provider :theme="theme">
       <nuxt-layout name="default">
         <template #header><AppHeader /> </template>
+
         <NuxtPage />
+
+        <template #footer><AppFooter /> </template>
       </nuxt-layout>
     </a-config-provider>
   </a-extract-style>

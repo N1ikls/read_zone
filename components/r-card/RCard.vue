@@ -8,16 +8,17 @@
 
 <style lang="scss" scoped>
 .r-card {
+  display: inline-block;
   position: relative;
   background-color: #ffffff;
   height: 372px;
-  width: 120px;
+  width: 264px;
   border-radius: 35px;
   transition: width 0.4s ease;
 
-  &:hover {
-    width: 264px;
-  }
+  // &:hover {
+  //   width: 264px;
+  // }
 
   img {
     position: absolute;

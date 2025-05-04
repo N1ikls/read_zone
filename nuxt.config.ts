@@ -11,6 +11,8 @@ export default defineNuxtConfig({
     '@sidebase/nuxt-session',
     '@sidebase/nuxt-auth',
     '@ant-design-vue/nuxt',
+    'nuxt-swiper',
+    'nuxt-openapi-docs-module',
   ],
   auth: {
     globalAppMiddleware: {

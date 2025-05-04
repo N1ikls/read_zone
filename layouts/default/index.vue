@@ -51,6 +51,7 @@ const slots = useSlots();
   margin: 0 auto;
   padding: 0 16px;
   max-width: 1200px;
+  height: 100%;
 
   @media (width > 500px) {
     padding: 0 36px;
@@ -77,6 +78,18 @@ header {
   z-index: 1;
 }
 
+footer {
+  margin-top: 60px;
+  height: 750px;
+  background-image: url('../../public/svg/footer.svg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  position: relative;
+}
+
+main {
+  margin-top: var(--header-height);
+}
 // main {
 //   margin-top: var(--header-height);
 //   height: calc(100% - var(--header-height));
@@ -92,6 +105,11 @@ header {
   height: 100%;
   flex-direction: column;
   background-color: #fff;
+
+  &__main {
+    &-bg {
+    }
+  }
 
   &__header,
   &__extra {

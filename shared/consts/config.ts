@@ -24,6 +24,7 @@ export const theme = {
     colorLink: '#050505',
     colorLinkActive: '#050505',
     colorLinkHover: '#050505',
+
     fontFamily: '"Lato", "Lato Fallback: Arial", sans-serif',
   } as AliasToken,
 };
