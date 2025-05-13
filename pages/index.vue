@@ -10,16 +10,24 @@ const { data } = useFetch('/api/search/books');
   <div class="main-bg"></div>
 
   <section class="main">
-    <div class="main__scroll">
-      <r-card
-        v-for="(i, idx) in 20"
-        :key="idx"
+    <ClientOnly>
+      <swiper-container
+        :slides-per-view="4"
+        :spaceBetween="10"
+        :free-mode="true"
+        ref="containerRef"
       >
-        {{ i }}
-      </r-card>
-    </div>
+        <swiper-slide
+          v-for="(i, idx) in data.catalog"
+          :key="idx"
+        >
+          <r-card>
+            {{ i.name }}
+          </r-card>
+        </swiper-slide>
+      </swiper-container>
+    </ClientOnly>
   </section>
-
   <section class="news">
     <r-header bold>Новинки</r-header>
 
@@ -147,7 +155,7 @@ const { data } = useFetch('/api/search/books');
 }
 
 .main {
-  padding-top: 100px;
+  z-index: 1;
 
   &__scroll {
     overflow-x: auto;

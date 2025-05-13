@@ -11,7 +11,7 @@ const props = defineProps({
   },
 
   size: {
-    type: String as PropType<'normal' | 'default' | 'v-large'>,
+    type: String as PropType<'normal' | 'default' | 'large' | 'v-large'>,
     default: 'default',
   },
 
@@ -109,11 +109,12 @@ const classes = computed(() => [
   }
 
   &_large {
-    font-size: 18px;
+    font-size: 20px;
+    font-weight: 700;
   }
 
   &_v-large {
-    font-size: 20px;
+    font-size: 32px;
     font-weight: 700;
   }
 

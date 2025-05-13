@@ -2,7 +2,9 @@ import knex from 'knex';
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
 // @ts-ignore
-import { getServerSession } from '#auth';
+import connectSessionKnex from 'connect-session-knex';
+import session from 'express-session';
+
 import Media from '../media';
 import Storage from '../storage';
 import Context from '../context';
@@ -30,18 +32,34 @@ const media = new Media({
     path: __dirname + '/../public/upload',
   },
 });
-
 const storage = new Storage(db);
 
+const sessionHandler = session({
+  name: 'session',
+  store: new (connectSessionKnex(session))({
+    knex: db,
+    tablename: 'session',
+    createtable: true,
+  }),
+  secret: 'asdf1234',
+  resave: false,
+  rolling: true,
+  saveUninitialized: false,
+  cookie: { secure: false },
+});
+
 export default defineEventHandler(async (event) => {
-  const session = await getServerSession(event);
+  return new Promise((resolve, reject) => {
+    sessionHandler(event.node.req, event.node.res, () => {
+      event.context.media = media;
+      event.context.storage = storage;
+      event.context.session = event.node.req.session;
+      event.context.context = new Context(
+        event.context.session,
+        event.context.storage,
+      );
 
-  event.context.media = media;
-  event.context.storage = storage;
-  event.context.session = session;
-
-  event.context.context = new Context(
-    event.context.session,
-    event.context.storage,
-  );
+      resolve();
+    });
+  });
 });

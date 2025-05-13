@@ -5,28 +5,32 @@ const theme = ref(false);
 
 <template>
   <div class="app-header">
-    <div class="app-header__logo">
-      <Icon name="my-icons:logo" />
-    </div>
+    <NuxtLink to="/">
+      <div class="app-header__logo">
+        <Icon name="my-icons:logo" />
+      </div>
+    </NuxtLink>
 
     <nav class="app-header__nav">
-      <r-text
-        icon="my-icons:list"
-        size="v-large"
-      >
-        Каталог
-      </r-text>
+      <NuxtLink to="/catalog">
+        <r-text
+          icon="my-icons:list"
+          size="large"
+        >
+          Каталог
+        </r-text>
+      </NuxtLink>
 
       <r-text
         icon="my-icons:group"
-        size="v-large"
+        size="large"
       >
         Сообщество
       </r-text>
 
       <r-text
         icon="my-icons:faq"
-        size="v-large"
+        size="large"
       >
         FAQ
       </r-text>
@@ -61,6 +65,10 @@ const theme = ref(false);
     align-items: center;
     justify-content: space-between;
     gap: 40px;
+  }
+
+  a {
+    text-decoration: none;
   }
 
   &__logo {

@@ -2,7 +2,7 @@ export default defineApiHandler(async (event) => {
   const query = getQuery(event);
   const storage = event.context.storage;
 
-  // const books = await storage.book.catalogSearch(query);
+  const catalog = await storage.book.catalogSearch(query);
 
   // return books.map((book) => storage.book.toPublic(book));
 
@@ -27,6 +27,7 @@ export default defineApiHandler(async (event) => {
   const news = books(4);
 
   return {
+    catalog: catalog.map((book) => storage.book.toPublic(book)),
     books: books(5),
     news,
     filters: books(20),
