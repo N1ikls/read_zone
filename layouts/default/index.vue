@@ -5,21 +5,28 @@ const slots = useSlots();
 <template>
   <section
     v-if="slots?.breadcrumb"
-    class="breadcrumb"
+    class="r-page-layout__breadcrumb"
   >
     <slot name="breadcrumb" />
 
-    <div class="title">
+    <div
+      v-if="slots?.breadcrumb && slots?.title"
+      class="r-page-layout__title"
+    >
       <slot name="title" />
     </div>
   </section>
 
-  <slot />
+  <section class="r-page-layout__section">
+    <slot />
+  </section>
 </template>
 
 <style lang="scss" scoped>
-.title {
-  margin-top: 16px;
-  margin-bottom: 60px;
+.r-page-layout {
+  &__title {
+    margin-top: 16px;
+    margin-bottom: 60px;
+  }
 }
 </style>
