@@ -13,6 +13,7 @@ export default defineNuxtConfig({
     '@ant-design-vue/nuxt',
     'nuxt-swiper',
     'nuxt-openapi-docs-module',
+    '@pinia/nuxt',
   ],
   // auth: {
   //   globalAppMiddleware: {
@@ -28,6 +29,7 @@ export default defineNuxtConfig({
       pathPrefix: false,
     },
   ],
+
   antd: {
     extractStyle: true,
   },
