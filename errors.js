@@ -1,4 +1,4 @@
-export class DBValidation extends Error {
+class DBValidation extends Error {
     errors
 
     constructor(errors) {

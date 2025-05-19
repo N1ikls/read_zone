@@ -5,10 +5,6 @@ import { fileURLToPath } from 'url';
 import connectSessionKnex from 'connect-session-knex';
 import session from 'express-session';
 
-import Media from '../media';
-import Storage from '../storage';
-import Context from '../context';
-
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const db = knex({
@@ -27,13 +23,6 @@ const db = knex({
   },
 });
 
-const media = new Media({
-  uploads: {
-    path: __dirname + '/../public/upload',
-  },
-});
-const storage = new Storage(db);
-
 const sessionHandler = session({
   name: 'session',
   store: new (connectSessionKnex(session))({
@@ -51,13 +40,7 @@ const sessionHandler = session({
 export default defineEventHandler(async (event) => {
   return new Promise((resolve, reject) => {
     sessionHandler(event.node.req, event.node.res, () => {
-      event.context.media = media;
-      event.context.storage = storage;
       event.context.session = event.node.req.session;
-      event.context.context = new Context(
-        event.context.session,
-        event.context.storage,
-      );
 
       resolve();
     });

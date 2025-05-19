@@ -1,26 +1,18 @@
 export default class Context {
-  #session
-  #storage
-  #user
+    #user
+    #req
 
-  constructor(session, storage) {
-    this.#storage = storage
-    this.#session = session
-  }
-
-  async getExportData() {
-    return {
-      user: this.#storage.user.toPublic(await this.user())
-    }
-  }
-
-  async user() {
-    if (this.#user === undefined) {
-      if ( ! ('user' in this.#session)) return null
-
-      this.#user = await this.#storage.user.findOne({id: this.#session.user.id})
+    constructor(req) {
+        this.#req = req
     }
 
-    return this.#user
-  }
+    async user() {
+        if (this.#user === undefined) {
+            if ( ! ('user' in this.#req.session)) return null
+
+            this.#user = await this.#req.db.findOne('UserFull', {id: this.#req.session.user.id}, {access: {read: true}})
+        }
+
+        return this.#user
+    }
 }

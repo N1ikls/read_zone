@@ -2,8 +2,6 @@
 import { RCard, RHeader } from '@/components';
 
 import { ItemThing, ItemFilters } from '@/entities/main';
-
-const { data } = useFetch('/api/search/books');
 </script>
 
 <template>
@@ -18,11 +16,11 @@ const { data } = useFetch('/api/search/books');
         ref="containerRef"
       >
         <swiper-slide
-          v-for="(i, idx) in data.catalog"
+          v-for="(i, idx) in []"
           :key="idx"
         >
           <r-card>
-            {{ i.name }}
+            {{ i }}
           </r-card>
         </swiper-slide>
       </swiper-container>
@@ -32,12 +30,9 @@ const { data } = useFetch('/api/search/books');
     <r-header bold>Новинки</r-header>
 
     <div class="grid">
-      <div
-        v-if="data.news"
-        class="grid__news"
-      >
+      <div class="grid__news">
         <div
-          v-for="(item, key) in data.news"
+          v-for="(item, key) in []"
           :key="key"
           class="grid-item"
         >
@@ -56,10 +51,7 @@ const { data } = useFetch('/api/search/books');
         </div>
       </div>
 
-      <div
-        v-if="data.books"
-        class="grid__read-now"
-      >
+      <div class="grid__read-now">
         <r-header
           class="grid__read-now__title"
           bold
@@ -68,7 +60,7 @@ const { data } = useFetch('/api/search/books');
         </r-header>
 
         <div
-          v-for="(item, key) in data.books"
+          v-for="(item, key) in []"
           :key="key"
           class="grid__read-now-item"
         >
@@ -78,13 +70,10 @@ const { data } = useFetch('/api/search/books');
     </div>
   </section>
 
-  <section
-    v-if="data.filters"
-    class="filters"
-  >
+  <section class="filters">
     <div class="filters__grid">
       <div
-        v-for="(item, key) in data.filters"
+        v-for="(item, key) in []"
         :key="key"
         class="filters__grid-item"
       >
