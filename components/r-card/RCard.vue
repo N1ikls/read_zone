@@ -15,8 +15,8 @@
   display: inline-block;
   position: relative;
   background-color: #ffffff;
-  height: 372px;
-  width: 264px;
+  height: 373px;
+  width: 265px;
   border-radius: 35px;
   transition: width 0.4s ease;
 
@@ -30,8 +30,13 @@
     width: 100%;
     inset: 0px;
     color: transparent;
-    object-fit: cover;
-    border-radius: 35px;
+
+    img {
+      width: inherit;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 35px;
+    }
 
     &::after {
       content: '';

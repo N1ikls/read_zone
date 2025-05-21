@@ -5,9 +5,9 @@ import { ItemThing, ItemFilters } from '@/entities/main';
 </script>
 
 <template>
-  <div class="main-bg"></div>
-
   <section class="main">
+    <div class="main-bg"></div>
+
     <ClientOnly>
       <swiper-container
         :slides-per-view="4"
@@ -16,7 +16,7 @@ import { ItemThing, ItemFilters } from '@/entities/main';
         ref="containerRef"
       >
         <swiper-slide
-          v-for="(i, idx) in []"
+          v-for="(i, idx) in [1, 2, 3, 4, 1, 2, 3, 4, 4, 1, 2, 3, 4]"
           :key="idx"
         >
           <r-card>
@@ -26,13 +26,14 @@ import { ItemThing, ItemFilters } from '@/entities/main';
       </swiper-container>
     </ClientOnly>
   </section>
+
   <section class="news">
     <r-header bold>Новинки</r-header>
 
     <div class="grid">
       <div class="grid__news">
         <div
-          v-for="(item, key) in []"
+          v-for="(item, key) in [1, 2, 3, 4]"
           :key="key"
           class="grid-item"
         >
@@ -60,7 +61,7 @@ import { ItemThing, ItemFilters } from '@/entities/main';
         </r-header>
 
         <div
-          v-for="(item, key) in []"
+          v-for="(item, key) in [1, 2, 3, 4, 5]"
           :key="key"
           class="grid__read-now-item"
         >
@@ -73,7 +74,7 @@ import { ItemThing, ItemFilters } from '@/entities/main';
   <section class="filters">
     <div class="filters__grid">
       <div
-        v-for="(item, key) in []"
+        v-for="(item, key) in [1, 3, 4, 5, 6, 1, 1, 1, 1]"
         :key="key"
         class="filters__grid-item"
       >
@@ -99,7 +100,9 @@ import { ItemThing, ItemFilters } from '@/entities/main';
 }
 
 .news {
-  padding-top: 300px;
+  position: relative;
+  z-index: 2;
+  padding-top: 237px;
 }
 
 .slide {
@@ -170,11 +173,16 @@ import { ItemThing, ItemFilters } from '@/entities/main';
     position: absolute;
     background-image: url('../public//main_bg.png');
     background-size: cover;
-    min-height: 785px;
+    height: 100%;
     width: 100%;
+    transform: translateY(0%);
     top: 0%;
     left: 0;
     background-repeat: no-repeat;
+
+    @media screen and (width >= 1920px) {
+      transform: translateY(-5%);
+    }
   }
 }
 
