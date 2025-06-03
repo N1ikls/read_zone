@@ -8,12 +8,13 @@ import session from 'express-session';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const db = knex({
-  client: 'pg',
+  client: 'mysql2',
   connection: {
-    port: 5432,
-    host: '127.0.0.1',
-    user: 'kiforenko_na',
-    database: 'db_test',
+    port: 3306,
+    host: 'db',
+    user: 'manga',
+    password: 'manga',
+    database: 'manga',
   },
   migrations: {
     directory: __dirname + '/../migrations',

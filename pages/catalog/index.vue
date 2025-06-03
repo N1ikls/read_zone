@@ -7,21 +7,7 @@ const sort = ref('update');
 
 const currentPage = ref(1);
 const pageSize = ref(10);
-const totalItems = computed(() => data.value?.at(0)?.length || 0);
-
-const data = ref([]);
-
-const paginatedData = computed(() => {
-  const start = (currentPage.value - 1) * pageSize.value;
-  const end = start + pageSize.value;
-  return (
-    data.value?.at(0)?.slice(start, end) ||
-    Array.from({ length: 100 }, () => ({ name: 'dsadasdas' }))
-  );
-});
-
-const books = ref(data.value?.[0] || []);
-const filter = ref(data.value?.[1] || {});
+const totalItems = ref(0);
 
 const handlePageChange = (page: number) => {
   currentPage.value = page;
@@ -34,6 +20,32 @@ const handleSizeChange = (current: number, size: number) => {
 };
 
 function submit() {}
+
+const {data} = await useAsyncData(async () => {
+  try {
+    const event = useRequestEvent()
+    const storage = event.context.storage
+
+    const filter = {}
+
+    const [books, genres, tags] = await Promise.all([
+      storage.book.catalogSearch({}),
+      storage.genre.find({}, {toPublic: true}),
+      storage.tag.find({}, {toPublic: true}),
+    ])
+
+    await storage.book.attachGenres(books)
+
+    return {
+      filter,
+      books: books.map(book => storage.book.toPublic(book)),
+      genres,
+      tags,
+    }
+  } catch(e) {console.error(e)}
+})
+
+const { filter = {}, books = [], genres = [], tags = [] } = data.value ?? {}
 </script>
 
 <template>
@@ -49,7 +61,7 @@ function submit() {}
       <r-text size="v-large">Каталог</r-text>
     </template>
 
-    <ItemCatalog :items="paginatedData" />
+    <ItemCatalog :filter="filter" :items="books" :genres="genres" :tags="tags" />
 
     <ClientOnly>
       <div

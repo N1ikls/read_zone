@@ -15,11 +15,12 @@ export async function up(knex) {
     table.string('alt_name', 255).nullable()
     table.text('description', 'mediumtext').nullable()
 
-    table.enu('type', ['original', 'translation', 'orig_fanfic', 'trans_fanfic']).notNullable()
+    table.enu('type', ['manga', 'oel', 'manhva', 'manhua', 'rumanga', 'comic']).notNullable()
+    table.enu('release_type', ['4coma', 'collection', 'dodzinsi', 'color', 'single', 'web', 'webtoon']).notNullable()
     table.enu('status', ['discarded', 'done', 'frozen', 'progress']).notNullable().default('progress')
 
     table.integer('year').unsigned().nullable()
-    table.enu('age_rate', [0, 16, 18]).notNullable().default(0)
+    table.enu('age_rate', [0, 6, 12, 16, 18]).notNullable().default(0)
 
     table.string('source_lang', 255).nullable()
     table.enu('source_status', ['discarded', 'done', 'frozen', 'progress']).nullable()
