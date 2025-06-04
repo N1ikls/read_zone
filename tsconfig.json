@@ -20,6 +20,7 @@
     "pages/**/*",
     "plugins/**/*",
     "server/**/*",
+    "storage/**/*",
     "app.vue",
     "error.vue"
   ],

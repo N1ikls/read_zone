@@ -1,6 +1,28 @@
+<script setup lang="ts">
+defineProps<{
+  filter: object;
+  genres: object[];
+  tags: object[];
+}>()
+
+const bookTypes = getBookTypes()
+</script>
+
 <template>
   <div class="sidebar">
     <div class="sidebar-sticky">dsadas dsa</div>
+    <div>{{ filter }}</div>
+    <div>
+      <div>Жанры</div>
+      <span v-for="genre in genres">{{ genre.name }}</span>
+    </div>
+    <div>
+      <div>Тэги</div>
+      <span v-for="tag in tags">{{ tag.name }}</span>
+    </div>
+    <div>
+      <div v-for="(bookTypeName, bookType) in bookTypes"><input type="checkbox" value=""{{ bookTypeName }}</div>
+    </div>
   </div>
 </template>
 

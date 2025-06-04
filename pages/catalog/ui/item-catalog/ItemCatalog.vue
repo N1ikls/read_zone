@@ -3,6 +3,9 @@ import { ItemCard, ItemFilter, ItemSidebar } from '@/entities/catalog';
 
 defineProps<{
   items: any[];
+  filter: object;
+  genres: object[];
+  tags: object[];
 }>();
 
 import { useCatalogState } from '@/entities/catalog';
@@ -23,7 +26,7 @@ const { isSidebar } = storeToRefs(useCatalogState());
       />
     </div>
 
-    <ItemSidebar v-if="isSidebar" />
+    <ItemSidebar v-if="isSidebar" :filter="filter" :genres="genres" :tags="tags" />
   </div>
 </template>
 
