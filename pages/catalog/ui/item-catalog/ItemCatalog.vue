@@ -2,10 +2,8 @@
 import { ItemCard, ItemFilter, ItemSidebar } from '@/entities/catalog';
 
 defineProps<{
+  queries: Record<string, string | string[]>;
   items: any[];
-  filter: object;
-  genres: object[];
-  tags: object[];
 }>();
 
 import { useCatalogState } from '@/entities/catalog';
@@ -17,7 +15,7 @@ const { isSidebar } = storeToRefs(useCatalogState());
 <template>
   <div class="catalog">
     <div class="column">
-      <ItemFilter />
+      <ItemFilter :queries="queries" />
 
       <ItemCard
         v-for="(item, index) in items"
@@ -26,14 +24,16 @@ const { isSidebar } = storeToRefs(useCatalogState());
       />
     </div>
 
-    <ItemSidebar v-if="isSidebar" :filter="filter" :genres="genres" :tags="tags" />
+    <ItemSidebar
+      v-if="isSidebar"
+      :queries="queries"
+    />
   </div>
 </template>
 
 <style lang="scss" scoped>
 .catalog {
   display: flex;
-  align-items: center;
   gap: 16px;
 }
 

@@ -1,51 +1,15 @@
 <script setup lang="ts">
 import { ItemCatalog } from './ui';
 
-const loading = ref(false);
-const name = ref('');
-const sort = ref('update');
-
-const currentPage = ref(1);
-const pageSize = ref(10);
-const totalItems = ref(0);
-
-const handlePageChange = (page: number) => {
-  currentPage.value = page;
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-};
-
-const handleSizeChange = (current: number, size: number) => {
-  currentPage.value = 1;
-  pageSize.value = size;
-};
+const queries = useGetRouteQuery({
+  name: null,
+});
 
 function submit() {}
 
-const {data} = await useAsyncData(async () => {
-  try {
-    const event = useRequestEvent()
-    const storage = event.context.storage
-
-    const filter = {}
-
-    const [books, genres, tags] = await Promise.all([
-      storage.book.catalogSearch({}),
-      storage.genre.find({}, {toPublic: true}),
-      storage.tag.find({}, {toPublic: true}),
-    ])
-
-    await storage.book.attachGenres(books)
-
-    return {
-      filter,
-      books: books.map(book => storage.book.toPublic(book)),
-      genres,
-      tags,
-    }
-  } catch(e) {console.error(e)}
-})
-
-const { filter = {}, books = [], genres = [], tags = [] } = data.value ?? {}
+const { data } = useFetch('/api/catalog', {
+  query: queries,
+});
 </script>
 
 <template>
@@ -61,23 +25,10 @@ const { filter = {}, books = [], genres = [], tags = [] } = data.value ?? {}
       <r-text size="v-large">Каталог</r-text>
     </template>
 
-    <ItemCatalog :filter="filter" :items="books" :genres="genres" :tags="tags" />
-
-    <ClientOnly>
-      <div
-        v-if="totalItems > pageSize"
-        class="catalog__pagination"
-      >
-        <a-pagination
-          v-model:current="currentPage"
-          :total="totalItems"
-          :pageSize="pageSize"
-          @change="handlePageChange"
-          @showSizeChange="handleSizeChange"
-          :show-size-changer="false"
-        />
-      </div>
-    </ClientOnly>
+    <ItemCatalog
+      :queries="queries"
+      :items="data || []"
+    />
   </NuxtLayout>
 </template>
 

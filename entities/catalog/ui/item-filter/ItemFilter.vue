@@ -2,12 +2,21 @@
 import { useCatalogState } from '@/entities/catalog';
 import { storeToRefs } from 'pinia';
 
+const { queries = {} } = defineProps<{
+  queries: Record<string, unknown>;
+}>();
 const catalogState = useCatalogState();
 
 const { showSidebar } = catalogState;
 const { isSidebar } = storeToRefs(catalogState);
 
-const name = ref('');
+const setRouteQueries = useSetRouteQuery();
+
+const name = computed(() => (queries?.name as string) || '');
+
+const onUpdateName = (value: string) => {
+  setRouteQueries(resetPaginationQuery({ name: value }));
+};
 </script>
 
 <template>
@@ -15,9 +24,10 @@ const name = ref('');
     <div class="filters__grid">
       <a-input
         class="input"
-        v-model:value="name"
+        :value="name"
         :bordered="false"
         placeholder="Найти по названию книги"
+        @update:value="onUpdateName"
       >
         <template #prefix>
           <SearchOutlined />
