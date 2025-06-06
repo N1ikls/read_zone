@@ -147,8 +147,13 @@ const slots = useSlots();
     display: flex;
     align-items: center;
     justify-content: space-between;
-
     font-size: 12px;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    word-break: break-all;
+    overflow-wrap: break-word;
 
     &-actions {
       font-size: 14px;

@@ -2,39 +2,20 @@
 import { RCard, RHeader } from '@/components';
 import { ItemThing, ItemFilters } from '@/entities/main';
 
-const {data} = await useAsyncData(async () => {
-  try {
-    const event = useRequestEvent()
-    const storage = event.context.storage
-
-    const [sliderBooks, newBooks, booksInProgress, topGenres] = await Promise.all([
-      storage.book.find({}, {limit: 13, order: {id: 'desc'}}),
-      storage.book.find({}, {limit: 4, order: {id: 'desc'}}),
-      storage.book.find({}, {limit: 5, order: {id: 'asc'}}),
-      storage.genre.find({}, {limit: 9}),
-    ])
-
-    await Promise.all([
-      storage.book.attachGenres(newBooks),
-      storage.book.attachGenres(booksInProgress)
-    ])
-
-    return {
-      sliderBooks,
-      newBooks: newBooks.map(book => storage.book.toPublic(book)),
-      booksInProgress: booksInProgress.map(book => storage.book.toPublic(book)),
-      topGenres: topGenres.map(genre => storage.genre.toPublic(genre))
-    }
-  } catch(e) {console.error(e)}
-})
-
-const { sliderBooks = [], newBooks = [], booksInProgress = [], topGenres = [] } = data.value ?? {}
-
+const limit = ref<number>(4);
+const { data: news } = useFetch('/api/new', {
+  query: {
+    limit,
+  },
+});
+const { data } = useFetch('/api/slider-books');
+const { data: read } = useFetch('/api/read-now');
+const { data: top } = useFetch('/api/top-genres');
 </script>
 
 <template>
   <section class="main">
-    <div class="main-bg"></div>
+    <!-- <div class="main-bg"></div> -->
 
     <ClientOnly>
       <swiper-container
@@ -44,7 +25,7 @@ const { sliderBooks = [], newBooks = [], booksInProgress = [], topGenres = [] } 
         ref="containerRef"
       >
         <swiper-slide
-          v-for="(i, idx) in sliderBooks"
+          v-for="(i, idx) in data"
           :key="idx"
         >
           <r-card>
@@ -61,7 +42,7 @@ const { sliderBooks = [], newBooks = [], booksInProgress = [], topGenres = [] } 
     <div class="grid">
       <div class="grid__news">
         <div
-          v-for="(item, key) in newBooks"
+          v-for="(item, key) in news"
           :key="key"
           class="grid-item"
         >
@@ -89,7 +70,7 @@ const { sliderBooks = [], newBooks = [], booksInProgress = [], topGenres = [] } 
         </r-header>
 
         <div
-          v-for="(item, key) in booksInProgress"
+          v-for="(item, key) in read"
           :key="key"
           class="grid__read-now-item"
         >
@@ -106,18 +87,27 @@ const { sliderBooks = [], newBooks = [], booksInProgress = [], topGenres = [] } 
         :key="key"
         class="filters__grid-item"
       >
-        <ItemFilters :item="{item}" />
+        <ItemFilters :item="{ item }" />
       </div>
     </div>
   </section>
 
   <section class="genres">
     <r-header bold> Популярыне жанры </r-header>
-    <div v-for="genre in topGenres.slice(3)" :key="genre.id" style="display: inline-block; margin-right: 20px;">
+    <div
+      v-for="genre in top?.slice(3)"
+      :key="genre.id"
+      style="display: inline-block; margin-right: 20px"
+    >
       {{ genre.name }}
     </div>
     <div></div>
-    <div v-for="genre in topGenres.slice(0, 3)" :key="genre.id">{{ genre.name }}</div>
+    <div
+      v-for="genre in top?.slice(0, 3)"
+      :key="genre.id"
+    >
+      {{ genre.name }}
+    </div>
   </section>
 </template>
 
@@ -248,7 +238,7 @@ const { sliderBooks = [], newBooks = [], booksInProgress = [], topGenres = [] } 
   }
 
   &__actions {
-    padding: 30px 20px;
+    padding: 35px 20px;
   }
 }
 </style>
