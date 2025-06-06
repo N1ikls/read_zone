@@ -17,6 +17,10 @@ const name = computed(() => (queries?.name as string) || '');
 const onUpdateName = (value: string) => {
   setRouteQueries(resetPaginationQuery({ name: value }));
 };
+
+const onSortDesc = (value: string) => {
+  setRouteQueries(resetPaginationQuery({ sort: value }));
+};
 </script>
 
 <template>
@@ -34,13 +38,19 @@ const onUpdateName = (value: string) => {
         </template>
       </a-input>
 
-      <a-button class="button">
+      <a-button
+        class="button"
+        @click="onSortDesc('updated_at')"
+      >
         <template #icon>
           <Icon name="my-icons:sorter-low" />
         </template>
       </a-button>
 
-      <a-button class="button">
+      <a-button
+        @click="onSortDesc('updated_at_asc')"
+        class="button"
+      >
         <template #icon> <Icon name="my-icons:sorter-up" /> </template>
       </a-button>
 

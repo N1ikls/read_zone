@@ -7,12 +7,17 @@ import {
   STATUS,
   OTHER,
 } from '../../consts';
+import { useCatalogState } from '../../models';
 
 const { queries = {} } = defineProps<{
   queries: Record<string, string | number | string[] | undefined>;
 }>();
 
 const setRouteQueries = useSetRouteQuery();
+
+const catalogState = useCatalogState();
+
+const { showSidebar } = catalogState;
 
 const { data: tag } = useFetch('/api/tag');
 const { data: genres } = useFetch('/api/genres');
@@ -26,7 +31,6 @@ const onUpdateString = (key: string, value: SelectValue) => {
 };
 
 const onUpdateArray = (key: string, value: string[] | string) => {
-  console.log(value);
   setRouteQueries(
     resetPaginationQuery({
       [key]: Array.isArray(value) ? value.join(',') : (value as string),
@@ -37,173 +41,211 @@ const onUpdateArray = (key: string, value: string[] | string) => {
 
 <template>
   <div class="sidebar">
-    <div class="sidebar-column">
-      <div class="sidebar__item">
-        <label>Жанры</label>
-        <a-select
-          :maxTagCount="3"
-          mode="multiple"
-          :field-names="{ label: 'name', value: 'id' }"
-          style="width: 100%"
-          :value="splitQueryValue(queries?.genres)"
-          :options="genres"
-          @update:value="(value) => onUpdateArray('genres', value)"
-          allowClear
-        >
-        </a-select>
-      </div>
+    <div class="sidebar-close">
+      <a-button
+        @click="showSidebar"
+        class="button"
+      >
+        <template #icon>
+          <Icon name="my-icons:close" />
+        </template>
+      </a-button>
+    </div>
 
-      <div class="sidebar__item">
-        <label>Теги</label>
-        <a-select
-          :maxTagCount="3"
-          mode="multiple"
-          :field-names="{ label: 'name', value: 'id' }"
-          style="width: 100%"
-          :options="tag"
-          :value="splitQueryValue(queries?.tags)"
-          @update:value="(value) => onUpdateArray('tags', value)"
-          allowClear
-        >
-        </a-select>
-      </div>
+    <div class="sidebar-wrapper">
+      <div class="sidebar-column">
+        <div class="sidebar__item">
+          <label>Жанры</label>
+          <a-select
+            :maxTagCount="3"
+            mode="multiple"
+            :field-names="{ label: 'name', value: 'id' }"
+            style="width: 100%"
+            :value="splitQueryValue(queries?.genres)"
+            :options="genres"
+            @update:value="(value) => onUpdateArray('genres', value)"
+            allowClear
+          >
+          </a-select>
+        </div>
 
-      <div class="sidebar__item">
-        <label>Количество глав</label>
+        <div class="sidebar__item">
+          <label>Теги</label>
+          <a-select
+            :maxTagCount="3"
+            mode="multiple"
+            :field-names="{ label: 'name', value: 'id' }"
+            style="width: 100%"
+            :options="tag"
+            :value="splitQueryValue(queries?.tags)"
+            @update:value="(value) => onUpdateArray('tags', value)"
+            allowClear
+          >
+          </a-select>
+        </div>
 
-        <div class="sidebar__item-input">
-          <a-input
-            placeholder="от"
-            @update:value="(value) => onUpdateString('chaptersFrom', value)"
-            :value="queries?.chaptersFrom"
-          />
-          <span />
+        <div class="sidebar__item">
+          <label>Количество глав</label>
 
-          <a-input
-            placeholder="до"
-            @update:value="(value) => onUpdateString('chaptersTo', value)"
-            :value="queries?.chaptersTo"
+          <div class="sidebar__item-input">
+            <a-input
+              placeholder="от"
+              @update:value="(value) => onUpdateString('chaptersFrom', value)"
+              :value="queries?.chaptersFrom"
+            />
+            <span />
+
+            <a-input
+              placeholder="до"
+              @update:value="(value) => onUpdateString('chaptersTo', value)"
+              :value="queries?.chaptersTo"
+            />
+          </div>
+        </div>
+
+        <div class="sidebar__item">
+          <label>Год релиза</label>
+
+          <div class="sidebar__item-input">
+            <a-input
+              placeholder="от"
+              @update:value="(value) => onUpdateString('yearFrom', value)"
+              :value="queries?.yearFrom"
+            />
+            <span />
+            <a-input
+              placeholder="до"
+              @update:value="(value) => onUpdateString('yearTo', value)"
+              :value="queries?.yearTo"
+            />
+          </div>
+        </div>
+
+        <div class="sidebar__item">
+          <label>Количество оценок</label>
+
+          <div class="sidebar__item-input">
+            <a-input
+              placeholder="от"
+              @update:value="(value) => onUpdateString('rateFrom', value)"
+              :value="queries?.rateFrom"
+            />
+            <span />
+            <a-input
+              placeholder="до"
+              @update:value="(value) => onUpdateString('rateTo', value)"
+              :value="queries?.rateTo"
+            />
+          </div>
+        </div>
+
+        <div class="sidebar__item rate">
+          <label>Возрастной рейтинг</label>
+          <a-checkbox-group
+            class="sidebar__item-checkbox"
+            :value="splitQueryValue(queries?.ageRate)"
+            name="checkboxgroup"
+            :options="BOOKS_AGE"
+            @change="(value) => onUpdateArray('ageRate', value)"
           />
         </div>
-      </div>
 
-      <div class="sidebar__item">
-        <label>Год релиза</label>
-
-        <div class="sidebar__item-input">
-          <a-input
-            placeholder="от"
-            @update:value="(value) => onUpdateString('yearFrom', value)"
-            :value="queries?.yearFrom"
-          />
-          <span />
-          <a-input
-            placeholder="до"
-            @update:value="(value) => onUpdateString('yearTo', value)"
-            :value="queries?.yearTo"
+        <div class="sidebar__item">
+          <label>Тип</label>
+          <a-checkbox-group
+            class="sidebar__item-checkbox"
+            name="checkboxgroup"
+            :value="splitQueryValue(queries?.types)"
+            :options="BOOKS_TYPE"
+            @change="(value) => onUpdateArray('types', value)"
           />
         </div>
-      </div>
 
-      <div class="sidebar__item">
-        <label>Количество оценок</label>
-
-        <div class="sidebar__item-input">
-          <a-input
-            placeholder="от"
-            @update:value="(value) => onUpdateString('rateFrom', value)"
-            :value="queries?.rateFrom"
-          />
-          <span />
-          <a-input
-            placeholder="до"
-            @update:value="(value) => onUpdateString('rateTo', value)"
-            :value="queries?.rateTo"
+        <div class="sidebar__item">
+          <label>Формат выпуска</label>
+          <a-checkbox-group
+            class="sidebar__item-checkbox"
+            name="checkboxgroup"
+            :value="splitQueryValue(queries?.release_type)"
+            :options="RELEASE_TYPE"
+            @change="(value) => onUpdateArray('release_type', value)"
           />
         </div>
-      </div>
 
-      <div class="sidebar__item">
-        <label>Возрастной рейтинг</label>
-        <a-checkbox-group
-          class="sidebar__item-checkbox"
-          :value="splitQueryValue(queries?.ageRate)"
-          name="checkboxgroup"
-          :options="BOOKS_AGE"
-          @change="(value) => onUpdateArray('ageRate', value)"
-        />
-      </div>
+        <div class="sidebar__item">
+          <label>Статус перевода</label>
+          <a-checkbox-group
+            :value="splitQueryValue(queries?.status)"
+            class="sidebar__item-checkbox"
+            name="checkboxgroup"
+            :options="STATUS"
+            @change="(value) => onUpdateArray('status', value)"
+          />
+        </div>
 
-      <div class="sidebar__item">
-        <label>Тип</label>
-        <a-checkbox-group
-          class="sidebar__item-checkbox"
-          name="checkboxgroup"
-          :value="splitQueryValue(queries?.types)"
-          :options="BOOKS_TYPE"
-          @change="(value) => onUpdateArray('types', value)"
-        />
-      </div>
-
-      <div class="sidebar__item">
-        <label>Формат выпуска</label>
-        <a-checkbox-group
-          class="sidebar__item-checkbox"
-          name="checkboxgroup"
-          :value="splitQueryValue(queries?.release_type)"
-          :options="RELEASE_TYPE"
-          @change="(value) => onUpdateArray('release_type', value)"
-        />
-      </div>
-
-      <div class="sidebar__item">
-        <label>Статус перевода</label>
-        <a-checkbox-group
-          :value="splitQueryValue(queries?.status)"
-          class="sidebar__item-checkbox"
-          name="checkboxgroup"
-          :options="STATUS"
-          @change="(value) => onUpdateArray('status', value)"
-        />
-      </div>
-
-      <div class="sidebar__item">
-        <label>Другое</label>
-        <a-checkbox-group
-          class="sidebar__item-other sidebar__item-checkbox"
-          name="checkboxgroup"
-          :options="OTHER"
-        />
+        <div class="sidebar__item">
+          <label>Другое</label>
+          <a-checkbox-group
+            class="sidebar__item-other sidebar__item-checkbox"
+            name="checkboxgroup"
+            :options="OTHER"
+          />
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
+.button {
+  font-size: 32px;
+  background-color: #0862e0;
+  border-radius: 50%;
+  min-width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 .sidebar {
   position: sticky;
   top: calc(var(--header-height) + 30px);
   align-self: flex-start;
   width: 320px;
-  height: 800px;
-  overflow: auto;
   border: 1px solid #e0e0e0;
   border-radius: 10px;
-  &::-webkit-scrollbar {
-    width: 4px;
-    height: 5px;
+
+  &-wrapper {
+    position: relative;
+    height: 800px;
+    overflow-y: auto;
+
+    &::-webkit-scrollbar {
+      width: 4px;
+      height: 5px;
+    }
+    &::-webkit-scrollbar-thumb {
+      border-radius: 6px;
+      background-color: #e1e6e6;
+    }
   }
 
-  &::-webkit-scrollbar-thumb {
-    border-radius: 6px;
-    background-color: #e1e6e6;
+  &-close {
+    position: absolute;
+    left: 45%;
+    top: -20px;
+    z-index: 1;
   }
 
   &-column {
-    padding: 12px;
+    padding: 18px;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 16px;
+  }
+
+  .rate {
+    margin-top: 14px;
   }
 
   &__item {
@@ -245,7 +287,8 @@ const onUpdateArray = (key: string, value: string[] | string) => {
       grid-template-columns: 1fr;
     }
     label {
-      padding: 12px 0;
+      font-size: 15px;
+      padding-bottom: 8px;
     }
   }
 }

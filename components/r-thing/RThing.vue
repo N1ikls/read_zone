@@ -117,6 +117,8 @@ const slots = useSlots();
     }
 
     &-text {
+      display: flex;
+      align-items: center;
       margin-top: 10px;
       font-size: 12px;
       line-height: 10px;

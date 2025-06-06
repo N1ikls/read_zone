@@ -31,7 +31,7 @@ const { item = {} } = defineProps<{
       #extra
     >
       <div class="extra">
-        <span> <icon name="my-icons:star" /> </span>
+        <span> <icon name="my-icons:rate" /> </span>
 
         <span>{{ item.rate }}</span>
       </div>

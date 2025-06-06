@@ -16,27 +16,58 @@ const { item = {} } = defineProps<{
         />
       </template>
 
-      {{ item?.name }}
+      <span class="item-card__title"> {{ item?.name }}</span>
 
       <template #text>
         <a-tag
-          v-for="(tag, tagIndex) in item.tags?.slice(0, 3)"
-          :key="tagIndex"
+          v-for="(tag, index) in item.genres"
+          :key="index"
           class="text-tag"
           color="#FFFFFF"
         >
-          {{ tag }}
+          {{ tag?.name }}
         </a-tag>
+
         <a-tag
-          v-if="item.rating"
+          v-if="item.rate"
           class="text-tag"
           color="#FFFFFF"
         >
-          {{ item.rating.toFixed(2) }}
+          <div class="extra">
+            <icon name="my-icons:rate" />
+
+            <span>{{ item.rate }}</span>
+          </div>
         </a-tag>
       </template>
 
-      <template #content> dsdasdddasad </template>
+      <template #content>
+        <div class="item-card__content">
+          <div class="item-card__content-extra">
+            <icon name="my-icons:timer" />
+
+            <span>{{ item.year }}</span>
+          </div>
+
+          <div class="item-card__content-extra">
+            <icon name="my-icons:eyes" />
+
+            <span>{{ item.viewers_count }}</span>
+          </div>
+
+          <div class="item-card__content-extra">
+            <icon name="my-icons:read" />
+
+            <span>{{ item.chapters_count }}</span>
+          </div>
+
+          <div class="item-card__content-extra">
+            <icon name="my-icons:like" />
+
+            <span>{{ item.likers_count }}</span>
+          </div>
+        </div>
+      </template>
 
       <template
         v-if="item.description"
@@ -63,15 +94,47 @@ const { item = {} } = defineProps<{
 </template>
 
 <style lang="scss" scoped>
+.extra {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+
+  :deep(.iconify) {
+    font-size: 18px;
+  }
+}
+
 .item-card {
   padding: 20px;
   background-color: #f5f5f5;
   border-radius: 10px;
   margin-bottom: 16px;
 
+  &__title {
+    font-size: 26px;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+    word-break: break-all;
+    overflow-wrap: break-word;
+  }
+
+  &__content {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    &-extra {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+  }
+
   .avatar {
-    width: 140px;
-    height: 140px;
+    width: 153px;
+    height: 153px;
     border-radius: 10px;
     object-fit: cover;
   }
@@ -96,7 +159,7 @@ const { item = {} } = defineProps<{
     margin-right: 4px;
     color: #000000;
     font-size: 14px;
-    font-weight: 600;
+    font-weight: 500;
   }
 }
 </style>
