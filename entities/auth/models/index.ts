@@ -1,11 +1,35 @@
 import { defineStore } from 'pinia';
 
+export interface IUser {
+  avatar: string | null;
+  books_count: number | null;
+  chapters_in_month: number | null;
+  id: string;
+  likers_count: number | null;
+  name: string | null;
+  subscribers_count: number | null;
+}
 export const useAuth = defineStore('auth', () => {
+  const { getData, setData } = useLocalData();
+
+  const user = ref<Partial<IUser> | null>(null);
   const isShow = ref<boolean>(false);
 
   const showModal = () => {
     isShow.value = !isShow.value;
   };
 
-  return { isShow, showModal };
+  const setUser = (value: IUser) => {
+    if (!value) return;
+
+    user.value = value;
+
+    setData(value, 'user');
+  };
+
+  onMounted(() => {
+    user.value = getData('user');
+  });
+
+  return { isShow, user, showModal, setUser };
 });

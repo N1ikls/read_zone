@@ -1,5 +1,8 @@
 <script lang="ts" setup>
+import { useAuth } from '../../models';
 import type { FormState } from '../../types';
+
+const { setUser } = useAuth();
 
 const model = defineModel<FormState>({
   default: () => ({}),
@@ -8,8 +11,6 @@ const model = defineModel<FormState>({
 const emits = defineEmits<{
   (e: 'close'): void;
 }>();
-
-const { setData } = useLocalData();
 
 const onFinish = async (values: FormState) => {
   const { data, status } = await useFetch('/api/auth/registration', {
@@ -23,12 +24,8 @@ const onFinish = async (values: FormState) => {
     return;
   }
 
-  setData(data.value, 'user');
+  setUser(data.value);
   emits('close');
-};
-
-const onFinishFailed = (errorInfo: any) => {
-  console.log('Failed:', errorInfo);
 };
 </script>
 
@@ -40,7 +37,6 @@ const onFinishFailed = (errorInfo: any) => {
     autocomplete="off"
     @finish="onFinish"
     layout="vertical"
-    @finishFailed="onFinishFailed"
   >
     <a-form-item
       label="Никнейм"

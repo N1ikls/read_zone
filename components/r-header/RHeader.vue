@@ -55,6 +55,7 @@ const classes = computed(() => ({
 .r-header {
   margin: 0;
   padding: 0;
+  line-height: 100%;
   letter-spacing: 0.015em;
   padding-bottom: v-bind(bottom);
   font-family: 'Aspa', sans-serif;

@@ -3,10 +3,7 @@ import { RText } from '@/components';
 import { ModalAuth, useAuth } from '@/entities/auth';
 
 const { showModal } = useAuth();
-const { isShow } = storeToRefs(useAuth());
-const { getData } = useLocalData();
-
-const user = ref(getData('user'));
+const { isShow, user } = storeToRefs(useAuth());
 
 const theme = ref(false);
 </script>
@@ -69,7 +66,7 @@ const theme = ref(false);
           v-else
           size="large"
         >
-          dsdas
+          {{ user.name }}
         </a-avatar>
       </a-space>
     </div>

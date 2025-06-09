@@ -134,7 +134,7 @@ export default class extends BaseStorage {
 
     const hashedPassword = security.getPasswordHash(password);
 
-    const userid = await this.knex(this.table)
+    const [userid] = await this.knex(this.table)
       .insert({
         email: login,
         password: hashedPassword,
@@ -142,10 +142,8 @@ export default class extends BaseStorage {
       })
       .returning('id');
 
-    console.log('userId', userid);
-
     const newUser = await this.knex(this.table)
-      .where({ id: userid })
+      .where({ id: userid.id })
       .select('*');
 
     return this.afterFetch(newUser[0]);

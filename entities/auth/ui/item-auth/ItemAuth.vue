@@ -1,7 +1,8 @@
 <script lang="ts" setup>
+import { useAuth } from '../../models';
 import type { FormState } from '../../types';
 
-const { setData } = useLocalData();
+const { setUser } = useAuth();
 
 const emits = defineEmits<{
   (e: 'registration', v: true): void;
@@ -24,16 +25,23 @@ const onFinish = async (values: FormState) => {
     return;
   }
 
-  setData(data.value, 'user');
-  emits('close');
-};
+  setUser(data.value);
 
-const onFinishFailed = (errorInfo: any) => {
-  console.log('Failed:', errorInfo);
+  emits('close');
 };
 </script>
 
 <template>
+  <div class="logo">
+    <Icon name="my-icons:auth-logo" />
+
+    <div class="logo__title">
+      Добро пожаловать!
+
+      <div class="logo__title-text">Чувствуйте себя как дома</div>
+    </div>
+  </div>
+
   <a-form
     class="modal__form"
     :model="model"
@@ -41,7 +49,6 @@ const onFinishFailed = (errorInfo: any) => {
     autocomplete="off"
     @finish="onFinish"
     layout="vertical"
-    @finishFailed="onFinishFailed"
   >
     <a-form-item
       label="Почта"
@@ -84,6 +91,31 @@ const onFinishFailed = (errorInfo: any) => {
 </template>
 
 <style lang="scss" scoped>
+.logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding-bottom: 25px;
+
+  span {
+    width: 100px;
+    height: 100px;
+    line-height: 100px;
+    font-size: 50px;
+  }
+
+  &__title {
+    font-weight: 700;
+    font-size: 20px;
+
+    &-text {
+      font-size: 15px;
+      font-weight: 400;
+    }
+  }
+}
+
 .text-small {
   margin-top: 8px;
   font-size: 15px;

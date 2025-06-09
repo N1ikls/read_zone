@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import { message } from 'ant-design-vue';
 import type { FormState } from '../../types';
 import { ItemAuth } from '../item-auth';
 import { ItemRegistration } from '../item-registration';
@@ -37,7 +36,9 @@ const close = () => {
   >
     <div class="modal__wrapper">
       <div class="modal__title">
-        <r-header>{{ isAuth ? 'Авторизация' : 'Регистрация' }} </r-header>
+        <r-header bottom="20px"
+          >{{ isAuth ? 'Авторизация' : 'Регистрация' }}
+        </r-header>
       </div>
 
       <item-auth
@@ -82,7 +83,7 @@ const close = () => {
 <style lang="scss" scoped>
 .modal {
   &__wrapper {
-    padding: 0 40px;
+    padding: 20px 15px;
   }
 
   &__title {
