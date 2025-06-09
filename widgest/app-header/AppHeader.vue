@@ -1,56 +1,81 @@
 <script setup lang="ts">
 import { RText } from '@/components';
+import { ModalAuth, useAuth } from '@/entities/auth';
+
+const { showModal } = useAuth();
+const { isShow } = storeToRefs(useAuth());
+const { getData } = useLocalData();
+
+const user = ref(getData('user'));
+
 const theme = ref(false);
 </script>
 
 <template>
-  <div class="app-header">
-    <NuxtLink to="/">
-      <div class="app-header__logo">
-        <Icon name="my-icons:logo" />
-      </div>
-    </NuxtLink>
-
-    <nav class="app-header__nav">
-      <NuxtLink to="/catalog">
-        <r-text
-          icon="my-icons:list"
-          size="large"
-        >
-          Каталог
-        </r-text>
+  <ClientOnly>
+    <div class="app-header">
+      <NuxtLink to="/">
+        <div class="app-header__logo">
+          <Icon name="my-icons:logo" />
+        </div>
       </NuxtLink>
 
-      <r-text
-        icon="my-icons:group"
+      <nav class="app-header__nav">
+        <NuxtLink to="/catalog">
+          <r-text
+            icon="my-icons:list"
+            size="large"
+          >
+            Каталог
+          </r-text>
+        </NuxtLink>
+
+        <r-text
+          icon="my-icons:group"
+          size="large"
+        >
+          Сообщество
+        </r-text>
+
+        <r-text
+          icon="my-icons:faq"
+          size="large"
+        >
+          FAQ
+        </r-text>
+      </nav>
+
+      <a-space
+        warp
         size="large"
       >
-        Сообщество
-      </r-text>
+        <NuxtLink to="/home"> Поиск </NuxtLink>
 
-      <r-text
-        icon="my-icons:faq"
-        size="large"
-      >
-        FAQ
-      </r-text>
-    </nav>
+        <a-switch v-model:checked="theme">
+          <template #checkedChildren>
+            <CheckOutlined />
+          </template>
+        </a-switch>
 
-    <a-space
-      warp
-      size="large"
-    >
-      <NuxtLink to="/home"> Поиск </NuxtLink>
+        <a-button
+          v-if="!user"
+          type="primary"
+          @click="showModal"
+        >
+          Вход / Регистрация
+        </a-button>
 
-      <a-switch v-model:checked="theme">
-        <template #checkedChildren>
-          <CheckOutlined />
-        </template>
-      </a-switch>
+        <a-avatar
+          v-else
+          size="large"
+        >
+          dsdas
+        </a-avatar>
+      </a-space>
+    </div>
+  </ClientOnly>
 
-      <a-button type="primary"> Вход / Регистрация </a-button>
-    </a-space>
-  </div>
+  <ModalAuth v-model:show="isShow" />
 </template>
 
 <style lang="scss" scoped>

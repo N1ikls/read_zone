@@ -8,21 +8,12 @@ export default defineNuxtConfig({
     '@nuxt/eslint',
     '@nuxt/icon',
     '@nuxt/fonts',
-    // '@sidebase/nuxt-session',
-    // '@sidebase/nuxt-auth',
+
     '@ant-design-vue/nuxt',
     'nuxt-swiper',
     'nuxt-openapi-docs-module',
     '@pinia/nuxt',
   ],
-  // auth: {
-  //   globalAppMiddleware: {
-  //     isEnabled: false,
-  //   },
-  //   provider: {
-  //     type: 'authjs',
-  //   },
-  // },
   components: [
     {
       path: '~/components',

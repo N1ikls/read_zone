@@ -1,29 +1,33 @@
-import * as helper from './helper.js'
-import security from '../security.js'
+import * as helper from './helper.js';
+import security from '../security.js';
 
 export async function seed(knex) {
-  const admins = []
-  for (let id = 1; id <= helper.ADMINS_COUNT; id++) {
+  // Создаём администраторов
+  const admins = [];
+  for (let i = 1; i <= helper.ADMINS_COUNT; i++) {
     admins.push({
-      id,
-      email: `admin${id}@example.com`,
+      email: `admin${i}@example.com`,
       password: security.getPasswordHash('123456'),
-      name: `Админ ${id}`,
+      name: `Админ ${i}`,
       role: 'admin',
-    })
+      created_at: knex.fn.now(),
+      updated_at: knex.fn.now(),
+    });
   }
-  await knex('user').insert(admins).onConflict().ignore()
+  await knex('user').insert(admins).onConflict('email').ignore(); // Конфликт по email
 
-  const users = []
-  for (let id = helper.ADMINS_COUNT + 1; id <= helper.USERS_COUNT; id++) {
+  // Создаём обычных пользователей
+  const users = [];
+  for (let i = helper.ADMINS_COUNT + 1; i <= helper.USERS_COUNT; i++) {
     users.push({
-      id,
-      email: `user${id}@example.com`,
+      email: `user${i}@example.com`,
       password: security.getPasswordHash('123456'),
-      name: `Юзер ${id}`,
+      name: `Юзер ${i}`,
       role: '',
-    })
+      created_at: knex.fn.now(),
+      updated_at: knex.fn.now(),
+    });
   }
 
-  await knex('user').insert(users).onConflict().ignore()
+  await knex('user').insert(users).onConflict('email').ignore(); // Конфликт по email
 }

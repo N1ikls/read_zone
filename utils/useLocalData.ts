@@ -1,21 +1,29 @@
-const useLocalData = (storageProvider: Storage = localStorage) => {
+const useLocalData = () => {
   const setData = <T>(value: T, key: string) => {
     if (!value || !key) return;
 
-    storageProvider.setItem(key, JSON.stringify(value));
+    if (process.client) {
+      localStorage.setItem(key, JSON.stringify(value));
+    }
   };
 
   const getData = <T>(key: string): T | null => {
     if (!key) return null;
+    let data = null;
 
-    const data = JSON.parse(storageProvider.getItem(key) || 'null');
+    if (process.client) {
+      data = JSON.parse(localStorage.getItem(key) || 'null');
+    }
 
     return data;
   };
 
   const clearData = (key: string) => {
     if (!key) return;
-    storageProvider.removeItem(key);
+
+    if (process.client) {
+      localStorage.removeItem(key);
+    }
   };
 
   return { setData, getData, clearData };
