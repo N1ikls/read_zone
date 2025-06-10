@@ -21,6 +21,7 @@ export const MENU_OPTIONS: DropdownMenuItem[] = [
     {
       label: 'Настройки',
       icon: 'settings',
+      link: `/user`,
     },
     {
       label: 'Промокоды',

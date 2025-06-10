@@ -46,7 +46,16 @@ const logout = async () => {
     </template>
 
     <template #item-label="{ item }">
-      <div class="p-1 font-bold text-xl text-white">{{ item.label }}</div>
+      <div class="p-1 font-bold text-xl text-white">
+        <NuxtLink
+          v-if="item.link"
+          :to="item.link"
+        >
+          {{ item.label }}
+        </NuxtLink>
+
+        <span v-else>{{ item.label }}</span>
+      </div>
     </template>
 
     <template #item-leading="{ item }">
