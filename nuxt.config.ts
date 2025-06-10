@@ -8,36 +8,28 @@ export default defineNuxtConfig({
     '@nuxt/eslint',
     '@nuxt/icon',
     '@nuxt/fonts',
-
     '@ant-design-vue/nuxt',
     'nuxt-swiper',
-    'nuxt-openapi-docs-module',
     '@pinia/nuxt',
+    '@nuxt/ui',
   ],
+
+  ui: {
+    colorMode: false,
+  },
   components: [
     {
       path: '~/components',
       pathPrefix: false,
     },
   ],
-
   antd: {
     extractStyle: true,
   },
   vue: {
     propsDestructure: true,
   },
-  nitro: {
-    devStorage: {
-      cache: { driver: 'memory' },
-    },
-  },
-  vite: {
-    server: {
-      hmr: { overlay: false },
-    },
-  },
-  css: ['./public/app.scss'],
+  css: ['./public/app.scss', '~/assets/css/main.css'],
   icon: {
     provider: 'server',
     customCollections: [

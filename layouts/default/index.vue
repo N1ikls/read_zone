@@ -26,7 +26,10 @@ const slots = useSlots();
 .r-page-layout {
   &__title {
     margin-top: 16px;
-    margin-bottom: 60px;
+  }
+
+  &__section {
+    margin-top: 60px;
   }
 }
 </style>

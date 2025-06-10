@@ -97,7 +97,7 @@ footer {
 
 main {
   flex: 1;
-  margin-top: calc(100px + var(--header-height));
+  padding-top: calc(100px + var(--header-height));
 }
 
 %flex {
@@ -113,6 +113,10 @@ main {
   &__header,
   &__extra {
     margin-bottom: 16px;
+  }
+
+  &__user {
+    background-color: #f5f5f5;
   }
 }
 </style>

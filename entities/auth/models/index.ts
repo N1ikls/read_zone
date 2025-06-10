@@ -5,13 +5,12 @@ export interface IUser {
   books_count: number | null;
   chapters_in_month: number | null;
   id: string;
+  email: string;
   likers_count: number | null;
   name: string | null;
   subscribers_count: number | null;
 }
 export const useAuth = defineStore('auth', () => {
-  const { getData, setData } = useLocalData();
-
   const user = ref<Partial<IUser> | null>(null);
   const isShow = ref<boolean>(false);
 
@@ -19,17 +18,11 @@ export const useAuth = defineStore('auth', () => {
     isShow.value = !isShow.value;
   };
 
-  const setUser = (value: IUser) => {
+  const setUser = (value: IUser | null) => {
     if (!value) return;
 
     user.value = value;
-
-    setData(value, 'user');
   };
-
-  onMounted(() => {
-    user.value = getData('user');
-  });
 
   return { isShow, user, showModal, setUser };
 });

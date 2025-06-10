@@ -5,15 +5,17 @@ import { theme } from '@/shared/consts';
 </script>
 
 <template>
-  <a-extract-style>
-    <a-config-provider :theme="theme">
-      <nuxt-layout name="main">
-        <template #header><AppHeader /> </template>
+  <u-app>
+    <a-extract-style>
+      <a-config-provider :theme="theme">
+        <nuxt-layout name="main">
+          <template #header><AppHeader /> </template>
 
-        <NuxtPage />
+          <NuxtPage />
 
-        <template #footer><AppFooter /> </template>
-      </nuxt-layout>
-    </a-config-provider>
-  </a-extract-style>
+          <template #footer><AppFooter /> </template>
+        </nuxt-layout>
+      </a-config-provider>
+    </a-extract-style>
+  </u-app>
 </template>
