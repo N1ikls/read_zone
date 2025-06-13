@@ -15,6 +15,11 @@ const props = defineProps({
     default: 'default',
   },
 
+  sizeSvg: {
+    type: Number as PropType<number>,
+    default: 22,
+  },
+
   color: {
     type: Boolean as PropType<boolean>,
     default: false,
@@ -52,15 +57,14 @@ const classes = computed(() => [
     class="r-text"
     :class="classes"
   >
-    <Icon
+    <UIcon
       class="r-text__icon"
+      :class="[`text-[${sizeSvg}px]`]"
       v-if="icon"
       :name="icon"
     />
 
-    <p>
-      <slot />
-    </p>
+    <slot />
   </div>
 </template>
 
@@ -73,10 +77,6 @@ const classes = computed(() => [
   display: flex;
   align-items: center;
   gap: 8px;
-
-  &__icon {
-    font-size: 22px;
-  }
 
   p {
     margin: 0;

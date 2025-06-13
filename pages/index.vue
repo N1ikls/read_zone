@@ -15,25 +15,21 @@ const { data: top } = useFetch('/api/top-genres');
 
 <template>
   <section class="main">
-    <!-- <div class="main-bg"></div> -->
-
-    <ClientOnly>
-      <swiper-container
-        :slides-per-view="4"
-        :spaceBetween="10"
-        :free-mode="true"
-        ref="containerRef"
+    <swiper-container
+      :slides-per-view="4"
+      :spaceBetween="10"
+      :free-mode="true"
+      ref="containerRef"
+    >
+      <swiper-slide
+        v-for="(i, idx) in data"
+        :key="idx"
       >
-        <swiper-slide
-          v-for="(i, idx) in data"
-          :key="idx"
-        >
-          <r-card>
-            {{ i.name }}
-          </r-card>
-        </swiper-slide>
-      </swiper-container>
-    </ClientOnly>
+        <r-card>
+          {{ i.name }}
+        </r-card>
+      </swiper-slide>
+    </swiper-container>
   </section>
 
   <section class="news">

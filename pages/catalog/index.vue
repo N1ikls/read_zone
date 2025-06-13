@@ -30,12 +30,7 @@ watch(
 
 <template>
   <NuxtLayout name="default">
-    <template #breadcrumb>
-      <a-breadcrumb>
-        <a-breadcrumb-item>Главная</a-breadcrumb-item>
-        <a-breadcrumb-item>Каталог</a-breadcrumb-item>
-      </a-breadcrumb>
-    </template>
+    <template #breadcrumb> выфвфы </template>
 
     <template #title>
       <r-text size="v-large">Каталог</r-text>
@@ -46,19 +41,6 @@ watch(
         :queries="queries"
         :items="data?.items || []"
       />
-
-      <div
-        v-if="data?.items"
-        class="catalog__pagination"
-      >
-        <a-pagination
-          :current="Number(queries?.page)"
-          :total="Number(data.total) || 0"
-          :pageSize="Number(queries.limit)"
-          @change="handlePageChange"
-          :show-size-changer="false"
-        />
-      </div>
     </template>
   </NuxtLayout>
 </template>

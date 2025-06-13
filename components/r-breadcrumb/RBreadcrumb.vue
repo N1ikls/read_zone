@@ -1,25 +1,15 @@
 <script lang="ts" setup>
-import type { BreadcrumbOptions } from '@/shared/types';
+import type { BreadcrumbItem } from '@nuxt/ui';
 
 defineProps<{
-  options: BreadcrumbOptions[];
+  options: BreadcrumbItem[];
 }>();
 </script>
 
 <template>
-  <a-breadcrumb>
-    <a-breadcrumb-item
-      v-for="option in options"
-      :key="option.path"
-    >
-      <NuxtLink
-        v-if="option.path"
-        :to="option.path"
-      >
-        {{ option.name }}
-      </NuxtLink>
-
-      <span v-else>{{ option.name }}</span>
-    </a-breadcrumb-item>
-  </a-breadcrumb>
+  <UBreadcrumb :items="options">
+    <template #separator>
+      <span class="text-muted">/</span>
+    </template>
+  </UBreadcrumb>
 </template>

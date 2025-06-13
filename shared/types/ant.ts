@@ -1,4 +1,4 @@
 export interface BreadcrumbOptions {
-  path: string;
-  name: string;
+  to: string;
+  label: string;
 }

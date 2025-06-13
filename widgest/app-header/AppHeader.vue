@@ -52,31 +52,20 @@ const logout = async () => {
       </r-text>
     </nav>
 
-    <a-space
-      warp
-      size="large"
-    >
+    <div class="flex items-center gap-3">
       <NuxtLink to="/home"> Поиск </NuxtLink>
 
-      <a-switch v-model:checked="theme">
-        <template #checkedChildren>
-          <CheckOutlined />
-        </template>
-      </a-switch>
-
-      <a-button
+      <u-button
         v-if="!user"
-        type="primary"
+        color="primary"
         @click="showModal"
       >
         Вход / Регистрация
-      </a-button>
+      </u-button>
 
       <ItemAvatar v-else />
-    </a-space>
+    </div>
   </div>
-
-  <ModalAuth v-model:show="isShow" />
 </template>
 
 <style lang="scss" scoped>

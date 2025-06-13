@@ -9,35 +9,93 @@ const { user } = useAuth();
     <img class="user-sidebar__logo" />
 
     <div class="user-sidebar__buttons">
-      <a-button
-        size="large"
+      <UButton
+        class="mb-[10px] rounded-[10px] bg-[#f5f5f5] text-[#97BFFF] hover:bg-[#f5f5f5] font-bold text-lg cursor-pointer"
+        color="secondary"
+        size="xl"
         block
       >
         Мои работы
-      </a-button>
-      <a-button
-        size="large"
+      </UButton>
+
+      <UButton
+        class="mb-[10px] rounded-[10px] bg-[#f5f5f5] text-[#97BFFF] hover:bg-[#f5f5f5] font-bold text-lg cursor-pointer"
+        color="secondary"
+        size="xl"
         block
       >
         Мои доходы
-      </a-button>
-      <a-button
-        size="large"
+      </UButton>
+
+      <UButton
+        class="mb-[10px] rounded-[10px] bg-[#f5f5f5] text-[#97BFFF] hover:bg-[#f5f5f5] font-bold text-lg cursor-pointer"
+        color="secondary"
+        size="xl"
         block
       >
         Закладки
-      </a-button>
+      </UButton>
     </div>
 
-    <div class="user-sidebar__friends">
-      <div class="grid">{{ user }}</div>
+    <div class="user-sidebar__friends bg-[#97BFFF] rounded-[10px] w-full">
+      <div class="p-4">
+        <div class="font-bold text-xl text-center text-[#FFFFFF] mb-[10px]">
+          Друзья ({{ 87 }})
+        </div>
+
+        <div class="grid grid-cols-4 gap-2">
+          <div
+            v-for="i in 8"
+            class="flex flex-col"
+          >
+            <div class="w-14 h-14 bg-[#D6D6D6] rounded-[10px]"></div>
+            <div
+              class="font-normal text-sm text-[#FFFFFF] text-center overflow-hidden text-ellipsis"
+            >
+              Имя {{ i }}
+            </div>
+          </div>
+        </div>
+
+        <UButton
+          class="mt-[10px] bg-[none] text-[#ffff] hover:bg-[none] rounded-[10px] border font-bold text-lg cursor-pointer"
+          color="secondary"
+          block
+        >
+          Больше
+        </UButton>
+      </div>
     </div>
 
-    <div class="user-sidebar__links">
-      <div class="user-sidebar__link">discord.com</div>
-      <div class="user-sidebar__link">telegram.org</div>
-      <div class="user-sidebar__link">twitch.tv</div>
-      <div class="user-sidebar__link">vk.com</div>
+    <div class="user-sidebar__links w-full">
+      <div class="user-sidebar__link">
+        <Icon
+          :style="{ fontSize: '23px' }"
+          name="my-icons:discord"
+        />
+        discord.com
+      </div>
+      <div class="user-sidebar__link">
+        <Icon
+          :style="{ fontSize: '23px' }"
+          name="my-icons:telegram-outline"
+        />
+        telegram.org
+      </div>
+      <div class="user-sidebar__link">
+        <Icon
+          :style="{ fontSize: '23px' }"
+          name="my-icons:twitch"
+        />
+        twitch.tv
+      </div>
+      <div class="user-sidebar__link">
+        <Icon
+          :style="{ fontSize: '23px' }"
+          name="my-icons:vk"
+        />
+        vk.com
+      </div>
     </div>
   </div>
 </template>
@@ -51,25 +109,21 @@ const { user } = useAuth();
 
   img {
     border: none;
-    width: 285px;
     height: 200px;
+    width: 100%;
     background-color: #d6d6d6;
     border-radius: 10px;
   }
 
-  &__buttons {
-    button {
-      height: 42px;
-      font-size: 18px;
-      font-weight: 700;
-      color: #97bfff;
-      background-color: #f5f5f5;
-      margin-bottom: 10px;
-
-      &:hover {
-        color: #97bfff;
-      }
-    }
+  &__link {
+    display: grid;
+    align-items: center;
+    grid-template-columns: 30px 1fr;
+    gap: 8px;
+    margin-bottom: 16px;
+    font-weight: 400;
+    font-size: 14px;
+    color: #1e1e1e;
   }
 }
 </style>

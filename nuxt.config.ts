@@ -6,14 +6,11 @@ export default defineNuxtConfig({
   },
   modules: [
     '@nuxt/eslint',
-    '@nuxt/icon',
     '@nuxt/fonts',
-    '@ant-design-vue/nuxt',
     'nuxt-swiper',
     '@pinia/nuxt',
     '@nuxt/ui',
   ],
-
   ui: {
     colorMode: false,
   },
@@ -23,9 +20,6 @@ export default defineNuxtConfig({
       pathPrefix: false,
     },
   ],
-  antd: {
-    extractStyle: true,
-  },
   vue: {
     propsDestructure: true,
   },
