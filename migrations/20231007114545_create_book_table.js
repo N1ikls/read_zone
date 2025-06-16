@@ -67,7 +67,7 @@ export async function up(knex) {
     table.uuid('user_id').unsigned().notNullable().references('user.id');
     table.uuid('book_id').unsigned().notNullable().references('book.id');
 
-    table.enu('type', ['process', 'discarded', 'favorite', 'planned']);
+    table.enu('type', ['all', 'process', 'discarded', 'favorite', 'planned']);
 
     table.primary(['user_id', 'book_id']);
   });

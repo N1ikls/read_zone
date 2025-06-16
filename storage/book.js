@@ -262,6 +262,7 @@ export default class extends BaseStorage {
     if (query.genres) options.filterByGenres = query.genres.split(',');
     if (query.tags) options.filterByTags = query.tags.split(',');
     if (query.fandoms) options.filterByFandoms = query.fandoms.split(',');
+    if (query.id) filter.push({ id: query.id });
 
     const books = await this.find(filter, options);
 

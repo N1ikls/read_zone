@@ -2,6 +2,7 @@ import errors from '../errors';
 
 export default defineApiHandler(async (event) => {
   const user = await event.context.context.user();
+
   if (!user) throw new errors.Unauthorized();
 
   const { guid, type } = getQuery(event);

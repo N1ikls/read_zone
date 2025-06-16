@@ -17,6 +17,7 @@ export async function seed(knex) {
   const rates = [];
   const views = [];
   const chapters = [];
+  const bookmarks = [];
 
   // Функции для получения случайных существующих ID
   const getRandomUserId = () =>
@@ -88,6 +89,26 @@ export async function seed(knex) {
     // Теги
     for (let i = 0; i < helper.random(0, 8); i++) {
       tags.push({ book_id: bookUuid, tag_id: getRandomTagId() });
+    }
+
+    const bookmarkTypes = ['process', 'discarded', 'favorite', 'planned'];
+
+    // Закладки
+    for (const book of books) {
+      const bookmarksCount = helper.random(0, helper.USERS_COUNT / 2);
+      for (let i = 0; i < bookmarksCount; i++) {
+        const userId = getRandomUserId();
+
+        if (
+          !bookmarks.some((b) => b.book_id === book.id && b.user_id === userId)
+        ) {
+          bookmarks.push({
+            user_id: userId,
+            book_id: book.id,
+            type: bookmarkTypes[helper.random(0, bookmarkTypes.length - 1)],
+          });
+        }
+      }
     }
 
     // Комментарии
@@ -184,6 +205,7 @@ export async function seed(knex) {
   await knex('book_rater').insert(rates).onConflict().ignore();
   await knex('book_viewer').insert(views).onConflict().ignore();
   await knex('chapter').insert(chapters).onConflict().ignore();
+  await knex('bookmark').insert(bookmarks).onConflict().ignore();
 
   await knex('book').update({
     likers_count: knex('book_liker').where('book_id', knex.raw('id')).count(),
@@ -191,5 +213,8 @@ export async function seed(knex) {
       .where('book_id', knex.raw('id'))
       .select(knex.raw('coalesce(sum(rate) / count(*), 0)')),
     viewers_count: knex('book_viewer').where('book_id', knex.raw('id')).count(),
+    bookmarks_count: knex('bookmark')
+      .where('book_id', knex.raw('id'))
+      .select(knex.raw('count(*)')),
   });
 }
