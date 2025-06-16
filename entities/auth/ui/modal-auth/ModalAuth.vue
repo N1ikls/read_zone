@@ -3,7 +3,7 @@ import type { FormState } from '../../types';
 import { ItemAuth } from '../item-auth';
 import { ItemRegistration } from '../item-registration';
 import { cloneDeep } from 'es-toolkit';
-
+import { AUTH_FOOTER_BUTTONS } from '../../consts';
 const DEFAULT = {
   login: '',
   username: '',
@@ -23,61 +23,61 @@ const close = () => {
   model.value = cloneDeep(DEFAULT);
   isAuth.value = true;
 };
+
+watch(show, (value) => {
+  if (!value) return;
+  isAuth.value = true;
+});
 </script>
 
 <template>
-  <a-modal
-    class="modal"
-    :maskClosable="false"
+  <u-modal
     v-model:open="show"
-    width="812px"
-    :footer="null"
-    @cancel="close"
+    :ui="{
+      content: 'min-w-[812px] ',
+      header: 'justify-center border-[0]',
+      body: 'border-[0] ',
+      footer: 'flex items-center justify-center gap-5 p-6',
+    }"
   >
-    <div class="modal__wrapper">
-      <div class="modal__title">
-        <r-header bottom="20px"
-          >{{ isAuth ? 'Авторизация' : 'Регистрация' }}
-        </r-header>
+    <template #title>
+      <r-header
+        class="text-[#000000]"
+        bottom="0"
+      >
+        {{ isAuth ? 'Авторизация' : 'Регистрация' }}
+      </r-header>
+    </template>
+
+    <template #body>
+      <div class="w-full h-full">
+        <item-auth
+          v-if="isAuth"
+          v-model="model"
+          @registration="() => (isAuth = false)"
+          @close="close"
+        />
+
+        <item-registration
+          v-else
+          v-model="model"
+          @close="close"
+        />
       </div>
+    </template>
 
-      <item-auth
-        v-if="isAuth"
-        v-model="model"
-        @registration="() => (isAuth = false)"
-        @close="close"
-      />
-
-      <item-registration
-        v-else
-        v-model="model"
-        @close="close"
-      />
-
-      <div class="modal__actions">
-        <a-button>
-          <template #icon>
-            <Icon name="my-icons:auth-telegram" />
-          </template>
-        </a-button>
-        <a-button>
-          <template #icon>
-            <Icon name="my-icons:auth-vk" />
-          </template>
-        </a-button>
-        <a-button>
-          <template #icon>
-            <Icon name="my-icons:auth-google" />
-          </template>
-        </a-button>
-        <a-button>
-          <template #icon>
-            <Icon name="my-icons:auth-email" />
-          </template>
-        </a-button>
-      </div>
-    </div>
-  </a-modal>
+    <template #footer>
+      <u-button
+        v-for="name in AUTH_FOOTER_BUTTONS"
+        class="flex items-center justify-center bg-[#f5f5f5] hover:bg-[#f5f5f5] w-25 h-25 text-[40px] rounded-[15px] cursor-pointer"
+      >
+        <u-icon
+          mode="svg"
+          :name="name"
+        />
+      </u-button>
+    </template>
+  </u-modal>
 </template>
 
 <style lang="scss" scoped>

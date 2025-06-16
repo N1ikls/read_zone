@@ -3,20 +3,8 @@ import { RText } from '@/components';
 import { ModalAuth, useAuth } from '@/entities/auth';
 import { ItemAvatar } from './ui';
 
-const { showModal, setUser } = useAuth();
+const { showModal } = useAuth();
 const { isShow, user } = storeToRefs(useAuth());
-
-const theme = ref(false);
-
-const logout = async () => {
-  const { data } = await useFetch('/api/auth/logout', {
-    method: 'POST',
-  });
-
-  if (!data.value?.ok) return;
-
-  setUser(null);
-};
 </script>
 
 <template>
@@ -66,6 +54,8 @@ const logout = async () => {
       <ItemAvatar v-else />
     </div>
   </div>
+
+  <ModalAuth v-model:show="isShow" />
 </template>
 
 <style lang="scss" scoped>

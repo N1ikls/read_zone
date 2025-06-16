@@ -5,7 +5,13 @@ import { theme } from '@/shared/consts';
 </script>
 
 <template>
-  <u-app>
+  <u-app
+    :toaster="{
+      position: 'top-center',
+      progress: false,
+      duration: 3000,
+    }"
+  >
     <nuxt-layout name="main">
       <template #header><AppHeader /> </template>
 

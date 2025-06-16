@@ -1,6 +1,8 @@
 <script lang="ts" setup>
+import type { FormSubmitEvent } from '@nuxt/ui';
 import { useAuth } from '../../models';
 import type { FormState } from '../../types';
+import { z } from 'zod/v3';
 
 const { setUser } = useAuth();
 
@@ -9,18 +11,28 @@ const emits = defineEmits<{
   (e: 'close'): void;
 }>();
 
+const toast = useToast();
+
 const model = defineModel<FormState>({
   default: () => ({}),
 });
 
-const onFinish = async (values: FormState) => {
+const schema = z.object({
+  login: z.string().email('Введите корректный email'),
+  password: z.string().min(6, 'Пароль должен содержать минимум 8 символов'),
+});
+
+const onSubmit = async (event: FormSubmitEvent<z.output<typeof schema>>) => {
   const { data, status } = await useFetch('/api/auth/login', {
     method: 'POST',
-    body: values,
+    body: event.data,
   });
 
   if (status.value === 'error') {
-    message.error(data.value?.message || 'Неправильный логин или пароль');
+    toast.add({
+      title: 'Неправильный логин или пароль',
+      color: 'error',
+    });
 
     return;
   }
@@ -33,7 +45,7 @@ const onFinish = async (values: FormState) => {
 
 <template>
   <div class="logo">
-    <Icon name="my-icons:auth-logo" />
+    <u-icon name="my-icons:auth-logo" />
 
     <div class="logo__title">
       Добро пожаловать!
@@ -42,52 +54,68 @@ const onFinish = async (values: FormState) => {
     </div>
   </div>
 
-  <a-form
-    class="modal__form"
-    :model="model"
-    name="basic"
-    autocomplete="off"
-    @finish="onFinish"
-    layout="vertical"
+  <u-form
+    class="modal__form space-y-4"
+    :schema="schema"
+    :state="model"
+    @submit="onSubmit"
   >
-    <a-form-item
+    <UFormField
+      class="h-23"
       label="Почта"
       name="login"
-      :rules="[{ required: true, message: 'Please input your username!' }]"
+      :ui="{
+        label: 'text-[#000000] font-bold text-xl',
+        error:
+          'text-red-500 text-sm mt-0 transition-all duration-300 ease-in-out',
+      }"
     >
-      <a-input
-        v-model:value="model.login"
-        size="large"
+      <u-input
+        class="w-full rounded-[10px] transition-all duration-300"
+        v-model="model.login"
+        size="xl"
       />
-    </a-form-item>
+    </UFormField>
 
-    <a-form-item
+    <UFormField
+      class="h-23"
       label="Пароль"
       name="password"
-      :rules="[{ required: true, message: 'Please input your password!' }]"
+      :ui="{
+        label: 'text-[#000000] font-bold text-xl',
+        error:
+          'text-red-500 text-sm mt-0 transition-all duration-300 ease-in-out',
+      }"
     >
-      <a-input-password
-        v-model:value="model.password"
-        size="large"
+      <u-input
+        class="w-full rounded-[10px] transition-all duration-300"
+        v-model="model.password"
+        size="xl"
       />
-    </a-form-item>
+    </UFormField>
 
-    <a-button
-      class="button"
+    <u-button
+      class="bg-[#0862E0] font-bold text-[18px] h-10 hover:bg-[#0862E0] text-[#FFFFFF] rounded-[10px] cursor-pointer"
       block
-      type="primary"
-      html-type="submit"
-      size="large"
-      >Войти
-    </a-button>
+      type="submit"
+    >
+      Войти
+    </u-button>
 
-    <div class="text-small">
+    <div class="text-[15px] text-[#000000]">
       Нет аккаунта на нашем портале?
-      <span @click="emits('registration', true)">Зарегестрироваться</span>
+      <span
+        class="text-[#0862E0] font-semibold"
+        @click="emits('registration', true)"
+        >Зарегестрироваться</span
+      >
     </div>
 
-    <div class="text-small">Забыли пароль? <span>Восстановить</span></div>
-  </a-form>
+    <div class="text-[15px] text-[#000000]">
+      Забыли пароль?
+      <span class="text-[#0862E0] font-semibold">Восстановить</span>
+    </div>
+  </u-form>
 </template>
 
 <style lang="scss" scoped>

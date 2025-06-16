@@ -85,8 +85,6 @@ const classes = computed(() => ({
 
 h1 {
   font-size: 70px;
-
-  color: #003386;
   font-weight: 700;
 }
 

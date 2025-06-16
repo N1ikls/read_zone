@@ -1,6 +1,8 @@
 <script lang="ts" setup>
+import type { FormSubmitEvent } from '@nuxt/ui';
 import { useAuth } from '../../models';
 import type { FormState } from '../../types';
+import { z } from 'zod/v3';
 
 const { setUser } = useAuth();
 
@@ -12,14 +14,24 @@ const emits = defineEmits<{
   (e: 'close'): void;
 }>();
 
-const onFinish = async (values: FormState) => {
+const toast = useToast();
+
+const schema = z.object({
+  login: z.string().email('Введите корректный email'),
+  password: z.string().min(6, 'Пароль должен содержать минимум 8 символов'),
+});
+
+const onSubmit = async (event: FormSubmitEvent<z.output<typeof schema>>) => {
   const { data, status } = await useFetch('/api/auth/registration', {
     method: 'POST',
-    body: values,
+    body: event.data,
   });
 
   if (status.value === 'error') {
-    message.error(data.value?.message || 'Неправильный логин или пароль');
+    toast.add({
+      title: 'Неправильный логин или пароль',
+      color: 'error',
+    });
 
     return;
   }
@@ -30,100 +42,94 @@ const onFinish = async (values: FormState) => {
 </script>
 
 <template>
-  <a-form
-    class="modal__form"
-    :model="model"
-    name="basic"
-    autocomplete="off"
-    @finish="onFinish"
-    layout="vertical"
+  <u-form
+    class="modal__form space-y-4"
+    :schema="schema"
+    :state="model"
+    @submit="onSubmit"
   >
-    <a-form-item
+    <UFormField
+      class="h-23"
       label="Никнейм"
       name="username"
-      :rules="[{ required: true, message: 'Please input your username!' }]"
+      :ui="{
+        label: 'text-[#000000] font-bold text-xl',
+        error:
+          'text-red-500 text-sm mt-0 transition-all duration-300 ease-in-out',
+      }"
     >
-      <a-input
-        v-model:value="model.username"
-        size="large"
+      <u-input
+        class="w-full rounded-[10px] transition-all duration-300"
+        v-model="model.username"
+        size="xl"
       />
-    </a-form-item>
+    </UFormField>
 
-    <a-form-item
+    <UFormField
+      class="h-23"
       label="Почта"
       name="login"
-      :rules="[{ required: true, message: 'Please input your username!' }]"
+      :ui="{
+        label: 'text-[#000000] font-bold text-xl',
+        error:
+          'text-red-500 text-sm mt-0 transition-all duration-300 ease-in-out',
+      }"
     >
-      <a-input
-        v-model:value="model.login"
-        size="large"
+      <u-input
+        class="w-full rounded-[10px] transition-all duration-300"
+        v-model="model.login"
+        size="xl"
       />
-    </a-form-item>
+    </UFormField>
 
-    <a-form-item
+    <UFormField
+      class="h-23"
       label="Пароль"
       name="password"
-      :rules="[{ required: true, message: 'Please input your password!' }]"
+      :ui="{
+        label: 'text-[#000000] font-bold text-xl',
+        error:
+          'text-red-500 text-sm mt-0 transition-all duration-300 ease-in-out',
+      }"
     >
-      <a-input-password
-        v-model:value="model.password"
-        size="large"
+      <u-input
+        class="w-full rounded-[10px] transition-all duration-300"
+        v-model="model.password"
+        size="xl"
       />
-    </a-form-item>
+    </UFormField>
 
-    <a-form-item name="ok">
-      <a-checkbox
-        class="checkbox"
-        v-model:checked="model.ok"
+    <UFormField name="ok">
+      <UCheckbox
+        class="checkbox bg-[0862E0]"
+        v-model="model.ok"
+        color="info"
+        size="xl"
+        :ui="{
+          label: 'text-base font-normal',
+        }"
       >
-        Принимаю
-        <span>положения и условия политики конфиденциальности</span>
-      </a-checkbox>
-    </a-form-item>
+        <template #label>
+          Принимаю
+          <span class="font-bold"
+            >положения и условия политики конфиденциальности</span
+          >
+        </template>
+      </UCheckbox>
+    </UFormField>
 
-    <a-button
-      class="button"
+    <u-button
+      class="bg-[#0862E0] font-bold text-[18px] h-10 hover:bg-[#0862E0] text-[#FFFFFF] rounded-[10px] cursor-pointer"
       block
-      type="primary"
-      html-type="submit"
-      size="large"
-      >Создать аккаунт
-    </a-button>
-  </a-form>
+      type="submit"
+    >
+      Создать аккаунт
+    </u-button>
+  </u-form>
 </template>
 
 <style lang="scss" scoped>
-.modal {
-  &__wrapper {
-    padding: 0 40px;
-
-    padding-bottom: 162px;
-  }
-
-  &__title {
-    text-align: center;
-  }
-  h1 {
-    color: #000000;
-  }
-
-  &__form {
-    padding: 25px 40px;
-    background-color: #f5f5f5;
-    border-radius: 10px;
-
-    &:deep(.ant-form-item-required) {
-      font-size: 20px;
-      font-weight: 700;
-      color: #000000;
-    }
-  }
-}
-
 .checkbox {
-  font-size: 16px;
-  font-weight: 400;
-
   span {
     font-weight: 700;
     color: #0862e0;
@@ -140,11 +146,5 @@ const onFinish = async (values: FormState) => {
   :deep(.ant-checkbox-inner::after) {
     transform: rotate(45deg) scale(1.5) translate(-25%, -50%);
   }
-}
-
-.button {
-  height: 42px;
-  font-size: 18px;
-  font-weight: 700;
 }
 </style>

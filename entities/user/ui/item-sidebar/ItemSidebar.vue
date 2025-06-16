@@ -32,6 +32,7 @@ const { user } = useAuth();
         color="secondary"
         size="xl"
         block
+        to="/bookmarks"
       >
         Закладки
       </UButton>

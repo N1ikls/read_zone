@@ -19,8 +19,6 @@ export const useAuth = defineStore('auth', () => {
   };
 
   const setUser = (value: IUser | null) => {
-    if (!value) return;
-
     user.value = value;
   };
 
