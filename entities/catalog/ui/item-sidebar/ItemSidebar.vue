@@ -22,6 +22,9 @@ const { showSidebar } = catalogState;
 const { data: tag } = useFetch('/api/tag');
 const { data: genres } = useFetch('/api/genres');
 
+const tagsValue = ref(splitQueryValue(queries?.tags));
+const genresValue = ref(splitQueryValue(queries?.genres));
+
 const onUpdateString = (key: string, value: SelectValue) => {
   setRouteQueries(
     resetPaginationQuery({
@@ -42,60 +45,86 @@ const onUpdateArray = (key: string, value: string[] | string) => {
 <template>
   <div class="sidebar">
     <div class="sidebar-close">
-      <a-button
+      <u-button
         @click="showSidebar"
         class="button"
       >
-        <template #icon>
-          <Icon name="my-icons:close" />
-        </template>
-      </a-button>
+        <Icon name="my-icons:close" />
+      </u-button>
     </div>
 
     <div class="sidebar-wrapper">
       <div class="sidebar-column">
         <div class="sidebar__item">
           <label>Жанры</label>
-          <a-select
-            :maxTagCount="3"
-            mode="multiple"
-            :field-names="{ label: 'name', value: 'id' }"
-            style="width: 100%"
-            :value="splitQueryValue(queries?.genres)"
-            :options="genres"
-            @update:value="(value) => onUpdateArray('genres', value)"
-            allowClear
+          <u-select-menu
+            multiple
+            labelKey="name"
+            valueKey="id"
+            v-model="genresValue"
+            :items="genres"
+            @update:model-value="(value) => onUpdateArray('genres', value)"
           >
-          </a-select>
+            <template
+              v-if="genresValue.length"
+              #trailing
+            >
+              <UButton
+                color="neutral"
+                variant="link"
+                size="sm"
+                icon="i-lucide-circle-x"
+                aria-label="Clear input"
+                @click.stop="
+                  onUpdateArray('genres', '');
+                  genresValue = [];
+                "
+              />
+            </template>
+          </u-select-menu>
         </div>
 
         <div class="sidebar__item">
           <label>Теги</label>
-          <a-select
-            :maxTagCount="3"
-            mode="multiple"
-            :field-names="{ label: 'name', value: 'id' }"
-            style="width: 100%"
-            :options="tag"
-            :value="splitQueryValue(queries?.tags)"
-            @update:value="(value) => onUpdateArray('tags', value)"
-            allowClear
+          <u-select-menu
+            multiple
+            labelKey="name"
+            valueKey="id"
+            v-model="tagsValue"
+            :items="tag"
+            @update:model-value="(value) => onUpdateArray('tags', value)"
           >
-          </a-select>
+            <template
+              v-if="tagsValue.length"
+              #trailing
+            >
+              <UButton
+                color="neutral"
+                variant="link"
+                size="sm"
+                icon="i-lucide-circle-x"
+                aria-label="Clear input"
+                @click.stop="
+                  onUpdateArray('tags', '');
+                  tagsValue = [];
+                "
+              />
+            </template>
+          </u-select-menu>
         </div>
 
         <div class="sidebar__item">
           <label>Количество глав</label>
 
           <div class="sidebar__item-input">
-            <a-input
+            <u-input
               placeholder="от"
               @update:value="(value) => onUpdateString('chaptersFrom', value)"
               :value="queries?.chaptersFrom"
             />
             <span />
 
-            <a-input
+            <u-input
               placeholder="до"
               @update:value="(value) => onUpdateString('chaptersTo', value)"
               :value="queries?.chaptersTo"
@@ -107,13 +136,13 @@ const onUpdateArray = (key: string, value: string[] | string) => {
           <label>Год релиза</label>
 
           <div class="sidebar__item-input">
-            <a-input
+            <u-input
               placeholder="от"
               @update:value="(value) => onUpdateString('yearFrom', value)"
               :value="queries?.yearFrom"
             />
             <span />
-            <a-input
+            <u-input
               placeholder="до"
               @update:value="(value) => onUpdateString('yearTo', value)"
               :value="queries?.yearTo"
@@ -121,17 +150,17 @@ const onUpdateArray = (key: string, value: string[] | string) => {
           </div>
         </div>
 
-        <div class="sidebar__item">
+        <!-- <div class="sidebar__item">
           <label>Количество оценок</label>
 
           <div class="sidebar__item-input">
-            <a-input
+            <u-input
               placeholder="от"
               @update:value="(value) => onUpdateString('rateFrom', value)"
               :value="queries?.rateFrom"
             />
             <span />
-            <a-input
+            <u-input
               placeholder="до"
               @update:value="(value) => onUpdateString('rateTo', value)"
               :value="queries?.rateTo"
@@ -141,7 +170,7 @@ const onUpdateArray = (key: string, value: string[] | string) => {
 
         <div class="sidebar__item rate">
           <label>Возрастной рейтинг</label>
-          <a-checkbox-group
+          <u-checkbox-group
             class="sidebar__item-checkbox"
             :value="splitQueryValue(queries?.ageRate)"
             name="checkboxgroup"
@@ -152,7 +181,7 @@ const onUpdateArray = (key: string, value: string[] | string) => {
 
         <div class="sidebar__item">
           <label>Тип</label>
-          <a-checkbox-group
+          <u-checkbox-group
             class="sidebar__item-checkbox"
             name="checkboxgroup"
             :value="splitQueryValue(queries?.types)"
@@ -163,7 +192,7 @@ const onUpdateArray = (key: string, value: string[] | string) => {
 
         <div class="sidebar__item">
           <label>Формат выпуска</label>
-          <a-checkbox-group
+          <u-checkbox-group
             class="sidebar__item-checkbox"
             name="checkboxgroup"
             :value="splitQueryValue(queries?.release_type)"
@@ -174,7 +203,7 @@ const onUpdateArray = (key: string, value: string[] | string) => {
 
         <div class="sidebar__item">
           <label>Статус перевода</label>
-          <a-checkbox-group
+          <u-checkbox-group
             :value="splitQueryValue(queries?.status)"
             class="sidebar__item-checkbox"
             name="checkboxgroup"
@@ -185,12 +214,12 @@ const onUpdateArray = (key: string, value: string[] | string) => {
 
         <div class="sidebar__item">
           <label>Другое</label>
-          <a-checkbox-group
+          <u-checkbox-group
             class="sidebar__item-other sidebar__item-checkbox"
             name="checkboxgroup"
             :options="OTHER"
           />
-        </div>
+        </div> -->
       </div>
     </div>
   </div>

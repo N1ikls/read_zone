@@ -1,14 +1,6 @@
 import type { BreadcrumbItem } from '@nuxt/ui';
 
-export enum Status {
-  'discarded' = 'discarded',
-  'done' = 'Завершенный',
-  'frozen' = 'Заморожено',
-  'progress' = 'В процессе',
-}
-
 const classes = 'text-[#999999] font-normal text-[15px]';
-
 export const ROUTES: BreadcrumbItem[] = [
   {
     to: '/',
@@ -16,7 +8,12 @@ export const ROUTES: BreadcrumbItem[] = [
     class: classes,
   },
   {
-    label: 'Каталог',
+    to: '/user',
+    label: 'Профиль',
+    class: classes,
+  },
+  {
+    label: 'Мои работы',
     class: 'text-[#050505] font-normal text-[15px]',
   },
 ];

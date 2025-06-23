@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { Status } from '../../consts';
-
 const { item = {} } = defineProps<{
   item: Record<string, string | number | string[]>;
 }>();
@@ -12,7 +10,7 @@ const { item = {} } = defineProps<{
       <div
         class="type w-30 text-center p-5 pt-[6px] pb-[6px] bg-[#0048B8] text-[#FFFFFF] rounded-[6px] font-normal text-sm"
       >
-        {{ Status[item.bookmark_type as keyof typeof Status] }}
+        <slot name="status" />
       </div>
     </div>
     <div class="item-card">
@@ -20,7 +18,7 @@ const { item = {} } = defineProps<{
         <template #avatar>
           <img
             class="avatar"
-            src="../../../../public/catalog.jpg"
+            src="../../public/catalog.jpg"
           />
         </template>
 

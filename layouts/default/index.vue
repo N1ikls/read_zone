@@ -3,19 +3,21 @@ const slots = useSlots();
 </script>
 
 <template>
-  <section
+  <div
     v-if="slots?.breadcrumb"
     class="r-page-layout__breadcrumb"
   >
     <slot name="breadcrumb" />
+  </div>
 
-    <div
-      v-if="slots?.breadcrumb && slots?.title"
-      class="r-page-layout__title"
-    >
-      <slot name="title" />
-    </div>
-  </section>
+  <div
+    v-if="slots?.title"
+    class="r-page-layout__title"
+  >
+    <slot name="title" />
+
+    <slot name="title-extra" />
+  </div>
 
   <section class="r-page-layout__section">
     <slot />
@@ -26,6 +28,11 @@ const slots = useSlots();
 .r-page-layout {
   &__title {
     margin-top: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 20px;
   }
 
   &__section {

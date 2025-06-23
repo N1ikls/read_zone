@@ -14,6 +14,7 @@ const { user } = useAuth();
         color="secondary"
         size="xl"
         block
+        to="/my-works"
       >
         Мои работы
       </UButton>

@@ -1,6 +1,6 @@
 import { db } from '~/config';
 import connectSessionKnex from 'connect-session-knex';
-import Context from '~/context.class.js';
+import Context from '../context';
 import knex from 'knex';
 import Media from '~/media.js';
 import session from 'express-session';

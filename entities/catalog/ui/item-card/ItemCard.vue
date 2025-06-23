@@ -19,26 +19,30 @@ const { item = {} } = defineProps<{
       <span class="item-card__title"> {{ item?.name }}</span>
 
       <template #text>
-        <a-tag
-          v-for="(tag, index) in item.genres"
-          :key="index"
-          class="text-tag"
-          color="#FFFFFF"
-        >
-          {{ tag?.name }}
-        </a-tag>
-
-        <a-tag
-          v-if="item.rate"
-          class="text-tag"
-          color="#FFFFFF"
-        >
-          <div class="extra">
-            <icon name="my-icons:rate" />
-
-            <span>{{ item.rate }}</span>
+        <div class="flex gap-6">
+          <div
+            v-for="(genre, index) in item.genres"
+            :key="index"
+            class="tag bg-[#FFFFFF] rounded-[10px] text-[#000000] font-semibold text-sm"
+          >
+            {{ genre.name }}
           </div>
-        </a-tag>
+
+          <div
+            v-if="item.rate"
+            class="tag bg-[#FFFFFF] rounded-[10px] text-[#000000] font-semibold text-sm"
+          >
+            <div class="extra">
+              <u-icon
+                mode="svg"
+                class="rate"
+                name="my-icons:rate"
+              />
+
+              <span>{{ item.rate }}</span>
+            </div>
+          </div>
+        </div>
       </template>
 
       <template #content>
@@ -82,12 +86,11 @@ const { item = {} } = defineProps<{
         v-if="item.status"
         #extra
       >
-        <a-tag
-          class="tag"
-          color="#1E9E1E"
+        <div
+          class="tag bg-[#1E9E1E] rounded-[10px] type w-30 text-center p-5 pt-[6px] pb-[6px] text-[#FFFFFF] rounded-[6px] font-normal text-sm"
         >
           {{ Status[item.status as keyof typeof Status] }}
-        </a-tag>
+        </div>
       </template>
     </r-thing>
   </div>
@@ -101,6 +104,12 @@ const { item = {} } = defineProps<{
 
   :deep(.iconify) {
     font-size: 18px;
+  }
+}
+
+.rate {
+  :deep(path) {
+    fill: #ffbc05;
   }
 }
 
@@ -138,13 +147,9 @@ const { item = {} } = defineProps<{
     border-radius: 10px;
     object-fit: cover;
   }
+
   .tag {
-    padding: 4px 11px;
-    margin: 0;
-    font-size: 15px;
-    font-weight: 600;
-    color: #ffffff;
-    border-radius: 10px;
+    padding: 6px 10px;
   }
   .description {
     color: #000000;

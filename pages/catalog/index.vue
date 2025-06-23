@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { debounce } from 'es-toolkit';
 import { ItemCatalog } from './ui';
-
+import { ROUTES } from './consts';
 const setRouteQueries = useSetRouteQuery();
 
 const queries = useGetRouteQuery({
@@ -30,7 +30,7 @@ watch(
 
 <template>
   <NuxtLayout name="default">
-    <template #breadcrumb> выфвфы </template>
+    <template #breadcrumb> <r-breadcrumb :options="ROUTES" /> </template>
 
     <template #title>
       <r-text size="v-large">Каталог</r-text>
@@ -40,6 +40,13 @@ watch(
       <ItemCatalog
         :queries="queries"
         :items="data?.items || []"
+      />
+
+      <r-pagination
+        :page="Number(queries?.page)"
+        :limit="Number(queries?.limit)"
+        :total="Number(data?.total)"
+        @update-page="handlePageChange"
       />
     </template>
   </NuxtLayout>

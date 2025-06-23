@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { debounce } from 'es-toolkit';
+import { isEmpty } from 'es-toolkit/compat';
 import { ROUTES } from './consts';
 import type { AcceptableValue } from '@nuxt/ui';
 import { Status } from '@/entities/bookmark';
@@ -15,7 +16,7 @@ const queries = useGetRouteQuery({
 const debounceParsedQueries = ref(unref(queries));
 const name = ref<string | null>(queries.value?.name);
 
-const { data } = useFetch('/api/bookmark', {
+const { data } = useFetch('/api/user/my-works', {
   method: 'get',
   query: debounceParsedQueries,
 });
@@ -48,15 +49,39 @@ watch(
         bottom="0"
         class="uppercase text-[#003386]"
       >
-        Закладки
+        Мои работы
       </r-header>
     </template>
 
-    <div class="bookmark">
+    <template #title-extra>
+      <u-button
+        class="gap-4 w-70 rounded-[10px] h-[42px] text-[#FFFFFF] bg-[#0862E0] font-bold text-lg hover:bg-[none] cursor-pointer items-center justify-center"
+      >
+        Создать книгу
+      </u-button>
+    </template>
+
+    <div
+      v-if="!isEmpty(data?.items)"
+      class="my-works"
+    >
+      <div class="w-50 sidebar">
+        <u-button
+          v-for="(name, key) in Status"
+          class="gap-4 rounded-[10px] h-[42px] text-[#FFFFFF] bg-[#97BFFF] font-bold text-xl hover:bg-[none] cursor-pointer"
+          block
+          :class="{ active: key === queries.type }"
+          @click="onUpdate(key, 'type')"
+        >
+          {{ name }}
+        </u-button>
+      </div>
+
       <div class="column">
         <UInput
           v-model="name"
           icon="i-lucide-search"
+          :va="name"
           size="md"
           :ui="{
             root: 'w-full mt-1',
@@ -81,7 +106,7 @@ watch(
           </template>
         </UInput>
 
-        <template v-if="data?.items">
+        <div>
           <r-card-status
             v-for="(item, index) in data.items"
             :key="index"
@@ -92,33 +117,20 @@ watch(
             </template>
           </r-card-status>
 
-          <UPagination
+          <r-pagination
             :page="Number(queries.page)"
-            show-edges
+            :limit="Number(queries.limit)"
             :total="Number(data.total)"
-            :items-per-page="Number(queries.limit)"
-            @update:page="handlePageChange"
+            @update-page="handlePageChange"
           />
-        </template>
-      </div>
-
-      <div class="w-73 sidebar">
-        <u-button
-          v-for="(name, key) in Status"
-          class="gap-4 rounded-[10px] h-[42px] text-[#FFFFFF] bg-[#97BFFF] font-bold text-xl hover:bg-[none] cursor-pointer"
-          block
-          :class="{ active: key === queries.type }"
-          @click="onUpdate(key, 'type')"
-        >
-          {{ name }}
-        </u-button>
+        </div>
       </div>
     </div>
   </NuxtLayout>
 </template>
 
 <style lang="scss" scoped>
-.bookmark {
+.my-works {
   display: flex;
   gap: 30px;
 }
