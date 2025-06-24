@@ -9,7 +9,7 @@ defineProps<{
 <template>
   <UBreadcrumb :items="options">
     <template #separator>
-      <span class="text-muted">/</span>
+      <span class="text-[#FFFFFF]">/</span>
     </template>
   </UBreadcrumb>
 </template>

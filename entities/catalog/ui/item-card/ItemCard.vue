@@ -7,7 +7,10 @@ const { item = {} } = defineProps<{
 </script>
 
 <template>
-  <div class="item-card">
+  <nuxt-link
+    :to="`/book/${item.id}`"
+    class="item-card"
+  >
     <r-thing>
       <template #avatar>
         <img
@@ -93,7 +96,7 @@ const { item = {} } = defineProps<{
         </div>
       </template>
     </r-thing>
-  </div>
+  </nuxt-link>
 </template>
 
 <style lang="scss" scoped>
@@ -118,6 +121,11 @@ const { item = {} } = defineProps<{
   background-color: #f5f5f5;
   border-radius: 10px;
   margin-bottom: 16px;
+  cursor: pointer;
+  transition: box-shadow 0.3s ease;
+  &:hover {
+    box-shadow: 0 0px 12px rgba(0, 0, 0, 0.1);
+  }
 
   &__title {
     font-size: 26px;

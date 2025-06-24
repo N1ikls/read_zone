@@ -28,16 +28,13 @@ const { item = {} } = defineProps<{
       </span>
     </template>
 
-    <template
-      v-if="item.rate"
-      #right
-    >
+    <template #right>
       <div class="rate">{{ item.rate }}</div>
 
-      <a-rate
-        class="stars"
-        :value="5"
-        disabled
+      <nuxt-rating
+        read-only
+        :rating-value="5"
+        active-color="#0862E0"
       />
 
       <div class="grad">{{ item.grad }} оценки</div>

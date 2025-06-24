@@ -58,7 +58,7 @@ const route = useRoute();
   @extend %transform;
   margin: 0 auto;
   padding: 0 16px;
-  max-width: 1330px;
+  max-width: 1430px;
   height: 100%;
 
   @media (width > 500px) {
@@ -80,7 +80,9 @@ const route = useRoute();
 
 header {
   height: var(--header-height);
-  background-color: #c5dcff;
+  // background-color: #c5dcff;
+  border-bottom: 2px solid #f5f5f5;
+  background-color: #ffffff;
   position: fixed;
   width: 100%;
   z-index: 1000;

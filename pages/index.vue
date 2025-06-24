@@ -15,7 +15,7 @@ const { data: top } = useFetch('/api/top-genres');
 
 <template>
   <section class="main">
-    <swiper-container
+    <!-- <swiper-container
       :slides-per-view="4"
       :spaceBetween="10"
       :free-mode="true"
@@ -29,11 +29,15 @@ const { data: top } = useFetch('/api/top-genres');
           {{ i.name }}
         </r-card>
       </swiper-slide>
-    </swiper-container>
+    </swiper-container> -->
   </section>
 
   <section class="news">
-    <r-header bold>Новинки</r-header>
+    <r-header
+      bold
+      class="text-[#003386]"
+      >Новинки</r-header
+    >
 
     <div class="grid">
       <div class="grid__news">
@@ -44,22 +48,23 @@ const { data: top } = useFetch('/api/top-genres');
         >
           <ItemThing :item="item" />
 
-          <a-divider class="divider" />
+          <div class="border" />
         </div>
 
         <div class="grid__actions">
-          <a-button
+          <u-button
             class="button"
-            type="primary"
+            color="info"
+            block
           >
             Показать еще
-          </a-button>
+          </u-button>
         </div>
       </div>
 
       <div class="grid__read-now">
         <r-header
-          class="grid__read-now__title"
+          class="grid__read-now__title text-[#003386]"
           bold
         >
           Сейчас читают
@@ -89,7 +94,12 @@ const { data: top } = useFetch('/api/top-genres');
   </section>
 
   <section class="genres">
-    <r-header bold> Популярыне жанры </r-header>
+    <r-header
+      class="text-[#003386]"
+      bold
+    >
+      Популярыне жанры
+    </r-header>
     <div
       v-for="genre in top?.slice(3)"
       :key="genre.id"
@@ -128,6 +138,12 @@ const { data: top } = useFetch('/api/top-genres');
   width: 264px !important;
   padding-right: 20px;
 }
+
+.border {
+  border-bottom: 1px solid #c2c2c2;
+  margin: 35px 0 0 0;
+}
+
 .button {
   width: 100%;
   color: #ffffff;
@@ -137,11 +153,6 @@ const { data: top } = useFetch('/api/top-genres');
   align-items: center;
   justify-content: center;
   height: 42px;
-}
-
-.divider {
-  background-color: #c2c2c2;
-  margin: 35px 0 0 0;
 }
 
 .filters {

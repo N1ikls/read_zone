@@ -10,6 +10,7 @@ export default defineNuxtConfig({
     'nuxt-swiper',
     '@pinia/nuxt',
     '@nuxt/ui',
+    'nuxt-rating',
   ],
   ui: {
     colorMode: false,

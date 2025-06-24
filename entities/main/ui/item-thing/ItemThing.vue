@@ -31,7 +31,12 @@ const { item = {} } = defineProps<{
       #extra
     >
       <div class="extra">
-        <span> <icon name="my-icons:rate" /> </span>
+        <span>
+          <u-icon
+            mode="svg"
+            name="my-icons:rate"
+          />
+        </span>
 
         <span>{{ item.rate }}</span>
       </div>
@@ -64,5 +69,9 @@ const { item = {} } = defineProps<{
 .extra {
   display: flex;
   gap: 3px;
+
+  &:deep(path) {
+    fill: #0862e0;
+  }
 }
 </style>
