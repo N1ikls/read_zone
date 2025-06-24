@@ -68,7 +68,9 @@ const logout = async () => {
     </template>
 
     <template #item-leading="{ item }">
-      <Icon
+      <u-icon
+        class="icon"
+        mode="svg"
         :style="{ fontSize: '28px' }"
         :name="`my-icons:${item.icon}`"
       />
@@ -90,3 +92,11 @@ const logout = async () => {
     </template>
   </UDropdownMenu>
 </template>
+
+<style lang="scss" scoped>
+.icon {
+  :deep(path) {
+    stroke: #ffff;
+  }
+}
+</style>

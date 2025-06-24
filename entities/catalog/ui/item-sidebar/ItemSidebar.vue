@@ -45,12 +45,15 @@ const onUpdateArray = (key: string, value: string[] | string) => {
 <template>
   <div class="sidebar">
     <div class="sidebar-close">
-      <u-button
+      <button
         @click="showSidebar"
         class="button"
       >
-        <Icon name="my-icons:close" />
-      </u-button>
+        <u-icon
+          mode="svg"
+          name="my-icons:close"
+        />
+      </button>
     </div>
 
     <div class="sidebar-wrapper">
@@ -150,7 +153,7 @@ const onUpdateArray = (key: string, value: string[] | string) => {
           </div>
         </div>
 
-        <!-- <div class="sidebar__item">
+        <div class="sidebar__item">
           <label>Количество оценок</label>
 
           <div class="sidebar__item-input">
@@ -171,21 +174,27 @@ const onUpdateArray = (key: string, value: string[] | string) => {
         <div class="sidebar__item rate">
           <label>Возрастной рейтинг</label>
           <u-checkbox-group
-            class="sidebar__item-checkbox"
+            color="secondary"
             :value="splitQueryValue(queries?.ageRate)"
             name="checkboxgroup"
-            :options="BOOKS_AGE"
+            :items="BOOKS_AGE"
             @change="(value) => onUpdateArray('ageRate', value)"
+            :ui="{
+              fieldset: 'sidebar__item-checkbox',
+            }"
           />
         </div>
 
         <div class="sidebar__item">
           <label>Тип</label>
           <u-checkbox-group
-            class="sidebar__item-checkbox"
+            color="secondary"
+            :ui="{
+              fieldset: 'sidebar__item-checkbox',
+            }"
             name="checkboxgroup"
             :value="splitQueryValue(queries?.types)"
-            :options="BOOKS_TYPE"
+            :items="BOOKS_TYPE"
             @change="(value) => onUpdateArray('types', value)"
           />
         </div>
@@ -193,10 +202,13 @@ const onUpdateArray = (key: string, value: string[] | string) => {
         <div class="sidebar__item">
           <label>Формат выпуска</label>
           <u-checkbox-group
-            class="sidebar__item-checkbox"
+            color="secondary"
+            :ui="{
+              fieldset: 'sidebar__item-checkbox',
+            }"
             name="checkboxgroup"
             :value="splitQueryValue(queries?.release_type)"
-            :options="RELEASE_TYPE"
+            :items="RELEASE_TYPE"
             @change="(value) => onUpdateArray('release_type', value)"
           />
         </div>
@@ -204,10 +216,13 @@ const onUpdateArray = (key: string, value: string[] | string) => {
         <div class="sidebar__item">
           <label>Статус перевода</label>
           <u-checkbox-group
+            color="secondary"
             :value="splitQueryValue(queries?.status)"
-            class="sidebar__item-checkbox"
+            :ui="{
+              fieldset: 'sidebar__item-checkbox',
+            }"
             name="checkboxgroup"
-            :options="STATUS"
+            :items="STATUS"
             @change="(value) => onUpdateArray('status', value)"
           />
         </div>
@@ -215,11 +230,14 @@ const onUpdateArray = (key: string, value: string[] | string) => {
         <div class="sidebar__item">
           <label>Другое</label>
           <u-checkbox-group
-            class="sidebar__item-other sidebar__item-checkbox"
+            color="secondary"
+            :ui="{
+              fieldset: 'sidebar__item-checkbox',
+            }"
             name="checkboxgroup"
-            :options="OTHER"
+            :items="OTHER"
           />
-        </div> -->
+        </div>
       </div>
     </div>
   </div>
@@ -235,7 +253,9 @@ const onUpdateArray = (key: string, value: string[] | string) => {
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
 }
+
 .sidebar {
   position: sticky;
   top: calc(var(--header-height) + 30px);
@@ -293,22 +313,18 @@ const onUpdateArray = (key: string, value: string[] | string) => {
       }
     }
 
-    &-checkbox {
+    :deep(.sidebar__item-checkbox) {
       width: 100%;
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 20px;
 
-      :deep(.ant-checkbox-inner) {
+      button {
         display: flex;
         align-items: center;
         justify-content: center;
         width: 25px;
         height: 25px;
-      }
-
-      :deep(.ant-checkbox-inner::after) {
-        transform: rotate(45deg) scale(1.5) translate(-25%, -50%);
       }
     }
 

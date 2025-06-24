@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { debounce } from 'es-toolkit';
+import { isEmpty } from 'es-toolkit/compat';
 import { ItemCatalog } from './ui';
 import { ROUTES } from './consts';
 const setRouteQueries = useSetRouteQuery();
@@ -36,13 +37,14 @@ watch(
       <r-text size="v-large">Каталог</r-text>
     </template>
 
-    <template v-if="data">
+    <template v-if="!isEmpty(data)">
       <ItemCatalog
         :queries="queries"
         :items="data?.items || []"
       />
 
       <r-pagination
+        v-if="!isEmpty(data.items)"
         :page="Number(queries?.page)"
         :limit="Number(queries?.limit)"
         :total="Number(data?.total)"
