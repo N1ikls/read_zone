@@ -59,6 +59,7 @@ const classes = computed(() => [
   >
     <UIcon
       class="r-text__icon"
+      mode="svg"
       :class="[`text-[${sizeSvg}px]`]"
       v-if="icon"
       :name="icon"
