@@ -16,10 +16,7 @@ const { data } = useFetch('/api/book', {
 
     <div class="absolute-background"></div>
 
-    <div
-      v-if="data"
-      class="book w-full"
-    >
+    <div class="book w-full">
       <div class="layout">
         <div class="sidebar">
           <img
@@ -36,12 +33,16 @@ const { data } = useFetch('/api/book', {
           >
             <div class="book-content__header-title-info w-full">
               <div
+                v-if="data?.name"
                 class="font-bold text-[#000000] w-[80%] text-[32px] leading-[40px]"
               >
                 {{ data.name }}
               </div>
 
-              <div class="font-normal text-[#999999] text-base mt-4">
+              <div
+                v-if="data?.description"
+                class="font-normal text-[#999999] text-base mt-4"
+              >
                 {{ data.description }}
               </div>
             </div>
