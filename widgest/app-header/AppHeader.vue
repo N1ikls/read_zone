@@ -5,6 +5,17 @@ import { ItemAvatar } from './ui';
 
 const { showModal } = useAuth();
 const { isShow, user } = storeToRefs(useAuth());
+
+const colorMode = useColorMode();
+
+const isDark = computed({
+  get() {
+    return colorMode.value === 'dark';
+  },
+  set(_isDark) {
+    colorMode.preference = _isDark ? 'dark' : 'light';
+  },
+});
 </script>
 
 <template>
@@ -18,34 +29,52 @@ const { isShow, user } = storeToRefs(useAuth());
     <nav class="app-header__nav">
       <NuxtLink to="/catalog">
         <r-text
+          class="font-semibold"
           icon="my-icons:list"
-          size="large"
         >
           Каталог
         </r-text>
       </NuxtLink>
 
-      <r-text
-        icon="my-icons:group"
-        size="large"
-      >
-        Сообщество
-      </r-text>
+      <nuxt-link to="/faq">
+        <r-text
+          class="font-semibold"
+          icon="my-icons:group"
+        >
+          Сообщество
+        </r-text>
+      </nuxt-link>
 
-      <r-text
-        icon="my-icons:faq"
-        size="large"
-      >
-        FAQ
-      </r-text>
+      <nuxt-link to="/faq">
+        <r-text
+          class="font-semibold"
+          icon="my-icons:faq"
+        >
+          FAQ
+        </r-text>
+      </nuxt-link>
     </nav>
 
     <div class="flex items-center gap-3">
       <NuxtLink to="/home"> Поиск </NuxtLink>
 
+      <ClientOnly v-if="!colorMode?.forced">
+        <u-switch
+          unchecked-icon="my-icons:sun"
+          checked-icon="my-icons:is-dark"
+          color="info"
+          v-model="isDark"
+        />
+        <template #fallback>
+          <div class="h-5 w-9" />
+        </template>
+      </ClientOnly>
+
       <u-button
         v-if="!user"
-        color="primary"
+        class="rounded-[10px] font-bold text-highlighted"
+        color="info"
+        size="md"
         @click="showModal"
       >
         Вход / Регистрация

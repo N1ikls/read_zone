@@ -28,7 +28,7 @@ const logout = async () => {
     v-model:open="open"
     :items="MENU_OPTIONS"
     :ui="{
-      content: 'w-85 bg-[#0862E0] p-3 rounded-[10px]',
+      content: 'w-85 p-3 rounded-[10px]',
     }"
     :content="{
       align: 'end',
@@ -46,7 +46,7 @@ const logout = async () => {
             size="3xl"
           />
 
-          <div class="flex flex-col pl-5 mt-2 text-white">
+          <div class="flex flex-col pl-5 mt-2">
             <div class="font-bold text-2xl">{{ user?.name }}</div>
             <div class="font-normal text-base">{{ user?.email }}</div>
           </div>
@@ -55,7 +55,7 @@ const logout = async () => {
     </template>
 
     <template #item-label="{ item }">
-      <div class="p-1 font-bold text-xl text-white">
+      <div class="p-1 font-bold text-xl">
         <NuxtLink
           v-if="item.link"
           :to="item.link"
@@ -83,12 +83,13 @@ const logout = async () => {
     />
 
     <template #content-bottom>
-      <UButton
+      <u-button
+        color="info"
         @click="logout"
-        class="m-2 items-center bg-[#ffff] text-[#0862E0] text-lg font-bold rounded-[10px] justify-center hover:bg-white cursor-pointer focus-visible:outline-2"
+        class="m-2 items-center text-lg font-bold rounded-[10px] justify-center"
       >
         Выйти
-      </UButton>
+      </u-button>
     </template>
   </UDropdownMenu>
 </template>

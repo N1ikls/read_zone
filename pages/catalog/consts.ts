@@ -7,16 +7,12 @@ export enum Status {
   'progress' = 'В процессе',
 }
 
-const classes = 'text-[#999999] font-normal text-[15px]';
-
 export const ROUTES: BreadcrumbItem[] = [
   {
     to: '/',
     label: 'Главная',
-    class: classes,
   },
   {
     label: 'Каталог',
-    class: 'text-[#050505] font-normal text-[15px]',
   },
 ];

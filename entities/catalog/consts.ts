@@ -5,6 +5,15 @@ export enum Status {
   'progress' = 'В процессе',
 }
 
+export enum Type {
+  'manga' = 'Манга',
+  'oel' = 'OEL-манга',
+  'manhva' = 'Манхва',
+  'manhua' = 'Маньхуа',
+  'rumanga' = 'Руманга',
+  'comic' = 'Комикс',
+}
+
 export const BOOKS_TYPE = [
   { label: 'Манга', value: 'manga' },
   { label: 'OEL-манга', value: 'oel' },

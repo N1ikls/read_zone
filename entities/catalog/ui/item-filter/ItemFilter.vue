@@ -5,14 +5,26 @@ import { storeToRefs } from 'pinia';
 const { queries = {} } = defineProps<{
   queries: Record<string, unknown>;
 }>();
+
 const catalogState = useCatalogState();
 
 const { showSidebar } = catalogState;
 const { isSidebar } = storeToRefs(catalogState);
 
+const isGrid = useCookie<boolean | null>('isGrid', {
+  default: () => false,
+});
 const setRouteQueries = useSetRouteQuery();
 
 const name = ref(queries?.name as string);
+
+const iconLayout = computed(() =>
+  isGrid.value ? 'heroicons-outline:view-grid' : 'heroicons-outline:view-list',
+);
+
+const onLayout = () => {
+  isGrid.value = !isGrid.value;
+};
 
 const onUpdateName = (value: string) => {
   setRouteQueries(resetPaginationQuery({ name: value }));
@@ -54,27 +66,49 @@ watch(name, (value) => onUpdateName(value));
           />
         </template>
       </UInput>
+
       <u-button
-        class="button"
+        color="secondary"
+        class="rounded-[10px] flex items-center justify-center h-[37px] w-[40.52px]"
         @click="onSortDesc('updated_at')"
       >
-        <u-icon name="my-icons:sorter-low" />
+        <u-icon
+          mode="svg"
+          name="my-icons:sorter-low"
+        />
       </u-button>
 
       <u-button
+        color="secondary"
         @click="onSortDesc('updated_at_asc')"
-        class="button"
+        class="rounded-[10px] flex items-center justify-center h-[37px] w-[40.52px]"
       >
-        <u-icon name="my-icons:sorter-up" />
+        <u-icon
+          mode="svg"
+          name="my-icons:sorter-up"
+        />
+      </u-button>
+
+      <u-button
+        color="secondary"
+        @click="onLayout"
+        class="rounded-[10px] text-[#232323] flex items-center justify-center h-[37px] w-[40.52px]"
+      >
+        <u-icon
+          class="text-[20px]"
+          mode="svg"
+          :name="iconLayout"
+        />
       </u-button>
 
       <u-button
         v-if="!isSidebar"
-        class="button-filter bg-[#0862E0] hover:bg-[none] cursor-pointer"
+        color="info"
+        class="rounded-[10px]"
         @click="showSidebar"
       >
         <u-icon name="my-icons:filters" />
-        <span class="button-filter__text">Фильтры</span>
+        <span class="font-bold text-highlighted">Фильтры</span>
       </u-button>
     </div>
   </div>
@@ -93,14 +127,6 @@ watch(name, (value) => onUpdateName(value));
 }
 
 .button {
-  border-radius: 10px;
-  min-width: 37px;
-  height: 37px;
-  background-color: #f5f5f5;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
   span {
     font-size: 15px;
   }

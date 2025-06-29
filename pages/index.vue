@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { RCard, RHeader } from '@/components';
 import { ItemThing, ItemFilters } from '@/entities/main';
+import type { Book } from '~/shared/types';
 
 const limit = ref<number>(4);
 const { data: news } = useFetch('/api/new', {
@@ -8,38 +9,39 @@ const { data: news } = useFetch('/api/new', {
     limit,
   },
 });
-const { data } = useFetch('/api/slider-books');
+const { data } = useFetch<Book[]>('/api/slider-books');
 const { data: read } = useFetch('/api/read-now');
 const { data: top } = useFetch('/api/top-genres');
 </script>
 
 <template>
-  <section class="main">
-    <!-- <swiper-container
-      :slides-per-view="4"
-      :spaceBetween="10"
-      :free-mode="true"
-      ref="containerRef"
+  <section class="main mt-4">
+    <UCarousel
+      v-if="data"
+      v-slot="{ item }"
+      class="cursor-grab"
+      loop
+      drag-free
+      :duration="0"
+      wheel-gestures
+      :items="data"
+      :ui="{ item: 'basis-1/7' }"
     >
-      <swiper-slide
-        v-for="(i, idx) in data"
-        :key="idx"
-      >
-        <r-card>
-          {{ i.name }}
-        </r-card>
-      </swiper-slide>
-    </swiper-container> -->
+      <nuxt-link :to="`/book/${item.id}`">
+        <r-card-default :item="item" />
+      </nuxt-link>
+    </UCarousel>
   </section>
 
-  <section class="news">
+  <section class="news mt-6">
     <r-header
       bold
+      bottom="0"
       class="text-[#003386]"
       >Новинки</r-header
     >
 
-    <div class="grid">
+    <div class="grid mt-8">
       <div class="grid__news">
         <div
           v-for="(item, key) in news"
@@ -48,7 +50,7 @@ const { data: top } = useFetch('/api/top-genres');
         >
           <ItemThing :item="item" />
 
-          <div class="border" />
+          <div class="grid-item__border" />
         </div>
 
         <div class="grid__actions">
@@ -81,7 +83,7 @@ const { data: top } = useFetch('/api/top-genres');
     </div>
   </section>
 
-  <section class="filters">
+  <!-- <section class="filters">
     <div class="filters__grid">
       <div
         v-for="(item, key) in [1, 3, 4, 5, 6, 1, 1, 1, 1]"
@@ -91,39 +93,36 @@ const { data: top } = useFetch('/api/top-genres');
         <ItemFilters :item="{ item }" />
       </div>
     </div>
-  </section>
+  </section> -->
 
-  <section class="genres">
+  <section class="genres mt-8">
     <r-header
       class="text-[#003386]"
       bold
     >
       Популярыне жанры
     </r-header>
-    <div
-      v-for="genre in top?.slice(3)"
-      :key="genre.id"
-      style="display: inline-block; margin-right: 20px"
+
+    <r-banner
+      v-for="(genre, index) in top?.slice(0, 4)"
+      :key="index"
     >
       {{ genre.name }}
-    </div>
-    <div></div>
-    <div
-      v-for="genre in top?.slice(0, 3)"
-      :key="genre.id"
+    </r-banner>
+
+    <u-button
+      block
+      color="info"
+      size="lg"
+      class="text-[18px] font-bold rounded-[10px]"
+      to="/catalog"
     >
-      {{ genre.name }}
-    </div>
+      Перейти в каталог
+    </u-button>
   </section>
 </template>
 
 <style lang="scss" scoped>
-.a-flex {
-  overflow-x: auto;
-  white-space: nowrap;
-  padding: 8px 0;
-}
-
 .container {
   padding-top: 100px;
 }
@@ -131,17 +130,11 @@ const { data: top } = useFetch('/api/top-genres');
 .news {
   position: relative;
   z-index: 2;
-  padding-top: 237px;
 }
 
 .slide {
   width: 264px !important;
   padding-right: 20px;
-}
-
-.border {
-  border-bottom: 1px solid #c2c2c2;
-  margin: 35px 0 0 0;
 }
 
 .button {
@@ -223,6 +216,12 @@ const { data: top } = useFetch('/api/top-genres');
 
   &-item {
     padding: 35px 35px 0 35px;
+
+    &__border {
+      border-radius: 1px;
+      border-bottom: 1px solid #c2c2c2;
+      margin: 35px 0 0 0;
+    }
   }
 
   &__read-now {
@@ -242,6 +241,7 @@ const { data: top } = useFetch('/api/top-genres');
   &__news {
     background-color: #ffffff;
     border-radius: 10px;
+    box-shadow: 0px 0px 4px 0px #59595940;
   }
 
   &__actions {

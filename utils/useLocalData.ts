@@ -1,6 +1,6 @@
 const useLocalData = () => {
   const setData = <T>(value: T, key: string) => {
-    if (!value || !key) return;
+    if (!key) return;
 
     if (process.client) {
       localStorage.setItem(key, JSON.stringify(value));

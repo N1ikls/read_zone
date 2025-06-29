@@ -1,5 +1,5 @@
-export { ItemFilter, ItemCard, ItemSidebar } from './ui';
+export { ItemFilter, ItemCard, ItemSidebar, ItemGrid } from './ui';
 
 export { useCatalogState } from './models';
 
-export { Status } from './consts';
+export { Status, Type } from './consts';

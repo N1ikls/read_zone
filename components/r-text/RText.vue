@@ -71,10 +71,8 @@ const classes = computed(() => [
 
 <style lang="scss" scoped>
 .r-text {
-  color: #050505;
   font-family: 'Lato' sans-serif;
   word-break: break-word;
-
   display: flex;
   align-items: center;
   gap: 8px;

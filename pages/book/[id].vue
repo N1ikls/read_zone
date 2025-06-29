@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ROUTES, BUTTONS } from './consts';
+import { ROUTES, TABS } from './consts';
 import { Status } from '@/entities/catalog';
 const route = useRoute();
 
@@ -14,8 +14,6 @@ const { data } = useFetch('/api/book', {
 <template>
   <NuxtLayout name="default">
     <template #breadcrumb> <r-breadcrumb :options="ROUTES" /> </template>
-
-    <div class="absolute-background"></div>
 
     <div class="book w-full">
       <div class="layout">
@@ -78,7 +76,7 @@ const { data } = useFetch('/api/book', {
 
         <div class="book-content">
           <div
-            class="book-content__header h-77 flex flex-col justify-between bg-[#FFFFFF] mb-4"
+            class="book-content__header h-77 flex flex-col justify-between light:bg-[#fffff] light:shadow-[0_2px_8px_rgba(0,0,0,0.1)] mb-4"
           >
             <div
               class="book-content__header-title flex items-start justify-between"
@@ -130,7 +128,7 @@ const { data } = useFetch('/api/book', {
               </r-text>
             </div>
 
-            <div class="flex flex-col gap-2 mb-6">
+            <div class="flex flex-col gap-2">
               <span class="font-normal text-[#999999] text-base">
                 Альтернативные названия
               </span>
@@ -150,7 +148,30 @@ const { data } = useFetch('/api/book', {
           </div>
 
           <div class="book-content__main flex items-center gap-4">
-            <u-button
+            <UTabs
+              color="info"
+              :items="TABS"
+              class="w-full"
+            >
+              <template #info>
+                <div class="light:bg-[#F5F5F5] rounded-[15px] p-5">
+                  <div class="text-[#404040] text-[20px] mb-4">
+                    Описание манги
+                  </div>
+
+                  <p
+                    class="text-[16px] whitespace-pre-wrap"
+                    v-if="data?.description"
+                  >
+                    {{ data.description }}
+                  </p>
+
+                  <div class="text-[#404040 text-[20px]">Создатели</div>
+                </div>
+              </template>
+            </UTabs>
+
+            <!-- <u-button
               v-for="(item, index) in BUTTONS"
               :class="item.class"
               class="bg-[#F5F5F5] text-[15px] h-13 w-50 items-center justify-center gap-3 rounded-[10px] hover:bg-[none] cursor-pointer"
@@ -165,7 +186,7 @@ const { data } = useFetch('/api/book', {
               </template>
 
               {{ item.name }}
-            </u-button>
+            </u-button> -->
           </div>
         </div>
       </div>
@@ -180,7 +201,7 @@ const { data } = useFetch('/api/book', {
   left: 0;
   width: 100%;
   height: 544px;
-  background: linear-gradient(to bottom right, #5294ff, #0e4aa9);
+  background: #f5f5f5;
   z-index: -1;
 }
 
@@ -201,7 +222,7 @@ const { data } = useFetch('/api/book', {
     width: 288px;
     height: 379px;
     object-fit: cover;
-    border-radius: 15px;
+    border-radius: 10px;
     margin-bottom: 15px;
   }
 

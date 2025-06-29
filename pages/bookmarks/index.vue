@@ -2,7 +2,7 @@
 import { debounce } from 'es-toolkit';
 import { ROUTES } from './consts';
 import type { AcceptableValue } from '@nuxt/ui';
-import { Status } from '@/entities/bookmark';
+import { Status, ItemGrid } from '@/entities/bookmark';
 const setRouteQueries = useSetRouteQuery();
 
 const queries = useGetRouteQuery({
@@ -19,6 +19,18 @@ const { data } = useFetch('/api/bookmark', {
   method: 'get',
   query: debounceParsedQueries,
 });
+
+const isGrid = useCookie<boolean | null>('isGrid', {
+  default: () => false,
+});
+
+const iconLayout = computed(() =>
+  isGrid.value ? 'heroicons-outline:view-grid' : 'heroicons-outline:view-list',
+);
+
+const onLayout = () => {
+  isGrid.value = !isGrid.value;
+};
 
 const onUpdate = (value: AcceptableValue, key: string) => {
   setRouteQueries(resetPaginationQuery({ [key]: value as string }));
@@ -54,43 +66,66 @@ watch(
 
     <div class="bookmark">
       <div class="column">
-        <UInput
-          v-model="name"
-          icon="i-lucide-search"
-          size="md"
-          :ui="{
-            root: 'w-full mt-1',
-            base: 'bg-[#F5F5F5] rounded-[10px]  h-9 placeholder:text-[#C2C2C2] placeholder:italic placeholder-text-base',
-            trailing: 'pe-1',
-          }"
-          variant="soft"
-          placeholder="Найти по названию книги"
-        >
-          <template
-            v-if="name"
-            #trailing
+        <div class="flex items-center gap-3">
+          <UInput
+            v-model="name"
+            icon="i-lucide-search"
+            size="md"
+            :ui="{
+              root: 'w-full mt-1',
+              base: 'bg-[#F5F5F5] rounded-[10px]  h-9 placeholder:text-[#C2C2C2] placeholder:italic placeholder-text-base',
+              trailing: 'pe-1',
+            }"
+            variant="soft"
+            placeholder="Найти по названию книги"
           >
-            <UButton
-              color="neutral"
-              variant="link"
-              size="sm"
-              icon="i-lucide-circle-x"
-              aria-label="Clear input"
-              @click="name = null"
+            <template
+              v-if="name"
+              #trailing
+            >
+              <UButton
+                color="neutral"
+                variant="link"
+                size="sm"
+                icon="i-lucide-circle-x"
+                aria-label="Clear input"
+                @click="name = null"
+              />
+            </template>
+          </UInput>
+
+          <u-button
+            color="secondary"
+            @click="onLayout"
+            class="rounded-[10px] text-[#232323] flex items-center justify-center h-[37px] w-[40.52px]"
+          >
+            <u-icon
+              class="text-[20px]"
+              mode="svg"
+              :name="iconLayout"
             />
-          </template>
-        </UInput>
+          </u-button>
+        </div>
 
         <template v-if="data?.items">
-          <r-card-status
-            v-for="(item, index) in data.items"
-            :key="index"
-            :item="item"
-          >
-            <template #status>
-              {{ Status[item.bookmark_type as keyof typeof Status] }}
-            </template>
-          </r-card-status>
+          <item-grid
+            v-if="isGrid"
+            :items="data!.items"
+          />
+
+          <template v-else>
+            <nuxt-link
+              v-for="(item, index) in data.items"
+              :key="index"
+              :to="`/book/${item.id}`"
+            >
+              <r-card-status :item="item">
+                <template #status>
+                  {{ Status[item.bookmark_type as keyof typeof Status] }}
+                </template>
+              </r-card-status>
+            </nuxt-link>
+          </template>
 
           <UPagination
             :page="Number(queries.page)"
@@ -101,18 +136,19 @@ watch(
           />
         </template>
       </div>
-
+      <!-- 
       <div class="w-73 sidebar">
         <u-button
           v-for="(name, key) in Status"
-          class="gap-4 rounded-[10px] h-[42px] text-[#FFFFFF] bg-[#97BFFF] font-bold text-xl hover:bg-[none] cursor-pointer"
+          color="info"
+          class="gap-4 rounded-[10px] h-[42px] text-[#FFFFFF] font-bold text-xl cursor-pointer"
           block
           :class="{ active: key === queries.type }"
           @click="onUpdate(key, 'type')"
         >
           {{ name }}
         </u-button>
-      </div>
+      </div> -->
     </div>
   </NuxtLayout>
 </template>

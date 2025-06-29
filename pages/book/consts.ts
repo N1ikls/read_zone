@@ -1,4 +1,4 @@
-import type { BreadcrumbItem } from '@nuxt/ui';
+import type { BreadcrumbItem, TabsItem } from '@nuxt/ui';
 
 const classes = 'text-[#FFFFFF] hover:text-[none] font-normal text-[15px]';
 export const ROUTES: BreadcrumbItem[] = [
@@ -46,5 +46,24 @@ export const BUTTONS = [
     icon: 'my-icons:errors',
     class: 'text-[#050505]',
     classIcon: 'text-[18px]',
+  },
+];
+
+export const TABS: TabsItem[] = [
+  {
+    label: 'О тайтле',
+    slot: 'info' as const,
+  },
+  {
+    label: 'Главы',
+    slot: 'account' as const,
+  },
+  {
+    label: 'Обсуждения',
+    slot: 'account' as const,
+  },
+  {
+    label: 'Ошибки',
+    slot: 'account' as const,
   },
 ];

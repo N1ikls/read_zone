@@ -1,25 +1,21 @@
 <script setup lang="ts">
 import { debounce } from 'es-toolkit';
-import { isEmpty } from 'es-toolkit/compat';
+
 import { ItemCatalog } from './ui';
 import { ROUTES } from './consts';
-const setRouteQueries = useSetRouteQuery();
+import type { CatalogResponse } from '~/shared/types';
 
 const queries = useGetRouteQuery({
   name: null,
   page: 1,
-  limit: 10,
+  limit: 100,
 });
 
 const debounceParsedQueries = ref(unref(queries));
 
-const { data } = useFetch('/api/catalog', {
+const { data } = useFetch<CatalogResponse>('/api/catalog', {
   query: debounceParsedQueries,
 });
-
-const handlePageChange = (page: number) => {
-  setRouteQueries({ page: page.toString() });
-};
 
 watch(
   queries,
@@ -37,20 +33,10 @@ watch(
       <r-text size="v-large">Каталог</r-text>
     </template>
 
-    <template v-if="!isEmpty(data)">
-      <ItemCatalog
-        :queries="queries"
-        :items="data?.items || []"
-      />
-
-      <r-pagination
-        v-if="!isEmpty(data.items)"
-        :page="Number(queries?.page)"
-        :limit="Number(queries?.limit)"
-        :total="Number(data?.total)"
-        @update-page="handlePageChange"
-      />
-    </template>
+    <ItemCatalog
+      :queries="queries"
+      :data="data"
+    />
   </NuxtLayout>
 </template>
 

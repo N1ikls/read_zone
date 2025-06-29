@@ -1,8 +1,9 @@
 <script setup lang="ts">
+import type { Book } from '@/shared/types';
 import { Status } from '../../consts';
 
-const { item = {} } = defineProps<{
-  item: Record<string, string | number | string[]>;
+const { item } = defineProps<{
+  item: Book;
 }>();
 </script>
 

@@ -48,10 +48,6 @@ const route = useRoute();
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-
-  &-bg {
-    background-color: #e0eaff;
-  }
 }
 
 .wrapper {
@@ -80,9 +76,8 @@ const route = useRoute();
 
 header {
   height: var(--header-height);
-  // background-color: #c5dcff;
-  border-bottom: 2px solid #f5f5f5;
-  background-color: #ffffff;
+  border-bottom: 2px solid var(--border-header-color);
+  background-color: var(--bg-header);
   position: fixed;
   width: 100%;
   z-index: 1000;
@@ -99,7 +94,7 @@ footer {
 
 main {
   flex: 1;
-  padding-top: calc(100px + var(--header-height));
+  padding-top: var(--header-height);
 }
 
 %flex {

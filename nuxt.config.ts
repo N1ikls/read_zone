@@ -6,14 +6,16 @@ export default defineNuxtConfig({
   },
   modules: [
     '@nuxt/eslint',
-    '@nuxt/fonts',
     'nuxt-swiper',
     '@pinia/nuxt',
     '@nuxt/ui',
     'nuxt-rating',
   ],
-  ui: {
-    colorMode: false,
+
+  colorMode: {
+    preference: 'light',
+    storage: 'localStorage',
+    storageKey: 'nuxt-color-mode',
   },
   components: [
     {

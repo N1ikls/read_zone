@@ -142,6 +142,11 @@ const { item = {} } = defineProps<{
   box-shadow: 0px 0px 4px 0px #59595940;
   border-radius: 10px;
   margin-bottom: 16px;
+  cursor: pointer;
+
+  &:hover {
+    box-shadow: 0 0px 12px rgba(0, 0, 0, 0.1);
+  }
 
   &__title {
     font-size: 16px;

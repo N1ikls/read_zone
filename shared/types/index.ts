@@ -1,1 +1,1 @@
-export type { BreadcrumbOptions } from './ant';
+export type { CatalogResponse, Book } from './common';
