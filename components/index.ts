@@ -6,3 +6,4 @@ export { RBanner } from './r-banner';
 export { RPagination } from './r-pagination';
 export { RCardStatus } from './r-card-status';
 export { RCardDefault } from './r-card-default';
+export { RModalSearch } from './r-modal-search';

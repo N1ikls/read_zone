@@ -56,7 +56,7 @@ const isDark = computed({
     </nav>
 
     <div class="flex items-center gap-3">
-      <NuxtLink to="/home"> Поиск </NuxtLink>
+      <r-modal-search />
 
       <ClientOnly v-if="!colorMode?.forced">
         <u-switch
