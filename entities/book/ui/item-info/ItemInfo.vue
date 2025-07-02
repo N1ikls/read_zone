@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import numeral from 'numeral';
 import type { Book } from '~/shared/types';
 import { RATINGS } from '../../consts';
 import type { RateCounts } from '~/shared/types/common';
@@ -13,10 +14,6 @@ const { data: tags } = await useFetch('/api/tag', {
 });
 
 const isHiddenDescription = ref(false);
-
-const maxRatingCount = computed(() =>
-  Math.max(...Object.values(item?.rate_counts || 0), 1),
-);
 
 const rate = (stars: number) =>
   item?.rate_counts?.[stars as unknown as keyof RateCounts] || 0;
@@ -142,7 +139,7 @@ const totalVotes = computed(() => {
     >
       <r-progress
         :value="Number(item?.rate || 0)"
-        :max="maxRatingCount"
+        :max="totalVotes"
         :votes="String(totalVotes)"
       />
 
@@ -162,8 +159,8 @@ const totalVotes = computed(() => {
               :max="totalVotes"
             />
 
-            <span class="text-sm">
-              {{ rate(rates.stars) }}
+            <span class="text-muted-foreground font-semibold text-sm">
+              {{ numeral(rate(rates.stars)).format('0.[0]a').toUpperCase() }}
             </span>
           </div>
         </div>

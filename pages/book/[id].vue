@@ -44,7 +44,7 @@ const formatCountChapters = computed(() => {
 
     <div class="book-content w-full">
       <div
-        class="book-content__header rounded-[20px] p-4 flex flex-col light:bg-[#ffffff] shadow mb-4"
+        class="book-content__header rounded-[20px] p-4 flex flex-col light:bg-[#ffffff] shadow inset-shadow-2xs mb-4"
       >
         <div
           class="grid grid-cols-[1fr_min-content] gap-2 [grid-template-areas:'title_title''stats_stats''rating_rating'] sm:[grid-template-areas:'title_title''stats_rating'] xl:[grid-template-areas:'title_rating''stats_rating'] [grid-area:header]"
@@ -132,7 +132,7 @@ const formatCountChapters = computed(() => {
           :items="TABS"
           class="w-full"
           :ui="{
-            list: 'rounded-full light:bg-[#FFFFFF] shadow',
+            list: 'rounded-full light:bg-[#FFFFFF] shadow inset-shadow-2xs',
             indicator: 'rounded-full',
           }"
         >
