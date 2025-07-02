@@ -1,197 +1,176 @@
 <script setup lang="ts">
-import { ROUTES, TABS } from './consts';
+import numeral from 'numeral';
+import { TABS } from './consts';
 import { Status } from '@/entities/catalog';
+import { ItemSidebar, ItemInfo } from '@/entities/book';
+import { isEmpty } from 'es-toolkit/compat';
+import type { Book } from '~/shared/types';
+
 const route = useRoute();
 
-const { data } = useFetch('/api/book', {
+const { data } = await useFetch<Book>('/api/book', {
   method: 'get',
   query: {
     id: route.params.id,
   },
 });
+
+const { data: authorBooks } = await useFetch<Book[]>('/api/book/search', {
+  method: 'get',
+  query: {
+    author_id: data.value?.author_id,
+  },
+});
+
+const formatCountChapters = computed(() => {
+  if (!data.value?.chapters_count) return 0;
+
+  const n = Math.abs(data.value.chapters_count) % 100;
+  const n1 = n % 10;
+
+  if (n > 10 && n < 20) return `${data.value?.chapters_count} Главы`;
+  if (n1 > 1 && n1 < 5) return `${data.value?.chapters_count} Главы`;
+  if (n1 === 1) return `${data.value?.chapters_count} Глава`;
+  return `${data.value?.chapters_count} Глав`;
+});
 </script>
 
 <template>
-  <NuxtLayout name="default">
-    <template #breadcrumb> <r-breadcrumb :options="ROUTES" /> </template>
+  <div
+    v-if="data"
+    class="book w-full xs:mt-[10vh] relative mt-[5vh] flex shrink-0 basis-auto flex-col items-start gap-6 md:mt-[48px] md:flex-row"
+  >
+    <item-sidebar />
 
-    <div class="book w-full">
-      <div class="layout">
-        <div class="sidebar">
-          <img
-            class="book__avatar"
-            src="../../public/test_book.jpg"
-          />
-
-          <div class="sidebar__buttons mb-[80px]">
-            <UButton
-              class="mb-[8px] p-2 h-10 rounded-[10px] font-bold text-lg cursor-pointer"
-              color="info"
-              block
+    <div class="book-content w-full">
+      <div
+        class="book-content__header rounded-[20px] p-4 flex flex-col light:bg-[#ffffff] shadow mb-4"
+      >
+        <div
+          class="grid grid-cols-[1fr_min-content] gap-2 [grid-template-areas:'title_title''stats_stats''rating_rating'] sm:[grid-template-areas:'title_title''stats_rating'] xl:[grid-template-areas:'title_rating''stats_rating'] [grid-area:header]"
+        >
+          <div class="book-content__header-title-info w-full">
+            <div
+              v-if="data?.name"
+              class="font-bold text-[#000000] w-[80%] text-2xl leading-2xl ellipsis"
             >
-              Начать читать
-            </UButton>
+              {{ data.name }}
+            </div>
+          </div>
 
-            <UButton
-              class="mb-[8px] text-[#050505] p-2 h-10 rounded-[10px] font-bold text-lg cursor-pointer"
-              color="info"
-              variant="outline"
-              block
+          <div
+            class="flex w-full flex-row gap-2 [grid-area:rating] md:flex-col md:items-end"
+          >
+            <div
+              class="cs-text leading-md text-foreground flex flex-nowrap items-center gap-2 rounded-md text-2xl leading-none font-bold select-none"
             >
-              Добавить в планы
-            </UButton>
+              <u-icon
+                mode="svg"
+                class="rate"
+                name="my-icons:rate"
+              />
 
-            <UButton
-              class="mb-[20px] p-2 h-10 rounded-[10px] font-bold text-lg cursor-pointer"
+              {{ data?.rate.toFixed(1) }}
+            </div>
+
+            <u-button
               color="info"
-              block
+              class="px-2 min-w-[20px] text-xs rounded-full h-[20px]"
+              >Оценить</u-button
             >
-              Забрать работу
-            </UButton>
+          </div>
+
+          <div
+            class="book-content__footer cs-layout-stats-short-root flex flex-wrap justify-center gap-2 md:justify-start -mx-2 items-center [grid-area:stats]"
+          >
+            <r-text
+              class="px-2.5 py-1"
+              icon="my-icons:eyes-black"
+              :size-svg="18"
+            >
+              Просмотров:
+              {{ numeral(data?.viewers_count).format('0.[0]a').toUpperCase() }}
+            </r-text>
 
             <r-text
-              class="justify-center warning cursor-pointer"
-              icon="my-icons:warning"
-              >Пожаловаться</r-text
+              class="px-2.5 py-1"
+              :size-svg="18"
+              icon="my-icons:read"
             >
-          </div>
-
-          <div class="status text-[20px] font-bold mb-[30px]">
-            Статус перевода: <span class="text-[#0862E0]">70 %</span>
-          </div>
-
-          <div class="text-[20px] font-bold mb-4">Категории</div>
-
-          <div
-            class="grid-tags gap-4 grid grid-cols-[repeat(auto-fill,minmax(100px,1fr))]"
-          >
-            <div
-              class="tag rounded-[10px] text-[16px] text-[#000000] bg-[#97BFFF] flex items-center justify-center p-2"
-              v-for="item in data?.genres"
+              {{ formatCountChapters }}</r-text
             >
-              {{ item.name }}
-            </div>
-          </div>
-        </div>
-
-        <div class="book-content">
-          <div
-            class="book-content__header h-77 flex flex-col justify-between light:bg-[#fffff] light:shadow-[0_2px_8px_rgba(0,0,0,0.1)] mb-4"
-          >
-            <div
-              class="book-content__header-title flex items-start justify-between"
+            <r-text
+              class="px-2.5 py-1"
+              :size-svg="16"
+              icon="my-icons:like-black"
             >
-              <div class="book-content__header-title-info w-full">
-                <div
-                  v-if="data?.name"
-                  class="font-bold text-[#000000] w-[80%] text-[32px] leading-[40px] ellipsis"
-                >
-                  {{ data.name }}
-                </div>
+              Лайков:
+              {{ numeral(data?.likers_count).format('0.[0]a').toUpperCase() }}
+            </r-text>
 
-                <div
-                  v-if="data?.description"
-                  class="font-normal text-[#999999] text-base mt-4 ellipsis"
-                >
-                  {{ data.description }}
-                </div>
-              </div>
-
-              <div class="book-content__header-title-actions pt-2">
-                <div class="extra">
-                  <u-icon
-                    mode="svg"
-                    class="rate"
-                    name="my-icons:rate"
-                  />
-
-                  <span class="font-bold text-[16px]"> {{ 4.85 }}</span>
-                </div>
-              </div>
-            </div>
-
-            <div class="book-content__footer flex align-center gap-[30px]">
-              <r-text icon="my-icons:eyes-black">
-                {{ data?.viewers_count }} просмотров
-              </r-text>
-              <r-text icon="my-icons:read">
-                {{ data?.chapters_count }} глав</r-text
-              >
-              <r-text icon="my-icons:like-black">
-                {{ data?.likers_count }} лайков
-              </r-text>
-              <r-text icon="my-icons:timer">
-                {{ data?.year }} Год выхода</r-text
-              >
-              <r-text icon="my-icons:checked">
-                {{ Status[data?.status as keyof typeof Status] }}
-              </r-text>
-            </div>
-
-            <div class="flex flex-col gap-2">
-              <span class="font-normal text-[#999999] text-base">
-                Альтернативные названия
-              </span>
-              <div class="flex items-center gap-3">
-                <u-button
-                  class="bg-[#F5F5F5] text-[#000000] text-[12px] hover:bg-[#F5F5F5]"
-                  block
-                  >Название</u-button
-                >
-                <u-button
-                  class="bg-[#F5F5F5] text-[#000000] text-[12px] hover:bg-[#F5F5F5]"
-                  block
-                  >Название</u-button
-                >
-              </div>
-            </div>
-          </div>
-
-          <div class="book-content__main flex items-center gap-4">
-            <UTabs
-              color="info"
-              :items="TABS"
-              class="w-full"
+            <r-text
+              class="px-2.5 py-1"
+              :size-svg="18"
+              icon="my-icons:timer"
             >
-              <template #info>
-                <div class="light:bg-[#F5F5F5] rounded-[15px] p-5">
-                  <div class="text-[#404040] text-[20px] mb-4">
-                    Описание манги
-                  </div>
-
-                  <p
-                    class="text-[16px] whitespace-pre-wrap"
-                    v-if="data?.description"
-                  >
-                    {{ data.description }}
-                  </p>
-
-                  <div class="text-[#404040 text-[20px]">Создатели</div>
-                </div>
-              </template>
-            </UTabs>
-
-            <!-- <u-button
-              v-for="(item, index) in BUTTONS"
-              :class="item.class"
-              class="bg-[#F5F5F5] text-[15px] h-13 w-50 items-center justify-center gap-3 rounded-[10px] hover:bg-[none] cursor-pointer"
-              :key="index"
+              {{ data?.year }} Год выхода</r-text
             >
-              <template #leading>
-                <UIcon
-                  mode="svg"
-                  :class="item.classIcon"
-                  :name="item.icon"
-                />
-              </template>
-
-              {{ item.name }}
-            </u-button> -->
+            <r-text
+              class="px-2.5 py-1"
+              :size-svg="18"
+              icon="my-icons:checked"
+            >
+              {{ Status[data?.status as keyof typeof Status] }}
+            </r-text>
           </div>
         </div>
       </div>
+
+      <div class="book-content__main flex items-center gap-4">
+        <UTabs
+          color="info"
+          :items="TABS"
+          class="w-full"
+          :ui="{
+            list: 'rounded-full light:bg-[#FFFFFF] shadow',
+            indicator: 'rounded-full',
+          }"
+        >
+          <template #info>
+            <ItemInfo :item="data" />
+          </template>
+        </UTabs>
+      </div>
     </div>
-  </NuxtLayout>
+  </div>
+
+  <div
+    class="mt-[61px]"
+    v-if="!isEmpty(authorBooks)"
+  >
+    <div
+      class="cs-text text-2xl leading-2xl text-foreground cs-layout-title-text break-word leading-lg font-bold mb-4"
+    >
+      Другие работы переводчика
+    </div>
+
+    <UCarousel
+      v-slot="{ item }"
+      class="cursor-grab w-full"
+      loop
+      drag-free
+      :duration="0"
+      wheel-gestures
+      :items="authorBooks"
+      :ui="{
+        item: 'basis-1/3  sm:basis-1/3 md:basis-1/5 lg:basis-1/7 xl:basis-1/7 ',
+      }"
+    >
+      <nuxt-link :to="`/book/${item.id}`">
+        <r-card-default :item="item" />
+      </nuxt-link>
+    </UCarousel>
+  </div>
 </template>
 
 <style lang="scss" scoped>
@@ -203,6 +182,10 @@ const { data } = useFetch('/api/book', {
   height: 544px;
   background: #f5f5f5;
   z-index: -1;
+}
+
+.shadow {
+  box-shadow: 0 2px 8px 0 rgba(60, 60, 60, 0.25);
 }
 
 .layout {
@@ -228,22 +211,14 @@ const { data } = useFetch('/api/book', {
 
   &-content {
     &__header {
-      padding: 20px;
-      border-radius: 15px 15px 0 0px;
     }
   }
 }
-
-.extra {
-  display: flex;
-  align-items: center;
-  gap: 3px;
-
+.rate {
   &:deep(path) {
     fill: #0862e0;
   }
 }
-
 .ellipsis {
   overflow: hidden;
   display: -webkit-box;

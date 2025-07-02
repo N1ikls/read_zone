@@ -78,13 +78,13 @@ const onClear = () => {
   <u-modal
     v-model:open="open"
     :ui="{
-      overlay: 'light:bg-black/80',
+      overlay: 'light:bg-black/80 ',
       content:
-        'top-4 -translate-y-0 grid gap-2 rounded-[22px] p-2 max-sm:max-w-[calc(100vw-8px)] sm:max-w-2xl bg-[#f2f2f7] divide-y-0',
+        'top-4 -translate-y-0 grid gap-2 rounded-[22px] p-2 max-sm:max-w-[calc(100vw-8px)] sm:max-w-2xl light:bg-[#f2f2f7] dark:bg-[#012053] divide-y-0',
     }"
   >
     <u-button
-      class="cs-button z-0 cursor-pointer group relative items-center box-border appearance-none whitespace-nowrap font-medium subpixel-antialiased transition-all tap-highlight-transparent transform-gpu data-[pressed=true]:scale-[0.97] opacity-100 outline-none focus-visible:outline-hidden ring-0 rounded-full h-9 text-sm bg-secondary text-secondary-foreground hover:bg-secondary/90 ml-2 flex gap-2 select-none"
+      class="cs-button z-0 cursor-pointer group relative items-center box-border appearance-none whitespace-nowrap font-medium subpixel-antialiased transition-all tap-highlight-transparent transform-gpu data-[pressed=true]:scale-[0.97] opacity-100 outline-none focus-visible:outline-hidden ring-0 rounded-full h-9 text-sm light:bg-[#ffffff] dark:bg-[#003386] text-secondary-foreground hover:bg-secondary/90 ml-2 flex gap-2 select-none"
       icon="i-lucide-search"
     >
       Поиск
@@ -98,7 +98,7 @@ const onClear = () => {
           size="md"
           :ui="{
             root: 'w-full mr-2',
-            base: 'rounded-[10px] hover:bg-[none]  h-9 placeholder:text-[#C2C2C2] placeholder:italic placeholder-text-base w-full rounded-full h-12 bg-[#ffff] shadow border border-[#c2c2c2]',
+            base: 'rounded-[10px] hover:bg-[none] text-[16px] h-9 placeholder:text-[#C2C2C2] placeholder:italic placeholder-text-base w-full rounded-full h-12 light:bg-[#ffff] dark:bg-[#003386] shadow border light:border-[#c2c2c2] dark:border-[#0862E0]',
             trailing: 'pe-1',
           }"
           variant="none"
@@ -121,7 +121,7 @@ const onClear = () => {
         </UInput>
 
         <u-button
-          class="rounded-full bg-[#ffff] hover:bg-[none] ring-0 h-12 min-w-12 justify-center cursor-pointer text-[#26262E]"
+          class="rounded-full light:bg-[#ffff] dark:bg-[#003386] hover:bg-[none] ring-0 h-12 min-w-12 justify-center cursor-pointer light:text-[#26262E] dark:text-[#ffffff]"
           @click="open = false"
         >
           <u-icon
@@ -139,7 +139,7 @@ const onClear = () => {
         <u-button
           v-for="(item, index) in searchHistory.slice(0, 3)"
           :key="index"
-          class="cs-button z-0 cursor-pointer group relative box-border appearance-none select-none whitespace-nowrap font-medium subpixel-antialiased transition-all tap-highlight-transparent transform-gpu data-[pressed=true]:scale-[0.97] opacity-100 outline-none focus-visible:outline-hidden ring-0 bg-transparent rounded-full h-9 min-w-9 text-sm hover:bg-info/10 hover:text-accent-foreground flex w-full max-w-full items-center justify-between px-3 pr-0 text-[#26262E]"
+          class="cs-button z-0 cursor-pointer group relative box-border appearance-none select-none whitespace-nowrap font-medium subpixel-antialiased transition-all tap-highlight-transparent transform-gpu data-[pressed=true]:scale-[0.97] opacity-100 outline-none focus-visible:outline-hidden ring-0 bg-transparent rounded-full h-9 min-w-9 text-sm light:hover:bg-info/10 dark:hover:bg-info/10 flex w-full max-w-full items-center justify-between px-3 pr-0 light:text-[#26262E] dark:text-[#FFFFFF]"
           @click.stop="onSearch(item.query)"
         >
           <div class="flex max-w-full items-center gap-2 truncate">

@@ -1,7 +1,11 @@
-interface Genre {
+export interface Genre {
   id: string;
   name: string;
 }
+
+export type RateCounts = {
+  [key in '1' | '2' | '3' | '4' | '5']: number;
+};
 
 export interface Book {
   age_rate: string;
@@ -24,6 +28,7 @@ export interface Book {
   type: 'oel' | 'translation' | string;
   viewers_count: number;
   year: number;
+  rate_counts: RateCounts;
 }
 
 export interface CatalogResponse {

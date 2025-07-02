@@ -1,1 +1,1 @@
-export type { CatalogResponse, Book } from './common';
+export type { CatalogResponse, Book, Genre } from './common';

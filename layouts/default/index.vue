@@ -12,7 +12,7 @@ const slots = useSlots();
 
   <div
     v-if="slots?.title"
-    class="r-page-layout__title"
+    class="r-page-layout__title my-2 md:my-4"
   >
     <slot name="title" />
 
@@ -27,16 +27,11 @@ const slots = useSlots();
 <style lang="scss" scoped>
 .r-page-layout {
   &__title {
-    margin-top: 16px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     flex-wrap: wrap;
     gap: 20px;
-  }
-
-  &__section {
-    margin-top: 60px;
   }
 }
 </style>

@@ -254,6 +254,9 @@ const onUpdateArray = (key: string, value: string[] | string) => {
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  :deep(path) {
+    color: #ffffff;
+  }
 }
 
 .sidebar {
@@ -263,6 +266,7 @@ const onUpdateArray = (key: string, value: string[] | string) => {
   width: 320px;
   border: 1px solid #e0e0e0;
   border-radius: 10px;
+  background-color: #ffffff;
 
   &-wrapper {
     position: relative;

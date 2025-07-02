@@ -1,5 +1,4 @@
-import type { BreadcrumbOptions } from '@/shared/types';
-import type { BreadcrumbItem } from '@nuxt/ui';
+import type { BreadcrumbItem, TabsItem } from '@nuxt/ui';
 
 export const ROUTES: BreadcrumbItem[] = [
   {
@@ -31,30 +30,22 @@ export const ACTIONS_BUTTONS = [
   },
 ];
 
-export const FOOTER_BUTTONS = [
+export const TABS: TabsItem[] = [
   {
-    name: 'Посты',
-    link: '',
+    label: 'Посты',
     icon: 'my-icons:read',
-    class: 'text-[#1E1E1E]',
-    classIcon: 'stroke-[#1E1E1E] stroke-[0.5px]',
+    slot: 'posts' as const,
   },
   {
-    name: 'Команды',
-    link: '',
-    icon: 'my-icons:people-black',
-    class: 'text-[#050505]',
+    label: 'Команды',
+    icon: 'my-icons:people',
   },
   {
-    name: 'Подписки',
-    link: '',
+    label: 'Подписки',
     icon: 'my-icons:people-group',
-    class: 'text-[#050505]',
   },
   {
-    name: 'Уведомления',
-    link: '',
-    icon: 'my-icons:notification',
-    class: 'text-[#050505]',
+    label: 'Уведомления',
+    icon: 'my-icons:notifications',
   },
 ];

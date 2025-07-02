@@ -27,10 +27,10 @@ watch(
 
 <template>
   <NuxtLayout name="default">
-    <template #breadcrumb> <r-breadcrumb :options="ROUTES" /> </template>
-
     <template #title>
-      <r-text size="v-large">Каталог</r-text>
+      <div class="text-2xl leading-xl font-semibold text-foreground cs-text">
+        Каталог
+      </div>
     </template>
 
     <ItemCatalog

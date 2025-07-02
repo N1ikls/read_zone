@@ -78,23 +78,27 @@ header {
   height: var(--header-height);
   border-bottom: 2px solid var(--border-header-color);
   background-color: var(--bg-header);
+  backdrop-filter: blur(50px);
   position: fixed;
   width: 100%;
   z-index: 1000;
 }
 
 footer {
-  margin-top: 60px;
+  padding-top: 60px;
   height: 750px;
   background-image: url('../../public/svg/footer.svg');
   background-size: cover;
   background-repeat: no-repeat;
   position: relative;
+  background-color: var(--bg);
 }
 
 main {
   flex: 1;
   padding-top: var(--header-height);
+  background-color: var(--bg);
+  z-index: 1;
 }
 
 %flex {

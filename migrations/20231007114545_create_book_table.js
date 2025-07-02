@@ -115,7 +115,7 @@ export async function up(knex) {
   await knex.schema.createTable('book_rater', (table) => {
     table.uuid('book_id').unsigned().notNullable().references('book.id');
     table.uuid('rater_id').unsigned().notNullable().references('user.id');
-    table.integer('rate').unsigned().notNullable();
+    table.float('rate', 3, 2).notNullable().default(0.0);
 
     table.primary(['book_id', 'rater_id']);
     table.index('rater_id');

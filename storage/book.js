@@ -272,14 +272,14 @@ export default class extends BaseStorage {
     return books;
   }
 
-  async getRateCounts(book) {
+  async getRateCounts(id) {
     const rates = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
     const rows = await this.knex(this.tableRater)
-      .where('book_id', book.id)
+      .where('book_id', id)
       .groupBy('rate')
       .select(['rate', this.knex.raw('count(*) as cnt')]);
 
-    for (const row of rows) rates[row.rate] = row.cnt;
+    for (const row of rows) rates[row.rate] = Number(row.cnt);
 
     return rates;
   }
@@ -478,5 +478,22 @@ export default class extends BaseStorage {
         .onConflict()
         .merge();
     }
+  }
+
+  async getTags(bookId) {
+    const tags = await this.knex(this.tableTag)
+      .innerJoin(
+        this.tableBookTag,
+        `${this.tableBookTag}.tag_id`,
+        `${this.tableTag}.id`,
+      )
+      .where(`${this.tableBookTag}.book_id`, bookId)
+      .select(`${this.tableTag}.*`);
+
+    return tags.map((tag) => ({
+      id: tag.id,
+      name: tag.name,
+      // другие нужные поля тега
+    }));
   }
 }

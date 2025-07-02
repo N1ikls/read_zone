@@ -72,7 +72,7 @@ const isDark = computed({
 
       <u-button
         v-if="!user"
-        class="rounded-[10px] font-bold text-highlighted"
+        class="rounded-[10px] font-bold"
         color="info"
         size="md"
         @click="showModal"

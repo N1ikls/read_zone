@@ -9,7 +9,7 @@ export default defineApiHandler(async (event) => {
 
   if (!book) return null;
 
-  if (isArray(book)) return book?.at(0);
+  const rateCounts = await storage.book.getRateCounts(id);
 
-  return book;
+  return isArray(book) ? { ...book?.at(0), rate_counts: rateCounts } : null;
 });

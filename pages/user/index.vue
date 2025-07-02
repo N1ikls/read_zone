@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ItemSidebar } from '@/entities/user';
-import { ROUTES, ACTIONS_BUTTONS, FOOTER_BUTTONS } from './consts';
+import { ROUTES, ACTIONS_BUTTONS, TABS } from './consts';
 import { useAuth } from '~/entities/auth';
 const route = useRoute();
 
@@ -89,7 +89,19 @@ const { user } = useAuth();
             </div>
           </div>
 
-          <div class="user-content__footer">
+          <div
+            v-if="true"
+            class="p-5 mt-3 w-full h-70 light:bg-[#F5F5F5] rounded-[10px]"
+          >
+            <div class="text-center font-bold text-xl">
+              У профиля пока нет работ в мастерской
+            </div>
+          </div>
+
+          <div
+            v-else
+            class="user-content__footer"
+          >
             <div class="grid grid-cols-[132px_1.55fr_1fr] gap-2">
               <div class="flex flex-col gap-2">
                 <img
@@ -140,27 +152,17 @@ const { user } = useAuth();
       </div>
 
       <div class="flex items-center gap-8 w-full mt-10">
-        <u-button
-          v-for="(item, index) in FOOTER_BUTTONS"
-          :class="item.class"
-          class="bg-[#F5F5F5] h-14 w-50 items-center justify-center gap-3 rounded-[10px] hover:bg-[none] cursor-pointer"
-          :key="index"
+        <UTabs
+          color="info"
+          :items="TABS"
+          class="w-full"
         >
-          <template #leading>
-            <UIcon
-              mode="svg"
-              class="text-[23px]"
-              :class="item.classIcon"
-              :name="item.icon"
-            />
+          <template #posts>
+            <div class="mt-6">
+              <div class="font-bold text-[#050505] text-xl">Все посты: 12</div>
+            </div>
           </template>
-
-          {{ item.name }}
-        </u-button>
-      </div>
-
-      <div class="mt-6">
-        <div class="font-bold text-[#050505] text-xl">Все посты: 12</div>
+        </UTabs>
       </div>
     </div>
   </NuxtLayout>
