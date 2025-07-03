@@ -1,6 +1,6 @@
 import error from '../../errors';
 
-export default defineApiHandler(async (event) => {
+export default defineApiHandler(async (event: H3Event<EventHandlerRequest>) => {
   const body = await readBody(event);
   const login = body.login;
   const password = body.password;

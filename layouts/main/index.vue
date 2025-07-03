@@ -54,20 +54,8 @@ const route = useRoute();
   @extend %transform;
   margin: 0 auto;
   padding: 0 16px;
-  max-width: 1430px;
+  max-width: 1240px;
   height: 100%;
-
-  @media (width > 500px) {
-    padding: 0 36px;
-  }
-
-  @media (width > 520px) {
-    padding: 0 56px;
-  }
-
-  @media (width > 630px) {
-    padding: 0 110px;
-  }
 
   &_wide {
     padding: 0;

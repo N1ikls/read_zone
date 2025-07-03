@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import numeral from 'numeral';
-import { TABS } from './consts';
+import { tabs } from './consts';
 import { Status } from '@/entities/catalog';
-import { ItemSidebar, ItemInfo } from '@/entities/book';
+import { ItemSidebar, ItemInfo, ItemChapter } from '@/entities/book';
 import { isEmpty } from 'es-toolkit/compat';
 import type { Book } from '~/shared/types';
 
@@ -22,125 +22,115 @@ const { data: authorBooks } = await useFetch<Book[]>('/api/book/search', {
   },
 });
 
-const formatCountChapters = computed(() => {
-  if (!data.value?.chapters_count) return 0;
+// const formatCountChapters = computed(() => {
+//   if (!data.value?.chapters_count) return 0;
 
-  const n = Math.abs(data.value.chapters_count) % 100;
-  const n1 = n % 10;
+//   const n = Math.abs(data.value.chapters_count) % 100;
+//   const n1 = n % 10;
 
-  if (n > 10 && n < 20) return `${data.value?.chapters_count} Главы`;
-  if (n1 > 1 && n1 < 5) return `${data.value?.chapters_count} Главы`;
-  if (n1 === 1) return `${data.value?.chapters_count} Глава`;
-  return `${data.value?.chapters_count} Глав`;
-});
+//   if (n > 10 && n < 20) return `${data.value?.chapters_count} Главы`;
+//   if (n1 > 1 && n1 < 5) return `${data.value?.chapters_count} Главы`;
+//   if (n1 === 1) return `${data.value?.chapters_count} Глава`;
+//   return `${data.value?.chapters_count} Глав`;
+// });
 </script>
 
 <template>
   <div
     v-if="data"
-    class="book w-full xs:mt-[10vh] relative mt-[5vh] flex shrink-0 basis-auto flex-col items-start gap-6 md:mt-[48px] md:flex-row"
+    class="book w-full xs:mt-[10vh] relative mt-[5vh] flex shrink-0 basis-auto flex-col items-start gap-6 md:mt-[80px] md:flex-row"
   >
     <item-sidebar />
 
-    <div class="book-content w-full">
-      <div
-        class="book-content__header rounded-[20px] p-4 flex flex-col light:bg-[#ffffff] shadow inset-shadow-2xs mb-4"
+    <div
+      class="grid flex-[1] gap-y-4 [grid-template-areas:'header_header''content_content''similar_similar''comments_comments'] xl:[grid-template-areas:'header_header''content_content''content_similar''comments_similar']"
+    >
+      <header
+        class="grid grid-cols-[1fr_min-content] gap-2 [grid-template-areas:'title_title''stats_stats''rating_rating'] sm:[grid-template-areas:'title_title''stats_rating'] xl:[grid-template-areas:'title_rating''stats_rating'] [grid-area:header]"
       >
         <div
-          class="grid grid-cols-[1fr_min-content] gap-2 [grid-template-areas:'title_title''stats_stats''rating_rating'] sm:[grid-template-areas:'title_title''stats_rating'] xl:[grid-template-areas:'title_rating''stats_rating'] [grid-area:header]"
+          v-if="data?.name"
+          class="font-bold text-[#000000] w-[80%] text-2xl leading-2xl ellipsis"
         >
-          <div class="book-content__header-title-info w-full">
-            <div
-              v-if="data?.name"
-              class="font-bold text-[#000000] w-[80%] text-2xl leading-2xl ellipsis"
-            >
-              {{ data.name }}
-            </div>
-          </div>
-
-          <div
-            class="flex w-full flex-row gap-2 [grid-area:rating] md:flex-col md:items-end"
-          >
-            <div
-              class="cs-text leading-md text-foreground flex flex-nowrap items-center gap-2 rounded-md text-2xl leading-none font-bold select-none"
-            >
-              <u-icon
-                mode="svg"
-                class="rate"
-                name="my-icons:rate"
-              />
-
-              {{ data?.rate.toFixed(1) }}
-            </div>
-
-            <u-button
-              color="info"
-              class="px-2 min-w-[20px] text-xs rounded-full h-[20px]"
-              >Оценить</u-button
-            >
-          </div>
-
-          <div
-            class="book-content__footer cs-layout-stats-short-root flex flex-wrap justify-center gap-2 md:justify-start -mx-2 items-center [grid-area:stats]"
-          >
-            <r-text
-              class="px-2.5 py-1"
-              icon="my-icons:eyes-black"
-              :size-svg="18"
-            >
-              Просмотров:
-              {{ numeral(data?.viewers_count).format('0.[0]a').toUpperCase() }}
-            </r-text>
-
-            <r-text
-              class="px-2.5 py-1"
-              :size-svg="18"
-              icon="my-icons:read"
-            >
-              {{ formatCountChapters }}</r-text
-            >
-            <r-text
-              class="px-2.5 py-1"
-              :size-svg="16"
-              icon="my-icons:like-black"
-            >
-              Лайков:
-              {{ numeral(data?.likers_count).format('0.[0]a').toUpperCase() }}
-            </r-text>
-
-            <r-text
-              class="px-2.5 py-1"
-              :size-svg="18"
-              icon="my-icons:timer"
-            >
-              {{ data?.year }} Год выхода</r-text
-            >
-            <r-text
-              class="px-2.5 py-1"
-              :size-svg="18"
-              icon="my-icons:checked"
-            >
-              {{ Status[data?.status as keyof typeof Status] }}
-            </r-text>
-          </div>
+          {{ data.name }}
         </div>
-      </div>
 
-      <div class="book-content__main flex items-center gap-4">
-        <UTabs
-          color="info"
-          :items="TABS"
-          class="w-full"
-          :ui="{
-            list: 'rounded-full light:bg-[#FFFFFF] shadow inset-shadow-2xs',
-            indicator: 'rounded-full',
-          }"
+        <div
+          class="flex w-full flex-row items-center justify-center gap-2 [grid-area:rating] md:flex-col md:items-end md:justify-center"
         >
-          <template #info>
-            <ItemInfo :item="data" />
-          </template>
-        </UTabs>
-      </div>
+          <div
+            class="cs-text leading-md text-foreground flex flex-nowrap items-center gap-2 rounded-[10px] text-2xl leading-none font-bold select-none"
+          >
+            <u-icon
+              mode="svg"
+              class="rate"
+              name="my-icons:rate"
+            />
+
+            {{ data?.rate.toFixed(1) }}
+          </div>
+
+          <u-button
+            color="info"
+            class="px-2 min-w-[20px] text-xs rounded-full h-[20px]"
+            >Оценить</u-button
+          >
+        </div>
+
+        <div
+          class="book-content__footer cs-layout-stats-short-root flex flex-wrap justify-center gap-2 md:justify-start -mx-2 items-center [grid-area:stats]"
+        >
+          <r-text
+            class="px-2.5 py-1"
+            icon="my-icons:eyes-black"
+            :size-svg="18"
+          >
+            Просмотров:
+            {{ numeral(data?.viewers_count).format('0.[0]a').toUpperCase() }}
+          </r-text>
+
+          <r-text
+            class="px-2.5 py-1"
+            :size-svg="16"
+            icon="my-icons:like-black"
+          >
+            Лайков:
+            {{ numeral(data?.likers_count).format('0.[0]a').toUpperCase() }}
+          </r-text>
+
+          <r-text
+            class="px-2.5 py-1"
+            :size-svg="18"
+            icon="my-icons:timer"
+          >
+            {{ data?.year }} Год выхода</r-text
+          >
+          <r-text
+            class="px-2.5 py-1"
+            :size-svg="18"
+            icon="my-icons:checked"
+          >
+            {{ Status[data?.status as keyof typeof Status] }}
+          </r-text>
+        </div>
+      </header>
+
+      <UTabs
+        color="info"
+        :items="tabs(data?.chapters_count)"
+        class="w-full [grid-area:content] min-w-0"
+        :ui="{
+          list: 'rounded-full light:bg-[#F5F5F5] h-9  shadow inset-shadow-2xs',
+          indicator: 'rounded-full',
+        }"
+      >
+        <template #info>
+          <ItemInfo :item="data" />
+        </template>
+        <template #chapters>
+          <ItemChapter :guid="data.id" />
+        </template>
+      </UTabs>
     </div>
   </div>
 

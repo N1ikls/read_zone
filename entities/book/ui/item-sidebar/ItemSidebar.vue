@@ -5,7 +5,7 @@
     class="xs:max-w-[70vw] flex w-full max-w-[60vw] shrink-0 basis-3/5 flex-col gap-4 sm:max-w-[320px] sm:basis-1/2 md:sticky md:top-[76px] md:basis-1/3 lg:basis-1/4 xl:basis-1/5"
   >
     <span
-      class="relative inline-flex shrink-0 aspect-[2/3] w-full overflow-hidden rounded-xl select-none"
+      class="relative inline-flex shrink-0 aspect-[2/3] w-full overflow-hidden rounded-[10px] select-none"
     >
       <img
         class="select-none size-full object-cover transition-all duration-200"

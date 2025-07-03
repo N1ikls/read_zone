@@ -49,14 +49,14 @@ export const BUTTONS = [
   },
 ];
 
-export const TABS: TabsItem[] = [
+export const tabs = (chapters: number): TabsItem[] => [
   {
     label: 'О тайтле',
     slot: 'info' as const,
   },
   {
-    label: 'Главы',
-    slot: 'account' as const,
+    label: `Главы (${chapters})`,
+    slot: 'chapters' as const,
   },
   {
     label: 'Обсуждения',

@@ -186,6 +186,7 @@ export async function seed(knex) {
         status: ['discarded', 'done', 'frozen', 'progress'][
           helper.random(0, 3)
         ],
+        volume: `Том ${i}`,
         is_public: i + 1 <= publicChaptersCount,
         price: i + 1 <= publicChaptersCount ? null : helper.random(1, 999),
         name: helper.random(0, 1) ? `Название главы ${i + 1}` : null,
