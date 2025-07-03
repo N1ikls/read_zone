@@ -31,6 +31,8 @@ export interface Book {
   rate_counts: RateCounts;
 }
 
+export interface Chapter {}
+
 export interface CatalogResponse {
   total: number;
   page: number;

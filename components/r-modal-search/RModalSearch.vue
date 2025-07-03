@@ -78,7 +78,7 @@ const onClear = () => {
   <u-modal
     v-model:open="open"
     :ui="{
-      overlay: 'light:bg-black/80 ',
+      overlay: 'light:bg-black/80',
       content:
         'top-4 -translate-y-0 grid gap-2 rounded-[22px] p-2 max-sm:max-w-[calc(100vw-8px)] sm:max-w-2xl light:bg-[#f2f2f7] dark:bg-[#012053] divide-y-0',
     }"

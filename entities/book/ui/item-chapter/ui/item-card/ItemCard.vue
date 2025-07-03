@@ -2,9 +2,10 @@
 import { parseISO, format } from 'date-fns';
 
 const { item } = defineProps<{
-  item: Record<string, string | number>;
+  item: Record<string, string | number | boolean>;
 }>();
 
+const isLiked = ref<boolean>((item.is_liked as boolean) || false);
 const countLike = ref<number>((item.likers_count as number) || 0);
 
 const like = async (key: number) => {
@@ -16,6 +17,7 @@ const like = async (key: number) => {
     },
   });
 
+  isLiked.value = true;
   countLike.value = data.value || 0;
 };
 </script>
@@ -51,12 +53,24 @@ const like = async (key: number) => {
       <div class="ml-2 flex items-center justify-between gap-2">
         <u-button
           class="cs-button z-0 cursor-pointer group relative items-center box-border appearance-none whitespace-nowrap font-medium subpixel-antialiased transition-all tap-highlight-transparent transform-gpu data-[pressed=true]:scale-[0.97] opacity-100 outline-none focus-visible:outline-hidden ring-0 rounded-full h-7 text-sm bg-[none] dark:bg-[#003386] text-secondary-foreground hover:bg-[#ffffff] 0 ml-2 flex gap-2 select-none"
-          icon="my-icons:like"
           @click.stop.prevent="like(item.number as number)"
         >
+          <u-icon
+            :class="{ 'text-red-700 is-liked': isLiked }"
+            name="i-lucide-heart"
+            mode="svg"
+          />
           {{ countLike }}
         </u-button>
       </div>
     </div>
   </div>
 </template>
+
+<style lang="scss" scoped>
+.is-liked {
+  :deep(path) {
+    fill: var(--color-red-700);
+  }
+}
+</style>

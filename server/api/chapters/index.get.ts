@@ -11,12 +11,19 @@ export default defineEventHandler(async (event) => {
 
   const chapters = await storage.chapter.find(
     { book_id: book_id },
+    { order: { number: 'desc' } },
     {
-      order: { number: 'desc' },
       with: ['is_readable'],
       actor: user,
     },
   );
 
-  return chapters.map((chapter) => storage.chapter.toPublic(chapter));
+  const chaptersIds = chapters.map((c) => c.id);
+
+  const likedMap = await storage.chapter.getLiked(chaptersIds, user);
+
+  return chapters.map((chapter) => ({
+    ...storage.chapter.toPublic(chapter),
+    is_liked: !!likedMap[chapter.id],
+  }));
 });

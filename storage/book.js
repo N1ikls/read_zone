@@ -379,7 +379,7 @@ export default class extends BaseStorage {
     if (value > 0) {
       await this.knex(this.tableRater)
         .insert({ book_id: book.id, rater_id: actor.id, rate: value })
-        .onConflict()
+        .onConflict(['book_id', 'rater_id'])
         .merge();
     } else {
       await this.knex(this.tableRater)

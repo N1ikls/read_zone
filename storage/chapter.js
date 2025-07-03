@@ -116,6 +116,14 @@ export default class extends BaseStorage {
     return chapterLikesCount;
   }
 
+  async getLiked(chapter_ids, user) {
+    const liked = await this.knex(this.tableLiker)
+      .whereIn('chapter_id', chapter_ids)
+      .andWhere('liker_id', user.id);
+
+    return Object.fromEntries(liked.map((r) => [r.chapter_id, true]));
+  }
+
   toReadable(chapter) {
     const data = this.toPublic(chapter);
     data.content = chapter.content;

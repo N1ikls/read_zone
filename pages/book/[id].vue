@@ -2,7 +2,7 @@
 import numeral from 'numeral';
 import { tabs } from './consts';
 import { Status } from '@/entities/catalog';
-import { ItemSidebar, ItemInfo, ItemChapter } from '@/entities/book';
+import { ItemSidebar, ItemRate, ItemInfo, ItemChapter } from '@/entities/book';
 import { isEmpty } from 'es-toolkit/compat';
 import type { Book } from '~/shared/types';
 
@@ -21,18 +21,6 @@ const { data: authorBooks } = await useFetch<Book[]>('/api/book/search', {
     author_id: data.value?.author_id,
   },
 });
-
-// const formatCountChapters = computed(() => {
-//   if (!data.value?.chapters_count) return 0;
-
-//   const n = Math.abs(data.value.chapters_count) % 100;
-//   const n1 = n % 10;
-
-//   if (n > 10 && n < 20) return `${data.value?.chapters_count} Главы`;
-//   if (n1 > 1 && n1 < 5) return `${data.value?.chapters_count} Главы`;
-//   if (n1 === 1) return `${data.value?.chapters_count} Глава`;
-//   return `${data.value?.chapters_count} Глав`;
-// });
 </script>
 
 <template>
@@ -70,11 +58,7 @@ const { data: authorBooks } = await useFetch<Book[]>('/api/book/search', {
             {{ data?.rate.toFixed(1) }}
           </div>
 
-          <u-button
-            color="info"
-            class="px-2 min-w-[20px] text-xs rounded-full h-[20px]"
-            >Оценить</u-button
-          >
+          <item-rate :guid="data.id" />
         </div>
 
         <div

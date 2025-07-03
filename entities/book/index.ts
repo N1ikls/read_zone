@@ -1,1 +1,1 @@
-export { ItemSidebar, ItemInfo, ItemChapter } from './ui';
+export { ItemSidebar, ItemInfo, ItemRate, ItemChapter } from './ui';
