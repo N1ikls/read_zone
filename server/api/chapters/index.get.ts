@@ -7,11 +7,15 @@ export default defineEventHandler(async (event) => {
 
   if (!user) throw new errors.Unauthorized();
 
-  const { book_id } = getQuery(event);
+  const { book_id, number = 'desc' } = getQuery(event);
 
   const chapters = await storage.chapter.find(
     { book_id: book_id },
-    { order: { number: 'desc' } },
+    {
+      order: {
+        number,
+      },
+    },
     {
       with: ['is_readable'],
       actor: user,

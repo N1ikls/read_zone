@@ -15,23 +15,11 @@ export default class extends BaseStorage {
   }
 
   async save(bookmark, actor) {
-    if (
-      !(
-        'book_id' in bookmark &&
-        typeof bookmark.book_id === 'number' &&
-        bookmark.book_id > 0
-      )
-    ) {
+    if (!('book_id' in bookmark)) {
       throw new errors.DBValidation([{ message: 'Нужен идентификатор книги' }]);
     }
 
-    if (
-      !(
-        'user_id' in bookmark &&
-        typeof bookmark.user_id === 'number' &&
-        bookmark.user_id > 0
-      )
-    ) {
+    if (!('user_id' in bookmark)) {
       throw new errors.DBValidation([
         { message: 'Нужен идентификатор пользователя' },
       ]);
@@ -53,7 +41,7 @@ export default class extends BaseStorage {
         user_id: bookmark.user_id,
         type: bookmark.type,
       })
-      .onConflict()
+      .onConflict(['book_id', 'user_id'])
       .merge();
 
     return this.findOne({
@@ -96,5 +84,14 @@ export default class extends BaseStorage {
     return this.knex(this.table)
       .where('user_id', userId)
       .select('book_id', 'type');
+  }
+
+  async getType(userId, bookId) {
+    return this.knex(this.table)
+      .where({
+        user_id: userId,
+        book_id: bookId,
+      })
+      .first('type');
   }
 }

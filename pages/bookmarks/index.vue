@@ -15,7 +15,7 @@ const queries = useGetRouteQuery({
 const debounceParsedQueries = ref(unref(queries));
 const name = ref<string | null>(queries.value?.name);
 
-const { data } = useFetch('/api/bookmark', {
+const { data } = useFetch('/api/bookmarks/items', {
   method: 'get',
   query: debounceParsedQueries,
 });

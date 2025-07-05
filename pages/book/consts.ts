@@ -52,10 +52,12 @@ export const BUTTONS = [
 export const tabs = (chapters: number): TabsItem[] => [
   {
     label: 'О тайтле',
-    slot: 'info' as const,
+    value: 'main',
+    slot: 'main' as const,
   },
   {
     label: `Главы (${chapters})`,
+    value: 'chapters',
     slot: 'chapters' as const,
   },
   {

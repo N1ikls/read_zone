@@ -7,6 +7,7 @@ import { isEmpty } from 'es-toolkit/compat';
 import type { Book } from '~/shared/types';
 
 const route = useRoute();
+const router = useRouter();
 
 const { data } = await useFetch<Book>('/api/book', {
   method: 'get',
@@ -19,6 +20,20 @@ const { data: authorBooks } = await useFetch<Book[]>('/api/book/search', {
   method: 'get',
   query: {
     author_id: data.value?.author_id,
+  },
+});
+
+const active = computed({
+  get() {
+    return (route.query.tab as string) || 'main';
+  },
+  set(tab: string) {
+    router.push({
+      query: {
+        ...route.query,
+        tab: tab ?? undefined,
+      },
+    });
   },
 });
 </script>
@@ -100,6 +115,7 @@ const { data: authorBooks } = await useFetch<Book[]>('/api/book/search', {
       </header>
 
       <UTabs
+        v-model="active"
         color="info"
         :items="tabs(data?.chapters_count)"
         class="w-full [grid-area:content] min-w-0"
@@ -108,7 +124,7 @@ const { data: authorBooks } = await useFetch<Book[]>('/api/book/search', {
           indicator: 'rounded-full',
         }"
       >
-        <template #info>
+        <template #main>
           <ItemInfo :item="data" />
         </template>
         <template #chapters>

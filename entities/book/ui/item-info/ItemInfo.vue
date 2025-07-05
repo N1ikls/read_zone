@@ -104,13 +104,14 @@ const totalVotes = computed(() => {
     <span class="text-[20px] font-bold"> Подписки </span>
   </div>
 
-  <div class="light:bg-[#F5F5F5] rounded-[10px] p-4">
+  <div class="rounded-[10px] p-4">
     <span class="text-[20px] font-bold"> Рейтинг </span>
 
     <div
-      class="mt-4 grid md:grid-cols-1 xl:grid-cols-[190px_1fr] items-center justify-between w-full gap-3"
+      class="mt-4 grid grid-cols-1 md:grid-cols-1 xl:grid-cols-[190px_1fr] items-center justify-between w-full gap-3"
     >
       <r-progress
+        class="flex justify-center"
         :value="Number(item?.rate || 0)"
         :max="totalVotes"
         :votes="String(totalVotes)"
@@ -122,7 +123,9 @@ const totalVotes = computed(() => {
           :key="index"
           class="grid grid-cols-3"
         >
-          <span class="font-normal">{{ rates.label }}</span>
+          <span class="font-normal text-xs md:text-sm xl:text-base">{{
+            rates.label
+          }}</span>
 
           <div class="flex col-span-2 items-center gap-4">
             <UProgress

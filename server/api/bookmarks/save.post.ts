@@ -1,4 +1,4 @@
-import errors from '../errors';
+import errors from '../../errors';
 
 export default defineApiHandler(async (event) => {
   const user = await event.context.context.user();
@@ -6,9 +6,6 @@ export default defineApiHandler(async (event) => {
   if (!user) throw new errors.Unauthorized();
 
   const { guid, type } = getQuery(event);
-
-  if (guid) throw new errors.BadRequest('Нужен идентификатор книги');
-  if (!type) throw new errors.BadRequest('Нужен тип закладки');
 
   const storage = event.context.storage;
 

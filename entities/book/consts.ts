@@ -5,3 +5,22 @@ export const RATINGS = [
   { label: 'Плохо', stars: 2 },
   { label: 'Ужасно', stars: 1 },
 ];
+
+export const ITEMS = [
+  {
+    label: 'Читаю',
+    value: 'process',
+  },
+  {
+    label: 'Буду читать',
+    value: 'planned',
+  },
+  {
+    label: 'Прочитано',
+    value: 'done',
+  },
+  {
+    label: 'Брошено',
+    value: 'discarded',
+  },
+];

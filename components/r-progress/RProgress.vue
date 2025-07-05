@@ -33,75 +33,77 @@ const center = computed(() => actualSize.value / 2);
 </script>
 
 <template>
-  <div class="relative">
-    <svg
-      class="h-full w-full"
-      :viewBox="`0 0 ${actualSize} ${actualSize}`"
-    >
-      <circle
-        :cx="center"
-        :cy="center"
-        :r="radius"
-        fill="none"
-        stroke="currentColor"
-        :stroke-width="actualStrokeWidth"
-        class="text-gray-200 dark:text-gray-700"
-      />
-
-      <circle
-        :cx="center"
-        :cy="center"
-        :r="radius"
-        fill="none"
-        stroke="currentColor"
-        :stroke-width="actualStrokeWidth"
-        :class="getProgressColor()"
-        stroke-linecap="round"
-        :stroke-dasharray="strokeDasharray"
-        :transform="`rotate(-90 ${center} ${center})`"
-      />
-
-      <text
-        :x="center"
-        :y="center - 8"
-        text-anchor="middle"
-        dominant-baseline="middle"
-        class="font-bold fill-gray-800 dark:fill-gray-200"
+  <div class="w-full h-full">
+    <div class="w-[190px] relative h-[190px]">
+      <svg
+        class="h-full w-full"
+        :viewBox="`0 0 ${actualSize} ${actualSize}`"
       >
-        {{ value.toFixed(1) }}
-      </text>
+        <circle
+          :cx="center"
+          :cy="center"
+          :r="radius"
+          fill="none"
+          stroke="currentColor"
+          :stroke-width="actualStrokeWidth"
+          class="text-gray-200 dark:text-gray-700"
+        />
 
-      <text
-        :x="center"
-        :y="center + 15"
-        text-anchor="middle"
-        dominant-baseline="middle"
-        class="text-[5px] font-medium fill-gray-800 dark:fill-gray-200"
-      >
-        {{ votes }}
-      </text>
-    </svg>
+        <circle
+          :cx="center"
+          :cy="center"
+          :r="radius"
+          fill="none"
+          stroke="currentColor"
+          :stroke-width="actualStrokeWidth"
+          :class="getProgressColor()"
+          stroke-linecap="round"
+          :stroke-dasharray="strokeDasharray"
+          :transform="`rotate(-90 ${center} ${center})`"
+        />
 
-    <div class="absolute top-[58%] right-[25%]">
-      <nuxt-rating
-        class="rating"
-        inline
-        read-only
-        :border-width="1.5"
-        :rounded-corners="true"
-        border-color="#0862E0"
-        :rating-content="[
-          10.937, 1.593, 12.927, 5.813, 13.377, 6.063, 17.837, 6.743, 17.707,
-          6.873, 14.477, 10.163, 14.227, 10.613, 15.007, 15.073, 14.877, 15.203,
-          10.937, 13.203, 10.937, 13.203, 6.997, 15.203, 6.867, 15.073, 7.647,
-          10.613, 7.397, 10.163, 4.167, 6.873, 4.037, 6.743, 8.497, 6.063,
-          8.947, 5.813, 10.937, 1.593,
-        ]"
-        inactive-color="#E8E8E8"
-        :rating-size="16"
-        :rating-value="value"
-        active-color="#0862E0"
-      />
+        <text
+          :x="center"
+          :y="center - 8"
+          text-anchor="middle"
+          dominant-baseline="middle"
+          class="font-bold fill-gray-800 dark:fill-gray-200"
+        >
+          {{ value.toFixed(1) }}
+        </text>
+
+        <text
+          :x="center"
+          :y="center + 15"
+          text-anchor="middle"
+          dominant-baseline="middle"
+          class="text-[5px] font-medium fill-gray-800 dark:fill-gray-200"
+        >
+          {{ votes }}
+        </text>
+      </svg>
+
+      <div class="absolute top-[58%] right-[25%]">
+        <nuxt-rating
+          class="rating"
+          inline
+          read-only
+          :border-width="1.5"
+          :rounded-corners="true"
+          border-color="#0862E0"
+          :rating-content="[
+            10.937, 1.593, 12.927, 5.813, 13.377, 6.063, 17.837, 6.743, 17.707,
+            6.873, 14.477, 10.163, 14.227, 10.613, 15.007, 15.073, 14.877,
+            15.203, 10.937, 13.203, 10.937, 13.203, 6.997, 15.203, 6.867,
+            15.073, 7.647, 10.613, 7.397, 10.163, 4.167, 6.873, 4.037, 6.743,
+            8.497, 6.063, 8.947, 5.813, 10.937, 1.593,
+          ]"
+          inactive-color="#E8E8E8"
+          :rating-size="16"
+          :rating-value="value"
+          active-color="#0862E0"
+        />
+      </div>
     </div>
   </div>
 </template>

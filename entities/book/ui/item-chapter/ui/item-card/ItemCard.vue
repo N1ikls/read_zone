@@ -9,7 +9,7 @@ const isLiked = ref<boolean>((item.is_liked as boolean) || false);
 const countLike = ref<number>((item.likers_count as number) || 0);
 
 const like = async (key: number) => {
-  const { data } = await useFetch<number>('/api/chapter/like', {
+  const data = await $fetch<number>('/api/chapter/like', {
     method: 'post',
     query: {
       book_id: item.book_id,
@@ -18,33 +18,40 @@ const like = async (key: number) => {
   });
 
   isLiked.value = true;
-  countLike.value = data.value || 0;
+  countLike.value = data || 0;
 };
 </script>
 
 <template>
   <div
-    class="light:bg-[#F5F5F5] rounded-[14px] flex cursor-pointer items-center justify-between !px-4 !py-2"
+    class="hover:bg-[#ffffff] flex cursor-pointer items-center justify-between !px-4 !py-1"
   >
-    <div class="flex items-center gap-4">
+    <div class="flex items-center gap-2">
       <u-icon
         name="my-icons:eyes-black"
         mode="svg"
       />
 
-      <div class="flex items-center gap-4">Том {{ item.volume || 1 }}</div>
+      <div class="flex items-center font-bold gap-4">
+        {{ item.volume || 1 }} Глава {{ item.number }}
+      </div>
 
-      <div class="flex">
-        <span class="cs-text text-md leading-md font-normal text-foreground"
-          >Глава {{ item.number }}</span
-        >
+      <div
+        v-if="!item.is_public"
+        class="text-[22px]"
+      >
+        <u-icon
+          class="text-[#0862E0]"
+          name="my-icons:lock"
+          mode="svg"
+        />
       </div>
     </div>
 
     <div class="flex-row flex items-center gap-2">
       <div class="flex items-center gap-2">
         <p
-          class="cs-text text-xs leading-xs font-normal text-muted-foreground hidden sm:inline"
+          class="cs-text text-[15px] leading-xs font-semibold hidden sm:inline"
         >
           {{ format(parseISO(item.created_at as string), 'dd.MM.yyyy') }}
         </p>
@@ -57,10 +64,13 @@ const like = async (key: number) => {
         >
           <u-icon
             :class="{ 'text-red-700 is-liked': isLiked }"
+            class="text-[22px]"
             name="i-lucide-heart"
             mode="svg"
           />
-          {{ countLike }}
+          <span class="text-base">
+            {{ countLike }}
+          </span>
         </u-button>
       </div>
     </div>
