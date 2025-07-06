@@ -4,6 +4,5 @@
   "singleQuote": true,
   "proseWrap": "always",
   "quoteProps": "consistent",
-  "singleAttributePerLine": true,
-  "vue/component-name-casing": "kebab-case"
+  "singleAttributePerLine": true
 }

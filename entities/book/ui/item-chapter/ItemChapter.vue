@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { parseISO, format } from 'date-fns';
+import { ModalDownloadChapter } from '../modal-download-chapter';
 import { ItemCard } from './ui';
 
 const { guid } = defineProps<{
@@ -30,7 +30,7 @@ const toggleRotation = () => {
 
 <template>
   <div class="light:bg-[#F5F5F5] rounded-[10px]">
-    <div class="p-4 flex items-center justify-between gap-4">
+    <div class="p-4 flex items-center flex-wrap justify-between gap-4">
       <u-button
         color="info"
         class="light:bg-[#ffffff] hover:bg-[none] light:text-[#050505] text-sm"
@@ -43,26 +43,25 @@ const toggleRotation = () => {
           mode="svg"
         />
 
-        <span>Сортировать</span>
+        <span class="hidden md:block xl:block">Сортировать</span>
       </u-button>
       <div class="flex gap-4">
         <u-button
           color="info"
-          class="text-sm fond-bold light:bg-[#ffffff] light:text-[#050505] hover:bg-[none]"
+          class="text-sm font-bold light:bg-[#ffffff] light:text-[#050505] hover:bg-[none]"
           >Режим переводчика</u-button
         >
-        <u-button
-          class="text-sm fond-bold light:bg-[#ffffff] light:text-[#050505] hover:bg-[none]"
-          color="info"
-          >Скачать
-        </u-button>
+
+        <modal-download-chapter :items="data" />
       </div>
     </div>
     <div class="relative flex flex-col gap-2 w-full">
       <nuxt-link
         v-for="(item, index) in data"
         :key="index"
-        to="/"
+        :to="
+          !item.is_public ? undefined : `/book/${item.book_id}/${item.number}`
+        "
         @click.self
       >
         <ItemCard :item="item" />

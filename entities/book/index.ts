@@ -1,1 +1,7 @@
-export { ItemSidebar, ItemInfo, ItemRate, ItemChapter } from './ui';
+export {
+  ItemInfo,
+  ItemRate,
+  ItemChapter,
+  ItemSidebar,
+  ModalDownloadChapter,
+} from './ui';

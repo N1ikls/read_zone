@@ -9,6 +9,8 @@ const isLiked = ref<boolean>((item.is_liked as boolean) || false);
 const countLike = ref<number>((item.likers_count as number) || 0);
 
 const like = async (key: number) => {
+  if (!isLiked.value) return;
+
   const data = await $fetch<number>('/api/chapter/like', {
     method: 'post',
     query: {
@@ -28,7 +30,8 @@ const like = async (key: number) => {
   >
     <div class="flex items-center gap-2">
       <u-icon
-        name="my-icons:eyes-black"
+        class="text-[18px]"
+        name="my-icons:eyes"
         mode="svg"
       />
 

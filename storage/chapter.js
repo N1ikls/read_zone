@@ -101,7 +101,7 @@ export default class extends BaseStorage {
       .onConflict(['chapter_id', 'liker_id'])
       .ignore();
 
-    const chapterLikesCount = await this.likers_recount(chapter);
+    await this.likers_recount(chapter);
 
     const result = await this.knex('chapter_liker')
       .join('chapter', 'chapter.id', 'chapter_liker.chapter_id')
@@ -113,7 +113,7 @@ export default class extends BaseStorage {
       likers_count: result.count,
     });
 
-    return chapterLikesCount;
+    return await this.likers_count({ id: chapter.id }, true);
   }
 
   async getLiked(chapter_ids, user) {

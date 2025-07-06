@@ -108,7 +108,7 @@ watch(name, (value) => onUpdateName(value));
         @click="showSidebar"
       >
         <u-icon name="my-icons:filters" />
-        <span class="font-bold text-highlighted">Фильтры</span>
+        <span class="font-bold">Фильтры</span>
       </u-button>
     </div>
   </div>

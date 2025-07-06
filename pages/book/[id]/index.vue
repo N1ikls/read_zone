@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import numeral from 'numeral';
-import { tabs } from './consts';
+import { tabs } from '../consts';
 import { Status } from '@/entities/catalog';
 import { ItemSidebar, ItemRate, ItemInfo, ItemChapter } from '@/entities/book';
 import { isEmpty } from 'es-toolkit/compat';

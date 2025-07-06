@@ -24,3 +24,5 @@ export const ITEMS = [
     value: 'discarded',
   },
 ];
+
+export const TEXT_DOWNLOAD = 'Скачать';
