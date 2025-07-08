@@ -1,12 +1,7 @@
 <script setup lang="ts">
+import { STATUS } from '@/shared/consts';
 import type { SelectValue } from 'ant-design-vue/es/select';
-import {
-  BOOKS_TYPE,
-  BOOKS_AGE,
-  RELEASE_TYPE,
-  STATUS,
-  OTHER,
-} from '../../consts';
+import { BOOKS_TYPE, BOOKS_AGE, RELEASE_TYPE, OTHER } from '../../consts';
 import { useCatalogState } from '../../models';
 
 const { queries = {} } = defineProps<{

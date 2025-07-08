@@ -6,7 +6,7 @@ export const RATINGS = [
   { label: 'Ужасно', stars: 1 },
 ];
 
-export const ITEMS = [
+export const BOOKMARKS = [
   {
     label: 'Читаю',
     value: 'process',

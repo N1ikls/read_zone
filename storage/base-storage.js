@@ -10,6 +10,8 @@ export default class BaseStorage {
   }
 
   async delete(filter, options = {}) {
+    console.log('table', this.table);
+
     const query = this.knex(this.table);
     applyFilter(query, filter, this.table);
 

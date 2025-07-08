@@ -21,7 +21,7 @@ export interface Book {
   likers_count: number;
   name: string;
   rate: number;
-  status: 'discarded' | 'ongoing' | 'completed' | 'hiatus';
+  status: 'discarded' | 'done' | 'frozen' | 'progress';
   source_status: 'discarded' | 'ongoing' | 'completed' | 'hiatus';
   translator_id: string;
   translator_name: string;
@@ -29,9 +29,23 @@ export interface Book {
   viewers_count: number;
   year: number;
   rate_counts: RateCounts;
+  is_writeable: boolean;
 }
 
-export interface Chapter {}
+export interface Chapter {
+  book_id: string; // UUID формата
+  number: number; // Номер главы
+  name: string; // Название главы
+  is_public: boolean; // Видимость главы
+  price: number; // Цена главы
+  volume: string; // Название тома
+  status: 'discarded' | 'published' | 'draft' | 'archived'; // Статус главы
+  created_at: string; // Дата создания в ISO формате
+  updated_at: string; // Дата обновления в ISO формате
+  likers_count: number; // Количество лайков
+  viewers_count: number; // Количество просмотров
+  is_liked: boolean; // Лайкнул ли текущий пользователь
+}
 
 export interface CatalogResponse {
   total: number;

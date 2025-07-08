@@ -1,1 +1,3 @@
-export type { CatalogResponse, Book, Genre } from './common';
+export type { ButtonsOptionsFabric } from './options';
+
+export type { CatalogResponse, Book, Genre, Chapter } from './common';

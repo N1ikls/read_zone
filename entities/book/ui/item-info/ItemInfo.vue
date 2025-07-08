@@ -100,6 +100,16 @@ const totalVotes = computed(() => {
     </div>
   </div>
 
+  <u-button
+    v-if="item.is_writeable"
+    color="info"
+    class="my-4 text-[16px] font-bold rounded-[10px]"
+    block
+    :to="`/book/${item.id}/edit`"
+  >
+    Редактировать
+  </u-button>
+
   <div class="light:bg-[#F5F5F5] rounded-[10px] p-4 my-4">
     <span class="text-[20px] font-bold"> Подписки </span>
   </div>

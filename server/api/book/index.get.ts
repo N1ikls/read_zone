@@ -1,7 +1,12 @@
 import { isArray } from 'es-toolkit/compat';
+import errors from '../../errors';
 
 export default defineApiHandler(async (event) => {
   const storage = event.context.storage;
+
+  const user = await event.context.context.user();
+
+  if (!user) throw new errors.Unauthorized();
 
   const { id } = getQuery(event);
 
@@ -9,7 +14,9 @@ export default defineApiHandler(async (event) => {
 
   if (!book) return null;
 
-  const rateCounts = await storage.book.getRateCounts(id);
+  const rate_counts = await storage.book.getRateCounts(id);
 
-  return isArray(book) ? { ...book?.at(0), rate_counts: rateCounts } : null;
+  const is_writeable = await storage.book.isWriteable(book, user);
+
+  return isArray(book) ? { ...book?.at(0), rate_counts, is_writeable } : null;
 });

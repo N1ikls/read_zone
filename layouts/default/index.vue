@@ -5,7 +5,7 @@ const slots = useSlots();
 <template>
   <div
     v-if="slots?.breadcrumb"
-    class="r-page-layout__breadcrumb"
+    class="r-page-layout__breadcrumb pt-[25px] xl:pt-[115px]"
   >
     <slot name="breadcrumb" />
   </div>
@@ -32,6 +32,13 @@ const slots = useSlots();
     justify-content: space-between;
     flex-wrap: wrap;
     gap: 20px;
+    font-weight: bold;
+    font-size: 32px;
+  }
+
+  &__breadcrumb {
+    padding-top: 55px;
+    margin-bottom: 16px;
   }
 }
 </style>

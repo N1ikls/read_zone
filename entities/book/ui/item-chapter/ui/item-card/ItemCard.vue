@@ -9,7 +9,7 @@ const isLiked = ref<boolean>((item.is_liked as boolean) || false);
 const countLike = ref<number>((item.likers_count as number) || 0);
 
 const like = async (key: number) => {
-  if (!isLiked.value) return;
+  if (isLiked.value) return;
 
   const data = await $fetch<number>('/api/chapter/like', {
     method: 'post',

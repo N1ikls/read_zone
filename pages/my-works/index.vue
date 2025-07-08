@@ -6,6 +6,10 @@ import type { AcceptableValue } from '@nuxt/ui';
 import { Status } from '@/entities/bookmark';
 const setRouteQueries = useSetRouteQuery();
 
+definePageMeta({
+  middleware: ['auth'],
+});
+
 const queries = useGetRouteQuery({
   name: null,
   page: 1,

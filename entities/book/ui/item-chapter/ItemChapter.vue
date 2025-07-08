@@ -3,6 +3,7 @@ import { ModalDownloadChapter } from '../modal-download-chapter';
 import { ItemCard } from './ui';
 
 const { guid } = defineProps<{
+  isWriteable: boolean;
   guid: string;
 }>();
 
@@ -45,12 +46,18 @@ const toggleRotation = () => {
 
         <span class="hidden md:block xl:block">Сортировать</span>
       </u-button>
-      <div class="flex gap-4">
+
+      <div
+        v-if="isWriteable"
+        class="flex gap-4"
+      >
         <u-button
           color="info"
           class="text-sm font-bold light:bg-[#ffffff] light:text-[#050505] hover:bg-[none]"
-          >Режим переводчика</u-button
+          :to="`/book/${guid}/edit`"
         >
+          Режим переводчика
+        </u-button>
 
         <modal-download-chapter :items="data" />
       </div>

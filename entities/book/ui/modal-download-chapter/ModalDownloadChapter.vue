@@ -1,38 +1,23 @@
 <script setup lang="ts">
-import { ItemChapter } from './ui';
+import { useVirtualList } from '@vueuse/core';
+
+import { parseISO, format } from 'date-fns';
 import { TEXT_DOWNLOAD } from '../../consts';
+import type { Chapter } from '~/shared/types';
 
 const { items = [] } = defineProps<{
-  items: Record<string, string | number | boolean>[];
+  items: Chapter[];
 }>();
 
 const open = ref<boolean>(false);
-const guidsChecked = reactive<Set<number>>(new Set());
 
-const isAllChecked = computed(
-  () => guidsChecked.size === items.length && items.length > 0,
-);
+const { guidsChecked, isAllChecked, toggleGuid, toggleAll } =
+  useGuidsChecked(items);
 
-const toggleGuid = (number: number) => {
-  if (guidsChecked.has(number)) {
-    guidsChecked.delete(number);
-
-    return;
-  }
-  guidsChecked.add(number);
-};
-
-const toggleAll = () => {
-  if (isAllChecked.value) {
-    guidsChecked.clear();
-
-    return;
-  }
-
-  items.forEach((item) => {
-    guidsChecked.add(item.number);
-  });
-};
+const { list, containerProps, wrapperProps } = useVirtualList(items, {
+  itemHeight: 20,
+  overscan: 10,
+});
 
 const onNegative = () => {
   open.value = false;
@@ -53,7 +38,7 @@ watch(open, (newValue) => {
     v-model:open="open"
     :ui="{
       content:
-        'grid gap-4 rounded-[10px] divide-y-0 p-7  max-sm:max-w-[calc(100vw-8px)] sm:max-w-2xl h-[300px] xl:h-[559px]',
+        'grid gap-4 rounded-[10px] divide-y-0 p-7  max-sm:max-w-[calc(100vw-8px)] sm:max-w-2xl max-h-[559px]',
     }"
   >
     <u-button
@@ -70,11 +55,11 @@ watch(open, (newValue) => {
     </u-button>
 
     <template #content>
-      <div class="flex flex-wrap items-center justify-between pr-3">
+      <div class="flex flex-wrap items-center justify-between">
         <span class="font-bold text-[22px]"> {{ TEXT_DOWNLOAD }}</span>
 
         <div
-          class="text-xs flex items-center gap-4"
+          class="text-xs flex items-center gap-4 pr-[7px]"
           @click.stop="toggleAll"
         >
           Выбрать все
@@ -90,15 +75,42 @@ watch(open, (newValue) => {
         </div>
       </div>
 
-      <div class="overflow-y-scroll scrollbar">
-        <div class="grid gap-1 pr-3">
-          <item-chapter
-            v-for="(item, index) in items"
+      <div
+        v-bind="containerProps"
+        class="overflow-auto scrollbar"
+      >
+        <div
+          v-bind="wrapperProps"
+          class="grid gap-2"
+        >
+          <template
+            v-for="{ index, data } in list"
             :key="index"
-            :item="item"
-            :checked="guidsChecked.has(item.number as number)"
-            @checkbox-toggled="toggleGuid"
-          />
+          >
+            <div class="grid gap-2 grid-cols-[2fr_65px_32px]">
+              <r-list-item
+                :key="index"
+                :guid="data.number"
+                :checked="guidsChecked.has(data.number as number)"
+                @checkbox-toggled="toggleGuid"
+                checked-allowed
+              >
+                <template #title>
+                  <span class="text-xs font-medium">
+                    {{ data.name }}
+                  </span>
+                </template>
+
+                <template #default>
+                  <p class="cs-text leading-xs text-xs font-medium">
+                    {{
+                      format(parseISO(data.created_at as string), 'dd.MM.yyyy')
+                    }}
+                  </p>
+                </template>
+              </r-list-item>
+            </div>
+          </template>
         </div>
       </div>
 

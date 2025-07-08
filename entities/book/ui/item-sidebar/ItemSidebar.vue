@@ -1,8 +1,17 @@
 <script lang="ts" setup>
-import { ITEMS } from '../../consts';
+import { STATUS } from '@/shared/consts';
+
+import { BOOKMARKS } from '../../consts';
+
+const { statuses, isWriteable } = defineProps<{
+  statuses: string | undefined;
+  isWriteable: boolean;
+}>();
 
 const route = useRoute();
-const value = ref<string | undefined>();
+
+const bookmark = ref<string | undefined>();
+const status = ref<string | undefined>(statuses);
 
 const { data } = await useFetch('/api/bookmarks/status', {
   method: 'get',
@@ -12,22 +21,30 @@ const { data } = await useFetch('/api/bookmarks/status', {
 });
 
 const onUpdate = async (value: string) => {
-  const data = await $fetch('/api/bookmarks/save', {
+  await $fetch('/api/bookmarks/save', {
     method: 'post',
     query: {
       guid: route.params.id,
       type: value,
     },
   });
+};
 
-  console.log(data);
+const onUpdateStatus = async (value: string) => {
+  await $fetch('/api/book/status', {
+    method: 'post',
+    query: {
+      guid: route.params.id,
+      status: value,
+    },
+  });
 };
 
 watch(
   data,
   (newValue) => {
     if (!newValue) return;
-    value.value = newValue?.type;
+    bookmark.value = newValue?.type;
   },
   {
     immediate: true,
@@ -62,8 +79,8 @@ watch(
       <USelect
         color="info"
         variant="outline"
-        v-model="value"
-        :items="ITEMS"
+        v-model="bookmark"
+        :items="BOOKMARKS"
         placeholder="Добавить в планы"
         :ui="{
           base: 'justify-center',
@@ -73,13 +90,20 @@ watch(
         @update:model-value="onUpdate"
       />
 
-      <UButton
-        class="p-2 h-10 rounded-[10px] font-bold text-lg cursor-pointer"
+      <USelect
+        v-if="isWriteable"
         color="info"
-        block
-      >
-        Забрать работу
-      </UButton>
+        variant="outline"
+        v-model="status"
+        :items="STATUS"
+        placeholder="Обновить статус"
+        :ui="{
+          base: 'justify-center',
+          placeholder: 'text-[#050505] font-bold',
+        }"
+        class="text-[#050505] ring-info ring-inset ring-2 p-2 h-10 rounded-[10px] font-bold text-lg cursor-pointer"
+        @update:model-value="onUpdateStatus"
+      />
 
       <r-text
         class="justify-center warning cursor-pointer"

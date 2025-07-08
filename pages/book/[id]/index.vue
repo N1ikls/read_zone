@@ -43,7 +43,10 @@ const active = computed({
     v-if="data"
     class="book w-full xs:mt-[10vh] relative mt-[5vh] flex shrink-0 basis-auto flex-col items-start gap-6 md:mt-[80px] md:flex-row"
   >
-    <item-sidebar />
+    <item-sidebar
+      :statuses="data.status"
+      :is-writeable="data.is_writeable"
+    />
 
     <div
       class="grid flex-[1] gap-y-4 [grid-template-areas:'header_header''content_content''similar_similar''comments_comments'] xl:[grid-template-areas:'header_header''content_content''content_similar''comments_similar']"
@@ -70,7 +73,7 @@ const active = computed({
               name="my-icons:rate"
             />
 
-            {{ data?.rate.toFixed(1) }}
+            {{ data?.rate?.toFixed(1) }}
           </div>
 
           <item-rate :guid="data.id" />
@@ -128,7 +131,10 @@ const active = computed({
           <ItemInfo :item="data" />
         </template>
         <template #chapters>
-          <ItemChapter :guid="data.id" />
+          <ItemChapter
+            :guid="data.id"
+            :is-writeable="data.is_writeable"
+          />
         </template>
       </UTabs>
     </div>

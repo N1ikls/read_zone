@@ -396,6 +396,24 @@ export default class extends BaseStorage {
       });
   }
 
+  async postStatus(bookId, actor, status) {
+    const book = await this.findOne({ id: bookId });
+
+    if (!book) {
+      throw new errors.NotFound('Книга не найдена');
+    }
+
+    if (actor.role !== 'admin' && book.author_id !== actor.id) {
+      throw new errors.Forbidden('Нет прав для обновления статуса');
+    }
+
+    await this.knex(this.table).where('id', bookId).update({
+      status,
+      updated_by: actor.id,
+      updated_at: this.knex.fn.now(),
+    });
+  }
+
   async save(book, actor) {
     const savedBook = await super.save(book, actor);
 

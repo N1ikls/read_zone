@@ -17,6 +17,8 @@ const model = defineModel<FormState>({
   default: () => ({}),
 });
 
+const show = ref(false);
+
 const schema = z.object({
   login: z.string().email('Введите корректный email'),
   password: z.string().min(6, 'Пароль должен содержать минимум 8 символов'),
@@ -91,7 +93,22 @@ const onSubmit = async (event: FormSubmitEvent<z.output<typeof schema>>) => {
         class="w-full rounded-[10px] transition-all duration-300"
         v-model="model.password"
         size="xl"
-      />
+        :type="show ? 'text' : 'password'"
+        :ui="{ trailing: 'pe-1' }"
+      >
+        <template #trailing>
+          <UButton
+            color="neutral"
+            variant="link"
+            size="sm"
+            :icon="show ? 'i-lucide-eye-off' : 'i-lucide-eye'"
+            :aria-label="show ? 'Hide password' : 'Show password'"
+            :aria-pressed="show"
+            aria-controls="password"
+            @click="show = !show"
+          />
+        </template>
+      </u-input>
     </UFormField>
 
     <u-button

@@ -3,6 +3,11 @@ import { debounce } from 'es-toolkit';
 import { ROUTES } from './consts';
 import type { AcceptableValue } from '@nuxt/ui';
 import { Status, ItemGrid } from '@/entities/bookmark';
+
+definePageMeta({
+  middleware: ['auth'],
+});
+
 const setRouteQueries = useSetRouteQuery();
 
 const queries = useGetRouteQuery({

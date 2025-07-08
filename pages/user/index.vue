@@ -2,6 +2,11 @@
 import { ItemSidebar } from '@/entities/user';
 import { ROUTES, ACTIONS_BUTTONS, TABS } from './consts';
 import { useAuth } from '~/entities/auth';
+
+definePageMeta({
+  middleware: ['auth'],
+});
+
 const route = useRoute();
 
 const guid = computed(() => route.params.id as string);

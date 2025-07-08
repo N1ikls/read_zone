@@ -37,7 +37,12 @@ export async function up(knex) {
     table.datetime('updated_at').nullable();
     table.uuid('updated_by').unsigned().nullable().references('user.id');
 
-    table.uuid('chapter_id').unsigned().notNullable().references('chapter.id');
+    table
+      .uuid('chapter_id')
+      .unsigned()
+      .notNullable()
+      .references('chapter.id')
+      .onDelete('CASCADE');
     table
       .uuid('parent_id')
       .unsigned()
@@ -55,7 +60,9 @@ export async function up(knex) {
       .uuid('chapter_comment_id')
       .unsigned()
       .notNullable()
-      .references('chapter_comment.id');
+      .references('chapter_comment.id')
+      .onDelete('CASCADE');
+
     table.uuid('liker_id').unsigned().notNullable().references('user.id');
     table.boolean('positive').notNullable().default(true);
 
@@ -65,7 +72,13 @@ export async function up(knex) {
   });
 
   await knex.schema.createTable('chapter_buyer', (table) => {
-    table.uuid('chapter_id').unsigned().notNullable().references('chapter.id');
+    table
+      .uuid('chapter_id')
+      .unsigned()
+      .notNullable()
+      .references('chapter.id')
+      .onDelete('CASCADE');
+
     table.uuid('user_id').unsigned().notNullable().references('user.id');
     table.uuid('pay_id').unsigned().notNullable().references('pay.id');
 
@@ -77,7 +90,13 @@ export async function up(knex) {
   });
 
   await knex.schema.createTable('chapter_liker', (table) => {
-    table.uuid('chapter_id').unsigned().notNullable().references('chapter.id');
+    table
+      .uuid('chapter_id')
+      .unsigned()
+      .notNullable()
+      .references('chapter.id')
+      .onDelete('CASCADE');
+
     table.uuid('liker_id').unsigned().notNullable().references('user.id');
 
     table.primary(['chapter_id', 'liker_id']);
@@ -85,7 +104,13 @@ export async function up(knex) {
   });
 
   await knex.schema.createTable('chapter_viewer', (table) => {
-    table.uuid('chapter_id').unsigned().notNullable().references('chapter.id');
+    table
+      .uuid('chapter_id')
+      .unsigned()
+      .notNullable()
+      .references('chapter.id')
+      .onDelete('CASCADE');
+
     table.uuid('viewer_id').unsigned().notNullable().references('user.id');
 
     table.primary(['chapter_id', 'viewer_id']);
@@ -95,7 +120,12 @@ export async function up(knex) {
   await knex.schema.createTable('chapter_error', (table) => {
     table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid()'));
 
-    table.uuid('chapter_id').unsigned().notNullable().references('chapter.id');
+    table
+      .uuid('chapter_id')
+      .unsigned()
+      .notNullable()
+      .references('chapter.id')
+      .onDelete('CASCADE');
 
     table.uuid('created_by').unsigned().notNullable().references('user.id');
     table.datetime('created_at').notNullable().defaultTo(knex.fn.now());

@@ -1,5 +1,5 @@
 export enum Status {
-  'discarded' = 'discarded',
+  'discarded' = 'Заброшен',
   'done' = 'Завершенный',
   'frozen' = 'Заморожено',
   'progress' = 'В процессе',
@@ -39,13 +39,6 @@ export const RELEASE_TYPE = [
   { label: 'Сингл', value: 'single' },
   { label: 'Веб', value: 'web' },
   { label: 'Вебтун', value: 'webtoon' },
-];
-
-export const STATUS = [
-  { label: 'Продолжается', value: 'progress' },
-  { label: 'Завершён', value: 'done' },
-  { label: 'Заморожен', value: 'frozen' },
-  { label: 'Заброшен', value: 'discarded' },
 ];
 
 export const OTHER = [
