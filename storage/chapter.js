@@ -1,5 +1,6 @@
 import BaseStorage from './base-storage.js';
 import knex from 'knex';
+import errors from '../errors.js';
 
 export default class extends BaseStorage {
   get table() {
@@ -22,7 +23,6 @@ export default class extends BaseStorage {
       'name',
       'is_public',
       'is_readable',
-      'is_read',
       'price',
       'volume',
       'status',
@@ -38,8 +38,6 @@ export default class extends BaseStorage {
 
     if ('is_readable' in chapter)
       chapter.is_readable = chapter.is_readable != 0;
-
-    if ('is_read' in chapter) chapter.is_read = chapter.is_read != 0;
 
     return chapter;
   }
@@ -122,6 +120,14 @@ export default class extends BaseStorage {
       .andWhere('liker_id', user.id);
 
     return Object.fromEntries(liked.map((r) => [r.chapter_id, true]));
+  }
+
+  async postBlocked(number, is_public, actor) {
+    await this.knex(this.table).where('number', number).update({
+      is_public,
+      updated_at: this.knex.fn.now(),
+      updated_by: actor.id,
+    });
   }
 
   toReadable(chapter) {

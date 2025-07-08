@@ -3,7 +3,7 @@ import numeral from 'numeral';
 import type { Book } from '~/shared/types';
 
 const { item } = defineProps<{
-  item: Book;
+  item: Book | null;
 }>();
 </script>
 
@@ -26,7 +26,7 @@ const { item } = defineProps<{
             name="my-icons:rate"
           />
 
-          {{ item?.rate.toFixed(1) }}
+          {{ item?.rate?.toFixed(1) }}
         </div>
       </div>
 

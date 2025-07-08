@@ -1,4 +1,4 @@
-import type { BreadcrumbItem } from '@nuxt/ui';
+import type { BreadcrumbItem, DropdownMenuItem } from '@nuxt/ui';
 import type { ButtonsOptionsFabric } from '~/shared/types';
 
 export const ROUTES: BreadcrumbItem[] = [

@@ -5,3 +5,5 @@ export {
   ItemSidebar,
   ModalDownloadChapter,
 } from './ui';
+
+export { useChaptersActions } from './lib';

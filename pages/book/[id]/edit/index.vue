@@ -4,15 +4,15 @@ import { useVirtualList } from '@vueuse/core';
 import { ItemCard } from './ui';
 import type { Book, Chapter } from '~/shared/types';
 import { ROUTES } from './consts';
-
+import { useChaptersActions } from '@/entities/book';
 import { format, parseISO } from 'date-fns';
-import type { DropdownMenuItem } from '@nuxt/ui';
 
 definePageMeta({
   middleware: ['auth'],
 });
 
 const route = useRoute();
+
 const setRouteQueries = useSetRouteQuery();
 
 const queries = useGetRouteQuery({
@@ -21,17 +21,19 @@ const queries = useGetRouteQuery({
 
 const isRotated = ref<boolean>(unref(queries).order === 'asc');
 
+const guid = computed(() => route.params.id as string);
+
 const { data } = await useFetch<Book>('/api/book', {
   method: 'get',
   query: {
-    id: route.params.id,
+    id: guid,
   },
 });
 
-const { data: chapters } = await useFetch<Chapter[]>('/api/chapters', {
+const { data: chapters, refresh } = await useFetch<Chapter[]>('/api/chapters', {
   method: 'get',
   query: {
-    book_id: route.params.id,
+    book_id: guid.value,
     number: computed(() => queries.value.order),
   },
 });
@@ -49,37 +51,12 @@ const { list, containerProps, wrapperProps } = useVirtualList(
 const { guidsChecked, isAllChecked, toggleGuid, toggleAll } =
   useGuidsChecked(normalizedChapters);
 
+const { options, deleteChapter } = useChaptersActions({ refresh });
+
 const toggleRotation = () => {
   isRotated.value = !isRotated.value;
   setRouteQueries({ order: isRotated.value ? 'asc' : 'desc' });
 };
-
-const options = (number: number): DropdownMenuItem[] => [
-  {
-    label: 'Редактировать',
-    icon: 'i-lucide-edit',
-    color: 'info',
-  },
-  {
-    label: 'Заблокировать',
-    icon: 'my-icons:lock',
-    color: 'info',
-  },
-  {
-    label: 'Удалить',
-    icon: 'i-lucide-trash',
-    color: 'error',
-    onSelect: async () => {
-      await $fetch('/api/chapter/delete', {
-        method: 'post',
-        query: {
-          guid: route.params.id,
-          number: number,
-        },
-      });
-    },
-  },
-];
 </script>
 
 <template>
@@ -88,10 +65,7 @@ const options = (number: number): DropdownMenuItem[] => [
 
     <template #title> Режим переводчика </template>
 
-    <div
-      v-if="data"
-      class="edit mt-[30px] w-full h-full"
-    >
+    <div class="edit mt-[30px] w-full h-full">
       <item-card :item="data" />
 
       <div class="mt-[40px]">
@@ -129,6 +103,12 @@ const options = (number: number): DropdownMenuItem[] => [
               color="info"
               class="text-sm ring-[#0862E0] light:text-[#050505] rounded-[10px]"
               size="lg"
+              @click="
+                deleteChapter(
+                  guid,
+                  Array.from(guidsChecked.values()) as number[],
+                )
+              "
             >
               Удалить
             </u-button>
@@ -169,22 +149,21 @@ const options = (number: number): DropdownMenuItem[] => [
             v-bind="containerProps"
             class="h-[450px] overflow-auto scrollbar px-4"
           >
-            <div
-              v-bind="wrapperProps"
-              class="grid gap-2"
-            >
+            <div v-bind="wrapperProps">
               <template
                 v-for="{ index, data } in list"
                 :key="index"
               >
                 <div class="grid gap-2 grid-cols-[4fr_1fr_32px_32px]">
                   <r-list-item
-                    :key="index"
                     :guid="data.number"
                     :checked="guidsChecked.has(data.number as number)"
                     @checkbox-toggled="toggleGuid"
                     checked-allowed
-                    :options="options(data.number)"
+                    :options="options(data)"
+                    :style="{
+                      height: '32px',
+                    }"
                   >
                     <template #title>
                       <span class="text-base cs-text leading-xs font-bold">

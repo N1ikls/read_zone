@@ -84,9 +84,9 @@ footer {
 
 main {
   flex: 1;
-  padding-top: var(--header-height);
   background-color: var(--bg);
   z-index: 1;
+  padding-top: var(--header-height);
 }
 
 %flex {
@@ -98,14 +98,5 @@ main {
   height: 100%;
   flex-direction: column;
   background-color: #fff;
-
-  &__header,
-  &__extra {
-    margin-bottom: 16px;
-  }
-
-  &__user {
-    background-color: #f5f5f5;
-  }
 }
 </style>
