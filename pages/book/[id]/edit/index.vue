@@ -4,7 +4,11 @@ import { useVirtualList } from '@vueuse/core';
 import { ItemCard } from './ui';
 import type { Book, Chapter } from '~/shared/types';
 import { ROUTES } from './consts';
-import { useChaptersActions } from '@/entities/book';
+import {
+  useChaptersActions,
+  ModalActionChapter,
+  ModalNewChapter,
+} from '@/entities/book';
 import { format, parseISO } from 'date-fns';
 
 definePageMeta({
@@ -31,9 +35,10 @@ const { data } = await useFetch<Book>('/api/book', {
 });
 
 const { data: chapters, refresh } = await useFetch<Chapter[]>('/api/chapters', {
+  key: `chapters-${guid.value}-${queries.value.order}`,
   method: 'get',
   query: {
-    book_id: guid.value,
+    book_id: guid,
     number: computed(() => queries.value.order),
   },
 });
@@ -48,7 +53,7 @@ const { list, containerProps, wrapperProps } = useVirtualList(
   },
 );
 
-const { guidsChecked, isAllChecked, toggleGuid, toggleAll } =
+const { isGuids, guidsChecked, isAllChecked, toggleGuid, toggleAll } =
   useGuidsChecked(normalizedChapters);
 
 const { options, deleteChapter } = useChaptersActions({ refresh });
@@ -56,6 +61,18 @@ const { options, deleteChapter } = useChaptersActions({ refresh });
 const toggleRotation = () => {
   isRotated.value = !isRotated.value;
   setRouteQueries({ order: isRotated.value ? 'asc' : 'desc' });
+};
+
+const onAddChapter = async (item: Partial<Chapter>) => {
+  await $fetch('/api/chapter/add', {
+    method: 'post',
+    body: {
+      book_id: guid.value,
+      ...item,
+    },
+  });
+
+  refresh();
 };
 </script>
 
@@ -83,43 +100,42 @@ const toggleRotation = () => {
               mode="svg"
             />
 
-            <span class="light:text-[#000000] hidden md:block xl:block"
-              >Сортировать</span
-            >
+            <span class="light:text-[#000000] hidden md:block xl:block">
+              Сортировать
+            </span>
           </u-button>
 
           <div class="flex flex-wrap items-center gap-4">
-            <u-button
-              variant="outline"
-              color="info"
-              class="text-sm ring-[#0862E0] light:text-[#050505] rounded-[10px]"
-              size="lg"
+            <modal-action-chapter
+              title="Выставить на распродажу"
+              btn-text="На распродажу"
+              :items="normalizedChapters"
+              negative-text="Отмена"
+              positive-text="Подтвердить"
             >
-              На распродажу
-            </u-button>
+              <u-button
+                variant="outline"
+                color="info"
+                :disabled="!isGuids"
+                class="text-sm ring-[#0862E0] light:text-[#050505] rounded-[10px]"
+                size="lg"
+              >
+                На распродажу
+              </u-button>
+            </modal-action-chapter>
 
             <u-button
               variant="outline"
               color="info"
               class="text-sm ring-[#0862E0] light:text-[#050505] rounded-[10px]"
               size="lg"
-              @click="
-                deleteChapter(
-                  guid,
-                  Array.from(guidsChecked.values()) as number[],
-                )
-              "
+              :disabled="!isGuids"
+              @click="deleteChapter(guid, Array.from(guidsChecked.values()))"
             >
               Удалить
             </u-button>
 
-            <u-button
-              color="info"
-              class="text-sm font-bold rounded-[10px]"
-              size="lg"
-            >
-              Добавить главу
-            </u-button>
+            <modal-new-chapter @positive="onAddChapter" />
           </div>
         </div>
 
@@ -156,14 +172,12 @@ const toggleRotation = () => {
               >
                 <div class="grid gap-2 grid-cols-[4fr_1fr_32px_32px]">
                   <r-list-item
-                    :guid="data.number"
-                    :checked="guidsChecked.has(data.number as number)"
+                    :key="index"
+                    :guid="data.id"
+                    :checked="guidsChecked.has(data.id)"
                     @checkbox-toggled="toggleGuid"
                     checked-allowed
                     :options="options(data)"
-                    :style="{
-                      height: '32px',
-                    }"
                   >
                     <template #title>
                       <span class="text-base cs-text leading-xs font-bold">

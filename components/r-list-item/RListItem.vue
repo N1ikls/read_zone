@@ -9,13 +9,13 @@ const {
   checkedAllowed = false,
 } = defineProps<{
   checked?: boolean;
-  guid: string | number;
+  guid: string;
   checkedAllowed?: boolean;
   options?: DropdownMenuItem[];
 }>();
 
 const emit = defineEmits<{
-  (e: 'checkbox-toggled', v: string | number): void;
+  (e: 'checkbox-toggled', v: string): void;
 }>();
 
 const checkedItem = computed({

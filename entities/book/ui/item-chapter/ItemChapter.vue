@@ -1,10 +1,11 @@
 <script lang="ts" setup>
-import { ModalDownloadChapter } from '../modal-download-chapter';
+import type { Book, Chapter } from '~/shared/types';
+import { TEXT_DOWNLOAD } from '../../consts';
+import { ModalActionChapter } from '../modal-action-chapter';
 import { ItemCard } from './ui';
 
-const { guid } = defineProps<{
-  isWriteable: boolean;
-  guid: string;
+const { item } = defineProps<{
+  item: Book;
 }>();
 
 const setRouteQueries = useSetRouteQuery();
@@ -15,10 +16,10 @@ const queries = useGetRouteQuery({
 
 const isRotated = ref<boolean>(unref(queries).order === 'asc');
 
-const { data } = await useFetch('/api/chapters', {
+const { data, refresh } = await useFetch<Chapter[]>('/api/chapters', {
   method: 'get',
   query: {
-    book_id: guid,
+    book_id: item.id,
     number: computed(() => queries.value.order),
   },
 });
@@ -48,30 +49,49 @@ const toggleRotation = () => {
       </u-button>
 
       <div
-        v-if="isWriteable"
+        v-if="item.is_writeable"
         class="flex gap-4"
       >
         <u-button
           color="info"
           class="text-sm font-bold light:bg-[#ffffff] light:text-[#050505] hover:bg-[none]"
-          :to="`/book/${guid}/edit`"
+          :to="`/book/${item.id}/edit`"
         >
           Режим переводчика
         </u-button>
 
-        <modal-download-chapter :items="data" />
+        <modal-action-chapter
+          :title="TEXT_DOWNLOAD"
+          :items="data || []"
+          positive-text="Скачать"
+          negative-text="Отмена"
+        >
+          <u-button
+            class="text-sm font-bold light:bg-[#ffffff] light:text-[#050505] hover:bg-[none]"
+            color="info"
+          >
+            {{ TEXT_DOWNLOAD }}
+
+            <u-icon
+              class="text-[21px] text-[#050505]"
+              name="my-icons:arrow-up-right"
+              mode="svg"
+            />
+          </u-button>
+        </modal-action-chapter>
       </div>
     </div>
     <div class="relative flex flex-col gap-2 w-full">
       <nuxt-link
         v-for="(item, index) in data"
         :key="index"
-        :to="
-          !item.is_public ? undefined : `/book/${item.book_id}/${item.number}`
-        "
+        :to="!item.is_public ? undefined : `/book/${item.book_id}/${item.id}`"
         @click.self
       >
-        <ItemCard :item="item" />
+        <item-card
+          :item="item"
+          :key="item.id"
+        />
       </nuxt-link>
     </div>
   </div>

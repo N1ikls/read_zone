@@ -9,9 +9,7 @@ defineProps<{
 <template>
   <UBreadcrumb
     :items="options"
-    :ui="{
-      item: 'font-normal text-[15px] text-[#999999]',
-    }"
+    :ui="{ list: 'gap-0', item: 'font-normal text-[15px] text-[#999999]' }"
   >
     <template #item-label="{ active, item }">
       <span

@@ -20,7 +20,7 @@ const route = useRoute();
 
     <main
       v-if="slots.default"
-      class="r-page-layout__main"
+      class="r-page-layout__main min-h-screen"
     >
       <div class="wrapper">
         <slot />

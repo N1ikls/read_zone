@@ -1,5 +1,4 @@
-import type { BreadcrumbItem, DropdownMenuItem } from '@nuxt/ui';
-import type { ButtonsOptionsFabric } from '~/shared/types';
+import type { BreadcrumbItem } from '@nuxt/ui';
 
 export const ROUTES: BreadcrumbItem[] = [
   {
@@ -7,11 +6,19 @@ export const ROUTES: BreadcrumbItem[] = [
     label: 'Главная',
   },
   {
-    to: '/user',
-    label: 'Профиль',
+    to: '/catalog',
+    label: 'Каталог',
   },
   {
-    label: 'Закладки',
+    to: '/user',
+    label: 'Тайтл',
+  },
+  {
+    to: '/user',
+    label: 'Главы',
+  },
+  {
+    label: 'Режим переводчика',
     class: 'text-[#050505] font-normal text-[15px]',
   },
 ];

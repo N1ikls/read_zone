@@ -6,8 +6,6 @@ export default defineApiHandler(async (event) => {
 
   const user = await event.context.context.user();
 
-  if (!user) throw new errors.Unauthorized();
-
   const { id } = getQuery(event);
 
   const book = await storage.book.catalogSearch({ id });

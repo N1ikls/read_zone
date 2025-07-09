@@ -1,17 +1,22 @@
 <script lang="ts" setup>
 import { parseISO, format } from 'date-fns';
+import type { Chapter } from '~/shared/types';
 
 const { item } = defineProps<{
-  item: Record<string, string | number | boolean>;
+  item: Chapter;
 }>();
+
+const { isAuth } = useAuthToast();
 
 const isLiked = ref<boolean>((item.is_liked as boolean) || false);
 const countLike = ref<number>((item.likers_count as number) || 0);
 
 const like = async (key: number) => {
+  if (!isAuth()) return;
+
   if (isLiked.value) return;
 
-  const data = await $fetch<number>('/api/chapter/like', {
+  const data: number = await $fetch('/api/chapter/like', {
     method: 'post',
     query: {
       book_id: item.book_id,
@@ -25,9 +30,7 @@ const like = async (key: number) => {
 </script>
 
 <template>
-  <div
-    class="hover:bg-[#ffffff] flex cursor-pointer items-center justify-between !px-4 !py-1"
-  >
+  <div class="flex cursor-pointer items-center justify-between !px-4 !py-1">
     <div class="flex items-center gap-2">
       <u-icon
         class="text-[18px]"

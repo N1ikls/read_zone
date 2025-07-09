@@ -18,6 +18,7 @@ export default class extends BaseStorage {
 
   get publicProperties() {
     return [
+      'id',
       'book_id',
       'number',
       'name',
@@ -114,7 +115,44 @@ export default class extends BaseStorage {
     return await this.likers_count({ id: chapter.id }, true);
   }
 
+  async addChapter(data, actor) {
+    if (!data.book_id) {
+      throw new errors.ValidationError('book_id is required');
+    }
+
+    if (!data.name) {
+      throw new errors.ValidationError('name is required');
+    }
+
+    const chapterData = {
+      book_id: data.book_id,
+      number: 323,
+      name: data.name,
+      content: data.content || '',
+      is_public: data.is_public ? 1 : 0,
+      price: data.price || 0,
+      volume: data.volume || null,
+      status: data.status || 'draft',
+      created_by: actor.id,
+      updated_by: actor.id,
+      created_at: this.knex.fn.now(),
+      updated_at: this.knex.fn.now(),
+    };
+
+    const [chapter] = await this.knex(this.table)
+      .insert(chapterData)
+      .returning('id');
+
+    const newChapter = await this.knex(this.table)
+      .where('id', chapter.id)
+      .first();
+
+    return this.afterFetch(newChapter);
+  }
+
   async getLiked(chapter_ids, user) {
+    if (!user) return null;
+
     const liked = await this.knex(this.tableLiker)
       .whereIn('chapter_id', chapter_ids)
       .andWhere('liker_id', user.id);

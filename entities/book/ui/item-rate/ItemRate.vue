@@ -3,15 +3,15 @@ const { guid } = defineProps<{
   guid: string;
 }>();
 
+const { isAuth } = useAuthToast();
+
 const open = ref<boolean>(false);
 
-const onRate = (rating: number) => {
-  const { data } = useFetch('/api/book/rate', {
+const onRate = async (rating: number) => {
+  await $fetch('/api/book/rate', {
     method: 'POST',
     query: { value: rating, book_id: guid },
   });
-
-  console.log(data.value);
 
   open.value = false;
 };
@@ -22,6 +22,7 @@ const onRate = (rating: number) => {
     <u-button
       color="info"
       class="px-2 min-w-[20px] text-xs rounded-full h-[20px]"
+      @click="isAuth() ? (open = true) : (open = false)"
     >
       Оценить
     </u-button>

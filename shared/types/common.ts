@@ -33,6 +33,7 @@ export interface Book {
 }
 
 export interface Chapter {
+  id: string; // UUID формата
   book_id: string; // UUID формата
   number: number; // Номер главы
   name: string; // Название главы

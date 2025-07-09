@@ -1,18 +1,18 @@
 export const useGuidsChecked = <T>(items: Ref<T> | T) => {
-  const guidsChecked = reactive<Set<number | string>>(new Set());
+  const guidsChecked = reactive<Set<string>>(new Set());
 
   const isAllChecked = computed(
     () =>
       guidsChecked.size === unref(items)?.length && unref(items)?.length > 0,
   );
 
-  const toggleGuid = (number: number | string) => {
-    if (guidsChecked.has(number)) {
-      guidsChecked.delete(number);
+  const toggleGuid = (guid: string) => {
+    if (guidsChecked.has(guid)) {
+      guidsChecked.delete(guid);
 
       return;
     }
-    guidsChecked.add(number);
+    guidsChecked.add(guid);
   };
 
   const toggleAll = () => {
@@ -23,11 +23,14 @@ export const useGuidsChecked = <T>(items: Ref<T> | T) => {
     }
 
     unref(items).forEach((item) => {
-      guidsChecked.add(item.number as number);
+      guidsChecked.add(item.id);
     });
   };
 
+  const isGuids = computed(() => guidsChecked.size !== 0);
+
   return {
+    isGuids,
     guidsChecked,
     isAllChecked,
     toggleAll,

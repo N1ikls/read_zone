@@ -2,13 +2,16 @@
 import { STATUS } from '@/shared/consts';
 
 import { BOOKMARKS } from '../../consts';
+import { useAuth } from '~/entities/auth';
 
-const { statuses, isWriteable } = defineProps<{
+const { statuses, isWriteable = false } = defineProps<{
   statuses: string | undefined;
   isWriteable: boolean;
 }>();
 
 const route = useRoute();
+
+const { user } = storeToRefs(useAuth());
 
 const bookmark = ref<string | undefined>();
 const status = ref<string | undefined>(statuses);
@@ -76,7 +79,8 @@ watch(
         Начать читать
       </UButton>
 
-      <USelect
+      <u-select
+        v-if="user"
         color="info"
         variant="outline"
         v-model="bookmark"
@@ -91,7 +95,7 @@ watch(
       />
 
       <USelect
-        v-if="isWriteable"
+        v-if="user && isWriteable"
         color="info"
         variant="outline"
         v-model="status"
@@ -108,8 +112,9 @@ watch(
       <r-text
         class="justify-center warning cursor-pointer"
         icon="my-icons:warning"
-        >Пожаловаться</r-text
       >
+        Пожаловаться
+      </r-text>
     </div>
   </div>
 </template>

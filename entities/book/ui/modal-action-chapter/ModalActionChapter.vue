@@ -2,11 +2,18 @@
 import { useVirtualList } from '@vueuse/core';
 
 import { parseISO, format } from 'date-fns';
-import { TEXT_DOWNLOAD } from '../../consts';
 import type { Chapter } from '~/shared/types';
 
 const { items = [] } = defineProps<{
+  title: string;
   items: Chapter[];
+  positiveText: string;
+  negativeText: string;
+}>();
+
+const emits = defineEmits<{
+  (e: 'positive', v: boolean): void;
+  (e: 'negative', v: boolean): void;
 }>();
 
 const open = ref<boolean>(false);
@@ -21,10 +28,12 @@ const { list, containerProps, wrapperProps } = useVirtualList(items, {
 
 const onNegative = () => {
   open.value = false;
+  emits('negative', false);
 };
 
 const onPositive = () => {
   open.value = false;
+  emits('positive', true);
 };
 
 watch(open, (newValue) => {
@@ -41,22 +50,11 @@ watch(open, (newValue) => {
         'grid gap-4 rounded-[10px] divide-y-0 p-7  max-sm:max-w-[calc(100vw-8px)] sm:max-w-2xl max-h-[559px]',
     }"
   >
-    <u-button
-      class="text-sm font-bold light:bg-[#ffffff] light:text-[#050505] hover:bg-[none]"
-      color="info"
-    >
-      {{ TEXT_DOWNLOAD }}
-
-      <u-icon
-        class="text-[21px] text-[#050505]"
-        name="my-icons:arrow-up-right"
-        mode="svg"
-      />
-    </u-button>
+    <slot />
 
     <template #content>
       <div class="flex flex-wrap items-center justify-between">
-        <span class="font-bold text-[22px]"> {{ TEXT_DOWNLOAD }}</span>
+        <span class="font-bold text-[22px]"> {{ title }}</span>
 
         <div
           class="text-xs flex items-center gap-4 pr-[7px]"
@@ -122,7 +120,7 @@ watch(open, (newValue) => {
           color="info"
           @click="onNegative"
         >
-          Отмена
+          {{ negativeText }}
         </u-button>
 
         <u-button
@@ -131,7 +129,7 @@ watch(open, (newValue) => {
           color="info"
           @click="onPositive"
         >
-          Скачать
+          {{ positiveText }}
         </u-button>
       </div>
     </template>

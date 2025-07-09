@@ -3,7 +3,8 @@ export {
   ItemRate,
   ItemChapter,
   ItemSidebar,
-  ModalDownloadChapter,
+  ModalNewChapter,
+  ModalActionChapter,
 } from './ui';
 
 export { useChaptersActions } from './lib';

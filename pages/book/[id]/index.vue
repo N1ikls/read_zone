@@ -131,10 +131,7 @@ const active = computed({
           <ItemInfo :item="data" />
         </template>
         <template #chapters>
-          <ItemChapter
-            :guid="data.id"
-            :is-writeable="data.is_writeable"
-          />
+          <ItemChapter :item="data" />
         </template>
       </UTabs>
     </div>
@@ -176,7 +173,7 @@ const active = computed({
   left: 0;
   width: 100%;
   height: 544px;
-  background: #f5f5f5;
+  background: linear-gradient(115.97deg, #5294ff 31.85%, #0e4aa9 77.99%);
   z-index: -1;
 }
 
