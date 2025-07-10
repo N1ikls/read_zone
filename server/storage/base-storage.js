@@ -1,5 +1,5 @@
-import { applyFilter, applyOptions } from '../query-builder.js';
-import errors from '../errors.js';
+import { applyFilter, applyOptions } from '../utils/query-builder';
+import errors from '../utils/errors';
 import Validator from 'validatorjs';
 
 export default class BaseStorage {

@@ -1,48 +1,33 @@
-import knex from 'knex';
-import { dirname } from 'path';
-import { fileURLToPath } from 'url';
-// @ts-ignore
+import { db } from '../../config';
 import connectSessionKnex from 'connect-session-knex';
+import Context from '../utils/context';
 import session from 'express-session';
+import Storage from '../storage/storage';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-
-const db = knex({
-  client: 'mysql2',
-  connection: {
-    port: 3306,
-    host: 'db',
-    user: 'manga',
-    password: 'manga',
-    database: 'manga',
-  },
-  migrations: {
-    directory: __dirname + '/../migrations',
-  },
-  seeds: {
-    directory: __dirname + '/../seeds',
-  },
-});
-
+const storage = new Storage(db);
 const sessionHandler = session({
   name: 'session',
   store: new (connectSessionKnex(session))({
     knex: db,
-    tablename: 'session',
+    tablename: 'sessions',
     createtable: true,
   }),
-  secret: 'asdf1234',
+  secret: process.env.SESSION_SECRET || 'asdf1234',
   resave: false,
   rolling: true,
   saveUninitialized: false,
-  cookie: { secure: false },
+  cookie: { secure: process.env.NODE_ENV === 'production' },
 });
 
 export default defineEventHandler(async (event) => {
-  return new Promise((resolve, reject) => {
-    sessionHandler(event.node.req, event.node.res, () => {
+  return new Promise<void>((resolve, reject) => {
+    sessionHandler(event.node.req, event.node.res, (err) => {
+      event.context.storage = storage;
       event.context.session = event.node.req.session;
-
+      event.context.context = new Context(
+        event.context.session,
+        event.context.storage,
+      );
       resolve();
     });
   });

@@ -1,6 +1,6 @@
 import BaseStorage from './base-storage.js';
-import knex from 'knex';
-import errors from '../errors.js';
+
+import errors from '../utils/errors';
 
 export default class extends BaseStorage {
   get table() {

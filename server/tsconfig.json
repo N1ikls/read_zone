@@ -1,8 +1,11 @@
 {
   "extends": ["../.nuxt/tsconfig.server.json"],
   "compilerOptions": {
-    "module": "ESNext",
+    "baseUrl": ".",
     "strict": true,
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "Node",
     "noEmit": true,
     "jsx": "preserve",
     "lib": ["ES2016", "DOM", "DOM.Iterable"],
@@ -11,7 +14,9 @@
     "skipLibCheck": true,
     "types": ["node", "nitropack"],
     "paths": {
-      "#auth": ["./.nuxt/types/auth"]
+      "@/*": ["./*"],
+      "#config": ["../config/config"],
+      "~/utils/*": ["./utils/*"]
     }
   },
   "exclude": ["node_modules"]

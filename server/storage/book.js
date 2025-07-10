@@ -1,6 +1,6 @@
-import { applyFilter } from '../query-builder.js';
+import { applyFilter } from '../utils/query-builder';
 import BaseStorage from './base-storage.js';
-import errors from '../errors.js';
+import errors from '../utils/errors';
 import Validator from 'validatorjs';
 
 export default class extends BaseStorage {

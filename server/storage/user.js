@@ -1,7 +1,7 @@
 import BaseStorage from './base-storage.js';
-import errors from '../errors.js';
-import security from '../security.js';
-import { v4 as uuidv4 } from 'uuid';
+import errors from '../utils/errors';
+import security from '../utils/security';
+
 export default class extends BaseStorage {
   get table() {
     return 'user';

@@ -1,11 +1,11 @@
 export default defineApiHandler(async (event) => {
   const storage = event.context.storage;
 
-  const { name, author_id } = getQuery(event);
+  const query = getQuery(event);
 
-  if (!name || !author_id) return [];
+  if (!query) return [];
 
-  const books = await storage.book.catalogSearch({ name, author_id });
+  const books = await storage.book.catalogSearch({ ...query });
 
   await storage.book.attachGenres(books);
 

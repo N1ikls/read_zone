@@ -1,5 +1,5 @@
 import BaseStorage from './base-storage.js';
-import errors from '../errors.js';
+import errors from '../utils/errors';
 
 export default class extends BaseStorage {
   get table() {

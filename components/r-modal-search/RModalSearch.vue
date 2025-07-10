@@ -15,7 +15,7 @@ const searchHistory = useCookie<Array<{ query: string; date: string }>>(
     default: () => [],
   },
 );
-const { data } = useFetch<Book[]>('/api/book/search', {
+const { data } = await useFetch<Book[]>('/api/book/search', {
   query: queries,
 });
 
@@ -46,18 +46,9 @@ const removeHistoryItem = (query: string) => {
   );
 };
 
-const debouncedUpdate = (value: string) =>
-  debounce(() => {
-    queries.value.name = value;
-
-    if (value.trim()) {
-      addToSearchHistory(value);
-    }
-  }, 1000);
-
 const handleInput = debounce((value: string) => {
   queries.value.name = value;
-
+  console.log(queries.value);
   if (value.trim()) {
     addToSearchHistory(value);
   }

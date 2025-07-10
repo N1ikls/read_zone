@@ -1,4 +1,4 @@
-import error from '../../errors';
+import error from '../../utils/errors';
 
 export default defineApiHandler(async (event: H3Event<EventHandlerRequest>) => {
   const body = await readBody(event);

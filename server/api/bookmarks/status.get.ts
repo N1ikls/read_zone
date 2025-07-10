@@ -1,4 +1,4 @@
-import errors from '../../errors';
+import errors from '../../utils/errors';
 
 export default defineApiHandler(async (event) => {
   const user = await event.context.context?.user();

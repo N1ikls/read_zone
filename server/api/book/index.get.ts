@@ -1,5 +1,4 @@
 import { isArray } from 'es-toolkit/compat';
-import errors from '../../errors';
 
 export default defineApiHandler(async (event) => {
   const storage = event.context.storage;
