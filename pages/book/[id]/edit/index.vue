@@ -140,64 +140,68 @@ const onAddChapter = async (item: Partial<Chapter>) => {
         </div>
 
         <div class="light:bg-[#F5F5F5] pb-4 rounded-[10px]">
-          <div
-            class="grid gap-2 grid-cols-[4fr_1fr_32px_32px] h-[50px] px-4 items-center"
-          >
-            <p class="text-sm font-light">Глава</p>
-            <p class="text-sm font-light">Дата</p>
-
-            <div
-              class="p-2"
-              @click.stop="toggleAll"
-            >
-              <u-checkbox
-                color="info"
-                size="lg"
-                :model-value="isAllChecked"
-                :ui="{
-                  base: 'ring-2 ring-[#0862E0]',
-                }"
-              />
-            </div>
-          </div>
-
-          <div
-            v-bind="containerProps"
-            class="h-[450px] overflow-auto scrollbar px-4"
-          >
-            <div v-bind="wrapperProps">
-              <template
-                v-for="{ index, data } in list"
-                :key="index"
+          <div class="overflow-x-auto md:overflow-x-visible">
+            <div class="min-w-[600px] md:min-w-0">
+              <div
+                class="grid gap-2 grid-cols-[4fr_1fr_32px_32px] h-[50px] px-4 items-center"
               >
-                <div class="grid gap-2 grid-cols-[4fr_1fr_32px_32px]">
-                  <r-list-item
-                    :key="index"
-                    :guid="data.id"
-                    :checked="guidsChecked.has(data.id)"
-                    @checkbox-toggled="toggleGuid"
-                    checked-allowed
-                    :options="options(data)"
-                  >
-                    <template #title>
-                      <span class="text-base cs-text leading-xs font-bold">
-                        {{ data.name }}
-                      </span>
-                    </template>
+                <p class="text-sm font-light">Глава</p>
+                <p class="text-sm font-light">Дата</p>
 
-                    <template #default>
-                      <p class="cs-text leading-xs text-xs font-normal">
-                        {{
-                          format(
-                            parseISO(data.created_at as string),
-                            'dd.MM.yyyy',
-                          )
-                        }}
-                      </p>
-                    </template>
-                  </r-list-item>
+                <div
+                  class="p-2"
+                  @click.stop="toggleAll"
+                >
+                  <u-checkbox
+                    color="info"
+                    size="lg"
+                    :model-value="isAllChecked"
+                    :ui="{
+                      base: 'ring-2 ring-[#0862E0]',
+                    }"
+                  />
                 </div>
-              </template>
+              </div>
+
+              <div
+                v-bind="containerProps"
+                class="h-[450px] overflow-auto scrollbar px-4"
+              >
+                <div v-bind="wrapperProps">
+                  <template
+                    v-for="{ index, data } in list"
+                    :key="index"
+                  >
+                    <div class="grid gap-2 grid-cols-[4fr_1fr_32px_32px]">
+                      <r-list-item
+                        :key="index"
+                        :guid="data.id"
+                        :checked="guidsChecked.has(data.id)"
+                        @checkbox-toggled="toggleGuid"
+                        checked-allowed
+                        :options="options(data)"
+                      >
+                        <template #title>
+                          <span class="text-base cs-text leading-xs font-bold">
+                            {{ data.name }}
+                          </span>
+                        </template>
+
+                        <template #default>
+                          <p class="cs-text leading-xs text-xs font-normal">
+                            {{
+                              format(
+                                parseISO(data.created_at as string),
+                                'dd.MM.yyyy',
+                              )
+                            }}
+                          </p>
+                        </template>
+                      </r-list-item>
+                    </div>
+                  </template>
+                </div>
+              </div>
             </div>
           </div>
         </div>

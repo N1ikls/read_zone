@@ -120,11 +120,14 @@ const active = computed({
       <UTabs
         v-model="active"
         color="info"
+        :unmountOnHide="false"
         :items="tabs(data?.chapters_count)"
         class="w-full [grid-area:content] min-w-0"
         :ui="{
-          list: 'rounded-full light:bg-[#F5F5F5] h-9  shadow inset-shadow-2xs',
+          root: 'gap-4',
+          list: 'rounded-full light:bg-[#F5F5F5] overflow-x-scroll  h-9  shadow inset-shadow-2xs',
           indicator: 'rounded-full',
+          trigger: 'min-w-[auto]',
         }"
       >
         <template #main>

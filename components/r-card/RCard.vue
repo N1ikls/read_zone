@@ -14,15 +14,14 @@
 .r-card {
   display: inline-block;
   position: relative;
-  background-color: #ffffff;
   height: 373px;
-  width: 265px;
+  width: 107px;
   border-radius: 35px;
   transition: width 0.4s ease;
 
-  // &:hover {
-  //   width: 264px;
-  // }
+  &:hover {
+    width: 264px;
+  }
 
   &__content {
     position: absolute;

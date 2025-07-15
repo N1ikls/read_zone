@@ -11,11 +11,9 @@ export default defineNuxtConfig({
     '@nuxt/ui',
     'nuxt-rating',
   ],
-
   colorMode: {
     preference: 'light',
     storage: 'localStorage',
-    storageKey: 'nuxt-color-mode',
   },
   components: [
     {

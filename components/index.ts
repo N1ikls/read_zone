@@ -5,6 +5,7 @@ export { RHeader } from './r-header';
 export { RBanner } from './r-banner';
 export { RProgress } from './r-progress';
 export { RListItem } from './r-list-item';
+export { RDoughnut } from './r-doughnunt';
 export { RPagination } from './r-pagination';
 export { RCardStatus } from './r-card-status';
 export { RCardDefault } from './r-card-default';
