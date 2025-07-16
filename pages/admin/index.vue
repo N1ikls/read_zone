@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ItemChart, ItemModels } from '@/entities/admin';
+import { ItemChart, ItemModels, TableBlocked } from '@/entities/admin';
 import { ROUTES, TABS } from './consts';
 
 definePageMeta({
@@ -46,6 +46,9 @@ const active = computed({
       </template>
       <template #models>
         <item-models />
+      </template>
+      <template #banList>
+        <table-blocked />
       </template>
     </u-tabs>
   </NuxtLayout>
