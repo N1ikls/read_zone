@@ -2,6 +2,7 @@
 import { h, resolveComponent } from 'vue';
 import type { TableColumn, TableRow } from '@nuxt/ui';
 import { ItemModal } from '../item-modal';
+import { ITEMS } from './consts';
 
 const UCheckbox = resolveComponent('UCheckbox');
 const UButton = resolveComponent('UButton');
@@ -17,21 +18,21 @@ const data = ref([
     name: 'MangaLover2007',
     date: '13.07.2025-18.07.2025',
     status: 'Активен',
-    reason: 'Оскорбление',
+    ban: 'Оскорбление',
   },
   {
     id: '4600',
     name: 'MangaLover2007',
     date: '13.07.2025-18.07.2025',
     status: 'Завершен',
-    reason: 'Неуважение',
+    ban: 'Неуважение',
   },
   {
     id: '4600',
     name: 'MangaLover2007',
     date: '13.07.2025-18.07.2025',
     status: 'Завершен',
-    reason: 'Оскорбление',
+    ban: 'Оскорбление',
   },
 ]);
 
@@ -54,8 +55,8 @@ const columns: TableColumn<unknown>[] = [
     header: 'Статус',
   },
   {
-    accessorKey: 'reason',
-    header: 'Причина',
+    accessorKey: 'ban',
+    header: 'Запрет',
   },
   {
     id: 'select',
@@ -191,7 +192,7 @@ const items = ['145625'];
           multiple
           :items="items"
           :model-value="
-            table?.tableApi?.getColumn('reason')?.getFilterValue() as string[]
+            table?.tableApi?.getColumn('ban')?.getFilterValue() as string[]
           "
           :ui="{
             placeholder: 'text-highlighted font-semibold',
@@ -199,7 +200,7 @@ const items = ['145625'];
             base: 'light:bg-[#FFFFFF] ring-0 rounded-[10px] min-w-[100px] font-semibold ',
           }"
           @update:model-value="
-            table?.tableApi?.getColumn('reason')?.setFilterValue($event)
+            table?.tableApi?.getColumn('ban')?.setFilterValue($event)
           "
         />
 
@@ -232,7 +233,14 @@ const items = ['145625'];
           Удалить
         </u-button>
 
-        <item-modal title="Забанить" />
+        <item-modal title="Запретить">
+          <UCheckboxGroup
+            :items="ITEMS"
+            :ui="{
+              fieldset: 'gap-y-3',
+            }"
+          />
+        </item-modal>
       </div>
     </div>
 

@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { debounce } from 'es-toolkit';
-import { isEmpty } from 'es-toolkit/compat';
-import { ItemCard } from '@/entities/search';
-
-import type { Book } from '~/shared/types';
-
-const search = ref<string>('');
+defineProps<{
+  title: string;
+}>();
 const open = ref<boolean>(false);
 
-const date = shallowRef();
+const model = defineModel({
+  default: () => ({}),
+});
+
+const slots = useSlots();
 </script>
 
 <template>
@@ -16,7 +16,7 @@ const date = shallowRef();
     v-model:open="open"
     :ui="{
       content:
-        'grid gap-2 rounded-[10px] p-6  sm:max-w-1xl  divide-y-0 overflow-y-auto',
+        'grid gap-2 rounded-[10px] p-6 ms:w-full  sm:max-w-1xl  divide-y-0 overflow-y-auto ',
     }"
   >
     <u-button
@@ -29,7 +29,7 @@ const date = shallowRef();
 
     <template #content>
       <div class="grid gap-6">
-        <span class="font-bold text-[22px]">Забанить</span>
+        <span class="font-bold text-[22px]">{{ title }}</span>
 
         <div class="grid gap-1">
           <label class="text-[15px]">Никнейм</label>
@@ -89,15 +89,21 @@ const date = shallowRef();
           <div class="light:bg-[#F5F5F5] rounded-[10px] p-2">
             <UCalendar
               color="info"
-              v-model="date"
+              v-model="model.date"
               locale="ru-RU"
             />
           </div>
         </div>
 
+        <slot
+          v-if="slots?.default"
+          name="default"
+        />
+
         <div class="grid gap-1">
           <label class="text-[15px]">Причина</label>
           <UTextarea
+            v-model="model.reason"
             color="info"
             class="light:bg-[#F5F5F5]"
             variant="subtle"

@@ -36,8 +36,8 @@ export const TABS = [
   },
   {
     label: 'Запреты',
-    value: 'blocked',
-    slot: 'blocked' as const,
+    value: 'ban',
+    slot: 'ban' as const,
     icon: 'my-icons:blocked',
   },
   {
