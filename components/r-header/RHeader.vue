@@ -64,10 +64,6 @@ const classes = computed(() => ({
     font-weight: 600;
   }
 
-  &_bold {
-    font-weight: bold;
-  }
-
   &_center {
     text-align: center;
   }
@@ -85,7 +81,6 @@ const classes = computed(() => ({
 
 h1 {
   font-size: 70px;
-  font-weight: 700;
 }
 
 h2 {

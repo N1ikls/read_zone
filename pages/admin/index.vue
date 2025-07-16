@@ -36,8 +36,8 @@ const active = computed({
       :items="TABS"
       :ui="{
         root: 'gap-4',
-        list: 'rounded-full light:bg-[#F5F5F5] overflow-x-scroll  h-9  shadow inset-shadow-2xs',
-        indicator: 'rounded-full',
+        list: 'light:bg-[#F5F5F5] overflow-x-scroll  ',
+        indicator: '',
         trigger: 'min-w-[auto]',
       }"
     >
