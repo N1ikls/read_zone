@@ -15,7 +15,7 @@ const { item } = defineProps<{
     >
       <img
         class="w-full object-cover"
-        src="../../public//test_grid.png"
+        :src="item.background"
       />
 
       <p

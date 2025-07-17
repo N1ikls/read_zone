@@ -4,6 +4,8 @@ import {
   ItemModels,
   TableBlocked,
   TableBan,
+  TableRoles,
+  TableComplaints,
 } from '@/entities/admin';
 import { ROUTES, TABS } from './consts';
 
@@ -57,6 +59,12 @@ const active = computed({
       </template>
       <template #ban>
         <table-ban />
+      </template>
+      <template #listOfComplaints>
+        <table-complaints />
+      </template>
+      <template #roles>
+        <table-roles />
       </template>
     </u-tabs>
   </NuxtLayout>

@@ -1,5 +1,5 @@
 import * as helper from './helper.js';
-import security from '../security.js';
+import security from './security.js';
 
 export async function seed(knex) {
   // Создаём администраторов

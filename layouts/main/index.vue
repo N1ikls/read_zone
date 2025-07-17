@@ -5,10 +5,7 @@ const route = useRoute();
 </script>
 
 <template>
-  <div
-    class="main-layout"
-    :class="{ 'main-layout-bg': route.path === '/' }"
-  >
+  <div class="main-layout">
     <header
       v-if="slots.header"
       class="r-page-layout__header"
@@ -22,9 +19,7 @@ const route = useRoute();
       v-if="slots.default"
       class="r-page-layout__main min-h-screen"
     >
-      <div class="wrapper">
-        <slot />
-      </div>
+      <slot />
     </main>
 
     <footer

@@ -187,7 +187,7 @@ const items = ['145625'];
         />
 
         <u-select
-          placeholder="Причина"
+          placeholder="Запрет"
           size="lg"
           multiple
           :items="items"

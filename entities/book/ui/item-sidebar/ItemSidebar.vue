@@ -5,6 +5,7 @@ import { BOOKMARKS } from '../../consts';
 import { useAuth } from '~/entities/auth';
 
 const { statuses, isWriteable = false } = defineProps<{
+  img: string;
   statuses: string | undefined;
   isWriteable: boolean;
 }>();
@@ -64,7 +65,7 @@ watch(
     >
       <img
         class="select-none size-full object-cover transition-all duration-200"
-        src="../../../../public/test_grid.png"
+        :src="img"
       />
     </span>
 

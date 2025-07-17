@@ -1,5 +1,7 @@
 import * as helper from './helper.js';
 import { v4 as uuidv4 } from 'uuid';
+import fs from 'fs';
+import csv from 'csv-parser';
 
 export async function seed(knex) {
   const userIds = await knex('user').pluck('id');
@@ -31,20 +33,33 @@ export async function seed(knex) {
   const getRandomTagId = () =>
     tagIds[Math.floor(Math.random() * tagIds.length)];
 
-  for (let id = 1; id <= helper.BOOKS_COUNT; id++) {
+  const csvData = [];
+  await new Promise((resolve, reject) => {
+    fs.createReadStream('/Users/kiforenko_na/read_zone/manga_2.csv')
+      .pipe(csv())
+      .on('data', (row) => csvData.push(row))
+      .on('end', resolve)
+      .on('error', reject);
+  });
+
+  for (let id = 1; id <= 100; id++) {
+    const row = csvData[id];
     const bookUuid = uuidv4();
     const chaptersCount = helper.random(0, 30);
     const publicChaptersCount = helper.random(0, chaptersCount);
     const translatorId = getRandomUserId();
+
+    console.log('row', row.title);
 
     books.push({
       id: bookUuid,
       created_by: getRandomUserId(),
       translator_id: translatorId,
       author_id: getRandomAuthorId(),
-      name: `Книга ${id}`,
+      name: row.title || `Книга ${id}`,
       alt_name: `Title ${id} name`,
-      description: helper.randomContent(`Описание книги ${id} `, 30),
+      description:
+        row.synopsis || helper.randomContent(`Описание книги ${id} `, 30),
       year: helper.random(1900, 2023),
       type: ['manga', 'oel', 'manhva', 'manhua', 'rumanga', 'comic'][
         helper.random(0, 5)
@@ -70,7 +85,8 @@ export async function seed(knex) {
       source_status: ['discarded', 'done', 'frozen', 'progress'][
         helper.random(0, 3)
       ],
-      rate: 0,
+      background: row.main_picture,
+      rate: row.score,
       chapters_count: chaptersCount,
       created_at: knex.fn.now(),
       updated_at: knex.fn.now(),

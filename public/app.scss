@@ -17,6 +17,22 @@ body {
   font-family: 'Lato', sans-serif;
 }
 
+%transform {
+  transition: all 0.3s ease-in-out;
+}
+
+.wrapper {
+  @extend %transform;
+  margin: 0 auto;
+  padding: 0 16px;
+  max-width: 1240px;
+  height: 100%;
+
+  &_wide {
+    padding: 0;
+  }
+}
+
 .container,
 .container-header {
   padding: 0 calc(50% - 700px);

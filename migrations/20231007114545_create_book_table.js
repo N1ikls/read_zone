@@ -42,7 +42,7 @@ export async function up(knex) {
       .enu('source_status', ['discarded', 'done', 'frozen', 'progress'])
       .nullable();
 
-    table.string('background', 255).nullable();
+    table.string('background').nullable();
 
     table.float('rate', 3, 2).notNullable().default(0.0);
     table.integer('bookmarks_count').unsigned().notNullable().default(0);

@@ -15,6 +15,7 @@ export default defineNuxtConfig({
     preference: 'light',
     storage: 'localStorage',
   },
+
   components: [
     {
       path: '~/components',

@@ -1,6 +1,7 @@
 export { RText } from './r-text';
 export { RCard } from './r-card';
 export { RThing } from './r-thing';
+export { RLoader } from './r-loader';
 export { RHeader } from './r-header';
 export { RBanner } from './r-banner';
 export { RProgress } from './r-progress';

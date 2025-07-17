@@ -19,7 +19,13 @@ const slots = useSlots();
         'grid gap-2 rounded-[10px] p-6 ms:w-full  sm:max-w-1xl  divide-y-0 overflow-y-auto ',
     }"
   >
+    <slot
+      v-if="slots?.trigger"
+      name="trigger"
+    />
+
     <u-button
+      v-else
       class="rounded-[10px] font-bold"
       color="info"
       size="lg"
