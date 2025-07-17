@@ -6,6 +6,7 @@ import {
   TableBan,
   TableRoles,
   TableComplaints,
+  TableShadowWork,
 } from '@/entities/admin';
 import { ROUTES, TABS } from './consts';
 
@@ -65,6 +66,9 @@ const active = computed({
       </template>
       <template #roles>
         <table-roles />
+      </template>
+      <template #shadowWork>
+        <table-shadow-work />
       </template>
     </u-tabs>
   </NuxtLayout>

@@ -9,5 +9,10 @@ export default defineAppConfig({
         color: 'info',
       },
     },
+    table: {
+      slots: {
+        tbody: 'divide-y-0',
+      },
+    },
   },
 });

@@ -22,7 +22,7 @@ const slots = useSlots();
     }"
   >
     <u-button
-      class="rounded-[10px] font-bold"
+      class="rounded-[10px]"
       color="info"
       icon="my-icons:pencil-outline"
       size="lg"
