@@ -2,18 +2,34 @@
 import numeral from 'numeral';
 import { tabs } from '../consts';
 import { Status } from '@/entities/catalog';
-import { ItemSidebar, ItemRate, ItemInfo, ItemChapter } from '@/entities/book';
+import {
+  ItemSidebar,
+  ItemRate,
+  ItemInfo,
+  ItemChapter,
+  ModalAgeRate,
+} from '@/entities/book';
 import { isEmpty } from 'es-toolkit/compat';
 import type { Book } from '~/shared/types';
 
 const route = useRoute();
 const router = useRouter();
 
-const { data } = await useFetch<Book>('/api/book', {
-  method: 'get',
-  query: {
-    id: route.params.id,
-  },
+const my18 = useCookie<boolean>('my-18', {
+  default: () => false,
+});
+
+const openAgeRate = ref(false);
+
+const { data } = await useAsyncData('book', async () => {
+  const book = await $fetch<Book>('/api/book', {
+    method: 'get',
+    query: {
+      id: route.params.id,
+    },
+  });
+  if (!book) return null;
+  return book;
 });
 
 const { data: authorBooks } = await useFetch<Book[]>('/api/book/search', {
@@ -36,13 +52,23 @@ const active = computed({
     });
   },
 });
+
+onMounted(() => {
+  if (!my18.value && data.value?.age_rate === '18') {
+    openAgeRate.value = true;
+  }
+});
 </script>
 
 <template>
   <div class="wrapper">
+    <div class="absolute-background" />
+
+    <modal-age-rate v-model="openAgeRate" />
+
     <div
       v-if="data"
-      class="book w-full xs:mt-[10vh] relative mt-[5vh] flex shrink-0 basis-auto flex-col items-start gap-6 md:mt-[80px] md:flex-row"
+      class="book w-full xs:mt-[10vh] relative mt-[5vh] flex shrink-0 basis-auto flex-col items-start gap-6 md:mt-[140px] md:flex-row"
     >
       <item-sidebar
         :img="data.background"
@@ -50,39 +76,32 @@ const active = computed({
         :is-writeable="data.is_writeable"
       />
 
-      <div
-        class="grid flex-[1] gap-y-4 [grid-template-areas:'header_header''content_content''similar_similar''comments_comments'] xl:[grid-template-areas:'header_header''content_content''content_similar''comments_similar']"
-      >
+      <div class="grid flex-[1] gap-y-4">
         <header
-          class="grid grid-cols-[1fr_min-content] gap-2 [grid-template-areas:'title_title''stats_stats''rating_rating'] sm:[grid-template-areas:'title_title''stats_rating'] xl:[grid-template-areas:'title_rating''stats_rating'] [grid-area:header]"
+          class="flex flex-col justify-between p-5 h-[285px] light:bg-[#ffffff] rounded-t-[15px]"
         >
-          <div
-            v-if="data?.name"
-            class="font-bold text-[#000000] w-[80%] text-2xl leading-2xl ellipsis"
-          >
-            {{ data.name }}
-          </div>
+          <div class="flex justify-between items-start">
+            <p class="font-bold text-[#000000] w-[80%] text-3xl ellipsis">
+              {{ data?.name }}
+            </p>
 
-          <div
-            class="flex w-full flex-row items-center justify-center gap-2 [grid-area:rating] md:flex-col md:items-end md:justify-center"
-          >
-            <div
-              class="cs-text leading-md text-foreground flex flex-nowrap items-center gap-2 rounded-[10px] text-2xl leading-none font-bold select-none"
-            >
+            <div class="flex flex-wrap gap-1 items-center">
               <u-icon
                 mode="svg"
                 class="rate"
                 name="my-icons:rate"
               />
 
-              {{ data?.rate?.toFixed(1) }}
+              <p class="font-bold">{{ data?.rate?.toFixed(2) }}</p>
             </div>
+          </div>
 
-            <item-rate :guid="data.id" />
+          <div class="flex light:text-[#999999] text-base ellipsis">
+            {{ data?.alt_name }}
           </div>
 
           <div
-            class="book-content__footer cs-layout-stats-short-root flex flex-wrap justify-center gap-2 md:justify-start -mx-2 items-center [grid-area:stats]"
+            class="book-content__footer cs-layout-stats-short-root flex flex-wrap justify-center gap-2 md:justify-start -mx-2 items-center"
           >
             <r-text
               class="px-2.5 py-1"
@@ -117,6 +136,18 @@ const active = computed({
               {{ Status[data?.status as keyof typeof Status] }}
             </r-text>
           </div>
+
+          <div>Альтернативные названия</div>
+
+          <div class="flex gap-3">
+            <div class="p-1 flex-1 text-center light:bg-[#F5F5F5]">
+              Название
+            </div>
+
+            <div class="p-1 flex-1 text-center light:bg-[#F5F5F5]">
+              Название
+            </div>
+          </div>
         </header>
 
         <UTabs
@@ -124,11 +155,11 @@ const active = computed({
           color="info"
           :unmountOnHide="false"
           :items="tabs(data?.chapters_count)"
-          class="w-full [grid-area:content] min-w-0"
+          class="w-full min-w-0"
           :ui="{
             root: 'gap-4',
-            list: 'rounded-full light:bg-[#F5F5F5] overflow-x-scroll  h-9  shadow inset-shadow-2xs',
-            indicator: 'rounded-full',
+            list: 'rounded-[10px] light:bg-[#F5F5F5] overflow-x-scroll',
+            indicator: 'rounded-[10px]',
             trigger: 'min-w-[auto]',
           }"
         >
@@ -178,7 +209,7 @@ const active = computed({
   top: 0;
   left: 0;
   width: 100%;
-  height: 544px;
+  height: 480px;
   background: linear-gradient(115.97deg, #5294ff 31.85%, #0e4aa9 77.99%);
   z-index: -1;
 }

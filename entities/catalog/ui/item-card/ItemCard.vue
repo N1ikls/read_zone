@@ -15,8 +15,8 @@ const { item } = defineProps<{
     <r-thing>
       <template #avatar>
         <img
-          class="avatar"
-          src="../../../../public/catalog.jpg"
+          class="w-full object-cover"
+          :src="item.background"
         />
       </template>
 

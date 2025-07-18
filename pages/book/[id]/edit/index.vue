@@ -165,7 +165,7 @@ const onAddChapter = async (item: Partial<Chapter>) => {
 
               <div
                 v-bind="containerProps"
-                class="h-[450px] overflow-auto scrollbar px-4"
+                class="max-h-[450px] overflow-auto scrollbar px-4"
               >
                 <div v-bind="wrapperProps">
                   <template

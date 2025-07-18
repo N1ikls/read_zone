@@ -5,7 +5,7 @@ import { BOOKMARKS } from '../../consts';
 import { useAuth } from '~/entities/auth';
 
 const { statuses, isWriteable = false } = defineProps<{
-  img: string;
+  img: string | null;
   statuses: string | undefined;
   isWriteable: boolean;
 }>();
@@ -64,8 +64,13 @@ watch(
       class="relative inline-flex shrink-0 aspect-[2/3] w-full overflow-hidden rounded-[10px] select-none"
     >
       <img
+        v-if="img"
         class="select-none size-full object-cover transition-all duration-200"
         :src="img"
+      />
+      <u-skeleton
+        v-else
+        class="select-none size-full object-cover transition-all"
       />
     </span>
 

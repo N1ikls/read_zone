@@ -1,7 +1,15 @@
+<script setup lang="ts">
+import { Type } from '@/entities/catalog';
+import type { Book } from '~/shared/types';
+const { item } = defineProps<{
+  item: Book;
+}>();
+</script>
+
 <template>
   <div class="r-card">
     <div class="r-card__content">
-      <img src="../../public/test.png" />
+      <img :src="item.background" />
     </div>
 
     <div class="r-card__actions">
@@ -15,13 +23,9 @@
   display: inline-block;
   position: relative;
   height: 373px;
-  width: 107px;
+  width: 264px;
   border-radius: 35px;
   transition: width 0.4s ease;
-
-  &:hover {
-    width: 264px;
-  }
 
   &__content {
     position: absolute;

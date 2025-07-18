@@ -1,14 +1,15 @@
 <script setup lang="ts">
 import { RThing } from '@/components';
+import type { Book } from '~/shared/types';
 
-const { item = {} } = defineProps<{
-  item: object;
+const { item } = defineProps<{
+  item: Book;
 }>();
 </script>
 <template>
   <r-thing>
     <template #avatar>
-      <img src="../../../../public/test.png" />
+      <img :src="item.background" />
     </template>
 
     {{ item?.name }}
@@ -38,7 +39,7 @@ const { item = {} } = defineProps<{
           />
         </span>
 
-        <span>{{ item.rate }}</span>
+        <span>{{ item.rate.toFixed(1) }}</span>
       </div>
     </template>
 

@@ -29,9 +29,7 @@ const totalVotes = computed(() => {
 
 <template>
   <div class="light:bg-[#F5F5F5] rounded-[10px] p-4">
-    <div
-      class="cs-text text-lg leading-lg font-semibold text-foreground leading-[1.25] mb-3"
-    >
+    <div class="cs-text text-xl leading-lg text-foreground leading-[1.25] mb-3">
       Описание манги
     </div>
 
@@ -70,7 +68,7 @@ const totalVotes = computed(() => {
 
     <div class="mb-3">
       <div
-        class="cs-text text-lg leading-lg font-semibold text-foreground leading-[1.25]"
+        class="cs-text text-xl leading-lg text-foreground leading-[1.25] mb-3"
       >
         Создатели
       </div>
@@ -80,23 +78,12 @@ const totalVotes = computed(() => {
 
     <div class="mb-3">
       <div
-        class="cs-text text-lg leading-lg font-semibold text-foreground leading-[1.25]"
+        class="cs-text text-xl leading-lg text-foreground leading-[1.25] mb-3"
       >
         Переводчики
       </div>
 
       <p>{{ item?.translator_name }}</p>
-    </div>
-
-    <div class="flex flex-col gap-2">
-      <span
-        class="cs-text text-lg leading-lg font-semibold text-foreground leading-[1.25]"
-      >
-        Альтернативные названия
-      </span>
-      <div class="flex items-center gap-3">
-        {{ item.alt_name }}
-      </div>
     </div>
   </div>
 

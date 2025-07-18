@@ -4,7 +4,7 @@ import { ItemThing, ItemFilters } from '@/entities/main';
 import type { Book } from '~/shared/types';
 
 const limit = ref<number>(4);
-const { data: news } = useFetch('/api/new', {
+const { data: news } = useFetch<Book[]>('/api/new', {
   query: {
     limit,
   },
@@ -19,112 +19,115 @@ const { data: top } = useFetch('/api/top-genres');
 
   <div
     v-else
-    class="wrapper"
+    class="light:bg-[#E0EAFF] min-h-screen pt-4"
   >
-    <section class="main mt-4">
-      <UCarousel
-        v-slot="{ item }"
-        class="cursor-grab"
-        loop
-        drag-free
-        :duration="0"
-        wheel-gestures
-        :items="data"
-        :ui="{ item: 'basis-1/7' }"
-      >
-        <nuxt-link :to="`/book/${item.id}`">
-          <r-card-default :item="item" />
-        </nuxt-link>
-      </UCarousel>
-    </section>
+    <div class="wrapper">
+      <section class="main">
+        <UCarousel
+          v-slot="{ item }"
+          class="cursor-grab"
+          loop
+          drag-free
+          :duration="0"
+          wheel-gestures
+          :items="data"
+          :ui="{ item: 'basis-1/7' }"
+        >
+          <nuxt-link :to="`/book/${item.id}`">
+            <r-card-default :item="item" />
+          </nuxt-link>
+        </UCarousel>
+      </section>
 
-    <section class="news mt-6">
-      <r-header
-        bold
-        bottom="0"
-        class="text-[#003386]"
-        >Новинки</r-header
-      >
+      <section class="news mt-4">
+        <r-header
+          bold
+          bottom="0"
+          class="text-[#003386]"
+          >Новинки
+        </r-header>
 
-      <div class="grid mt-8">
-        <div class="grid__news">
-          <div
-            v-for="(item, key) in news"
-            :key="key"
-            class="grid-item"
-          >
-            <ItemThing :item="item" />
-
-            <div class="grid-item__border" />
-          </div>
-
-          <div class="grid__actions">
-            <u-button
-              class="button"
-              color="info"
-              block
+        <div class="grid mt-8">
+          <div class="grid__news">
+            <div
+              v-for="(item, key) in news"
+              :key="key"
+              class="grid-item"
             >
-              Показать еще
-            </u-button>
+              <ItemThing :item="item" />
+
+              <div class="grid-item__border" />
+            </div>
+
+            <div class="grid__actions">
+              <u-button
+                class="button font-bold"
+                color="info"
+                size="xl"
+                block
+              >
+                Показать еще
+              </u-button>
+            </div>
+          </div>
+
+          <div class="grid__read-now">
+            <r-header
+              class="grid__read-now__title text-[#003386]"
+              bold
+            >
+              Сейчас читают
+            </r-header>
+
+            <div
+              v-for="(item, key) in read"
+              :key="key"
+              class="grid__read-now-item"
+            >
+              <ItemThing :item="item" />
+            </div>
           </div>
         </div>
+      </section>
 
-        <div class="grid__read-now">
-          <r-header
-            class="grid__read-now__title text-[#003386]"
-            bold
-          >
-            Сейчас читают
-          </r-header>
-
+      <section class="filters">
+        <div class="filters__grid">
           <div
-            v-for="(item, key) in read"
+            v-for="(item, key) in [1, 3, 4, 5, 6, 1, 1, 1, 1]"
             :key="key"
-            class="grid__read-now-item"
+            class="filters__grid-item"
           >
-            <ItemThing :item="item" />
+            <ItemFilters :item="{ item }" />
           </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- <section class="filters">
-    <div class="filters__grid">
-      <div
-        v-for="(item, key) in [1, 3, 4, 5, 6, 1, 1, 1, 1]"
-        :key="key"
-        class="filters__grid-item"
-      >
-        <ItemFilters :item="{ item }" />
-      </div>
+      <section class="genres mt-8">
+        <r-header
+          class="text-[#003386]"
+          bold
+        >
+          Популярыне жанры
+        </r-header>
+
+        <r-banner
+          v-for="(genre, index) in top?.slice(0, 4)"
+          :key="index"
+        >
+          {{ genre.name }}
+        </r-banner>
+
+        <u-button
+          block
+          color="info"
+          size="lg"
+          class="text-[18px] font-bold rounded-[10px]"
+          to="/catalog"
+        >
+          Перейти в каталог
+        </u-button>
+      </section>
     </div>
-  </section> -->
-
-    <section class="genres mt-8">
-      <r-header
-        class="text-[#003386]"
-        bold
-      >
-        Популярыне жанры
-      </r-header>
-
-      <r-banner
-        v-for="(genre, index) in top?.slice(0, 4)"
-        :key="index"
-      >
-        {{ genre.name }}
-      </r-banner>
-
-      <u-button
-        block
-        color="info"
-        size="lg"
-        class="text-[18px] font-bold rounded-[10px]"
-        to="/catalog"
-      >
-        Перейти в каталог
-      </u-button>
-    </section>
   </div>
 </template>
 
@@ -194,10 +197,6 @@ const { data: top } = useFetch('/api/top-genres');
     justify-content: space-between;
   }
 
-  &__title {
-    padding-bottom: 48px;
-  }
-
   &-bg {
     position: absolute;
     background-image: url('../public//main_bg.png');
@@ -212,6 +211,10 @@ const { data: top } = useFetch('/api/top-genres');
     @media screen and (width >= 1920px) {
       transform: translateY(-5%);
     }
+  }
+
+  &__title {
+    padding-bottom: 48px;
   }
 }
 
@@ -247,7 +250,6 @@ const { data: top } = useFetch('/api/top-genres');
   &__news {
     background-color: #ffffff;
     border-radius: 10px;
-    box-shadow: 0px 0px 4px 0px #59595940;
   }
 
   &__actions {

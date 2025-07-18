@@ -29,6 +29,7 @@ const isDark = computed({
     <nav class="app-header__nav">
       <NuxtLink to="/catalog">
         <r-text
+          size="large"
           class="font-semibold"
           icon="my-icons:list"
         >
@@ -38,6 +39,7 @@ const isDark = computed({
 
       <nuxt-link to="/faq">
         <r-text
+          size="large"
           class="font-semibold"
           icon="my-icons:group"
         >
@@ -47,6 +49,7 @@ const isDark = computed({
 
       <nuxt-link to="/faq">
         <r-text
+          size="large"
           class="font-semibold"
           icon="my-icons:faq"
         >

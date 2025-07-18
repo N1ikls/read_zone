@@ -8,7 +8,10 @@ const route = useRoute();
   <div class="main-layout">
     <header
       v-if="slots.header"
-      class="r-page-layout__header"
+      class="r-page-layout__header bg-[var(--bg-header)]"
+      :class="{
+        'light:bg-[#ffffff] ring-2 ring-[#F5F5F5]': route.name === 'book-id',
+      }"
     >
       <div class="wrapper">
         <slot name="header" />
@@ -18,13 +21,15 @@ const route = useRoute();
     <main
       v-if="slots.default"
       class="r-page-layout__main min-h-screen"
+      :class="{ 'bg-[--bg]': route.fullPath === '/' }"
     >
       <slot />
     </main>
 
     <footer
       v-if="slots.footer"
-      class="r-page-layout__footer"
+      class="r-page-layout__footer bg-[var(--bg)]"
+      :class="{ 'light:bg-[#E0EAFF]': route.fullPath === '/' }"
     >
       <div class="wrapper">
         <slot name="footer" />
@@ -59,8 +64,6 @@ const route = useRoute();
 
 header {
   height: var(--header-height);
-  border-bottom: 2px solid var(--border-header-color);
-  background-color: var(--bg-header);
   backdrop-filter: blur(50px);
   position: fixed;
   width: 100%;
@@ -74,14 +77,13 @@ footer {
   background-size: cover;
   background-repeat: no-repeat;
   position: relative;
-  background-color: var(--bg);
 }
 
 main {
   flex: 1;
-  background-color: var(--bg);
   z-index: 1;
   padding-top: var(--header-height);
+  background-color: var(--bg);
 }
 
 %flex {

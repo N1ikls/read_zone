@@ -75,7 +75,8 @@ const onClear = () => {
     }"
   >
     <u-button
-      class="cs-button z-0 cursor-pointer group relative items-center box-border appearance-none whitespace-nowrap font-medium subpixel-antialiased transition-all tap-highlight-transparent transform-gpu data-[pressed=true]:scale-[0.97] opacity-100 outline-none focus-visible:outline-hidden ring-0 rounded-full h-9 text-sm light:bg-[#ffffff] dark:bg-[#003386] text-secondary-foreground hover:bg-secondary/90 ml-2 flex gap-2 select-none"
+      color="info"
+      class="cs-button z-0 cursor-pointer group relative items-center box-border appearance-none whitespace-nowrap font-medium subpixel-antialiased transition-all transform-gpu data-[pressed=true] opacity-100 outline-none focus-visible:outline-hidden ring-0 rounded-full h-8 text-sm ml-2 flex gap-2 select-none"
       icon="i-lucide-search"
     >
       Поиск
