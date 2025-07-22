@@ -13,16 +13,16 @@ const { item } = defineProps<{
     <span
       class="inline-flex shrink-0 relative aspect-[2/3] w-full overflow-hidden rounded-[14px] select-none"
     >
-      <img
+      <NuxtImg
         class="w-full object-cover"
         :src="item.background"
       />
 
       <p
-        class="cs-text text-xs leading-xs font-semibold text bg flex flex-nowrap items-center gap-2 rounded-[22px] px-3 py-2 leading-none select-none absolute right-1 bottom-1"
+        class="cs-text text-[16px] leading-xs font-semibold text bg flex flex-nowrap items-center gap-1 rounded-[5px] px-2.5 py-2 leading-none select-none absolute right-2 top-2"
       >
         <u-icon
-          name="my-icons:star-new"
+          name="my-icons:rate"
           mode="svg"
           class="text-[#0862e0]"
         />
@@ -51,6 +51,7 @@ const { item } = defineProps<{
   color: hsl(240 9.5% 16.5%);
 }
 .bg {
-  background-color: color-mix(in oklab, hsl(240 10% 95%) 70%, transparent);
+  background: #ffffffbf;
+  backdrop-filter: blur(12.899999618530273px);
 }
 </style>

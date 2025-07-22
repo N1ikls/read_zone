@@ -15,12 +15,7 @@ const { data: top } = useFetch('/api/top-genres');
 </script>
 
 <template>
-  <r-loader v-if="!data || !read || !top" />
-
-  <div
-    v-else
-    class="light:bg-[#E0EAFF] min-h-screen pt-4"
-  >
+  <div class="light:bg-[#E0EAFF] min-h-screen pt-4">
     <div class="wrapper">
       <section class="main">
         <UCarousel
@@ -30,7 +25,7 @@ const { data: top } = useFetch('/api/top-genres');
           drag-free
           :duration="0"
           wheel-gestures
-          :items="data"
+          :items="data || []"
           :ui="{ item: 'basis-1/7' }"
         >
           <nuxt-link :to="`/book/${item.id}`">

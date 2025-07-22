@@ -10,7 +10,8 @@ const route = useRoute();
       v-if="slots.header"
       class="r-page-layout__header bg-[var(--bg-header)]"
       :class="{
-        'light:bg-[#ffffff] ring-2 ring-[#F5F5F5]': route.name === 'book-id',
+        'light:bg-[#ffffff] light:ring-2 light:ring-[#F5F5F5]':
+          route.name === 'book-id',
       }"
     >
       <div class="wrapper">

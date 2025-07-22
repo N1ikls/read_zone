@@ -63,11 +63,12 @@ watch(
     <span
       class="relative inline-flex shrink-0 aspect-[2/3] w-full overflow-hidden rounded-[10px] select-none"
     >
-      <img
+      <NuxtImg
         v-if="img"
         class="select-none size-full object-cover transition-all duration-200"
         :src="img"
       />
+
       <u-skeleton
         v-else
         class="select-none size-full object-cover transition-all"

@@ -26,7 +26,7 @@ const onClose = () => {
     :dismissible="false"
     :ui="{
       content:
-        'grid gap-5 rounded-[15px] p-5 max-w-[320px] dark:bg-[#012053] divide-y-0',
+        'grid gap-5 rounded-[15px] p-5 max-w-[320px] dark:bg-[var(--bg)] divide-y-0',
     }"
   >
     <template #content>

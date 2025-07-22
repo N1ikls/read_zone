@@ -4,7 +4,6 @@ import { tabs } from '../consts';
 import { Status } from '@/entities/catalog';
 import {
   ItemSidebar,
-  ItemRate,
   ItemInfo,
   ItemChapter,
   ModalAgeRate,
@@ -78,10 +77,10 @@ onMounted(() => {
 
       <div class="grid flex-[1] gap-y-4">
         <header
-          class="flex flex-col justify-between p-5 h-[285px] light:bg-[#ffffff] rounded-t-[15px]"
+          class="flex flex-col justify-between p-5 h-[285px] light:bg-[#ffffff] dark:bg-[var(--bg)] rounded-t-[15px]"
         >
           <div class="flex justify-between items-start">
-            <p class="font-bold text-[#000000] w-[80%] text-3xl ellipsis">
+            <p class="font-bold w-[80%] text-3xl ellipsis">
               {{ data?.name }}
             </p>
 
@@ -204,14 +203,23 @@ onMounted(() => {
 </template>
 
 <style lang="scss" scoped>
-.absolute-background {
+%absolute {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 480px;
-  background: linear-gradient(115.97deg, #5294ff 31.85%, #0e4aa9 77.99%);
   z-index: -1;
+}
+
+.light .absolute-background {
+  @extend %absolute;
+  background: linear-gradient(115.97deg, #5294ff 31.85%, #0e4aa9 77.99%);
+}
+
+.dark .absolute-background {
+  @extend %absolute;
+  background: linear-gradient(95.24deg, #0054dc 29.67%, #001c4a 100%);
 }
 
 .shadow {

@@ -10,6 +10,7 @@ export default defineNuxtConfig({
     '@pinia/nuxt',
     '@nuxt/ui',
     'nuxt-rating',
+    '@nuxt/image',
   ],
   colorMode: {
     preference: 'light',
@@ -35,6 +36,9 @@ export default defineNuxtConfig({
         dir: './public/svg',
       },
     ],
+  },
+  ui: {
+    fonts: false,
   },
   app: {
     head: {

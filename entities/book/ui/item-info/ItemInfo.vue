@@ -3,6 +3,7 @@ import numeral from 'numeral';
 import type { Book } from '~/shared/types';
 import { RATINGS } from '../../consts';
 import type { RateCounts } from '~/shared/types/common';
+import { ItemRate } from '@/entities/book';
 
 const { item } = defineProps<{
   item: Book;
@@ -28,30 +29,37 @@ const totalVotes = computed(() => {
 </script>
 
 <template>
-  <div class="light:bg-[#F5F5F5] rounded-[10px] p-4">
-    <div class="cs-text text-xl leading-lg text-foreground leading-[1.25] mb-3">
+  <div
+    class="light:bg-[#F5F5F5] dark:bg-[#012053] rounded-[10px] grid gap-3 p-4"
+  >
+    <div class="cs-text text-xl leading-lg text-foreground leading-[1.25]">
       Описание манги
     </div>
 
-    <div
-      class="relative overflow-hidden"
-      :class="{ 'max-h-[120px]': !isHiddenDescription }"
-    >
-      <div class="text-[16px] whitespace-pre-wrap">
-        <p>dsadas</p>
+    <div class="grid gap-1">
+      <div
+        class="relative overflow-hidden"
+        :class="{ 'max-h-[120px]': !isHiddenDescription }"
+      >
+        <div
+          class="text-[16px]"
+          style="overflow-wrap: anywhere; word-break: break-word"
+        >
+          <p>{{ item.description }}</p>
+        </div>
       </div>
+
+      <u-button
+        color="info"
+        variant="link"
+        class="cs-text p-0 light:text-[#0862e0] text-sm leading-sm font-normal cursor-pointer underline-offset-4"
+        @click="isHiddenDescription = !isHiddenDescription"
+      >
+        {{ isHiddenDescription ? 'Скрыть' : 'Больше' }}
+      </u-button>
     </div>
 
-    <u-button
-      color="info"
-      variant="link"
-      class="cs-text p-0 light:text-[#0862e0] text-sm leading-sm font-normal cursor-pointer underline-offset-4 mb-3"
-      @click="isHiddenDescription = !isHiddenDescription"
-    >
-      {{ isHiddenDescription ? 'Скрыть' : 'Больше' }}
-    </u-button>
-
-    <div class="mb-3">
+    <div class="">
       <span class="mb-3">Теги</span>
 
       <div
@@ -66,20 +74,16 @@ const totalVotes = computed(() => {
       </div>
     </div>
 
-    <div class="mb-3">
-      <div
-        class="cs-text text-xl leading-lg text-foreground leading-[1.25] mb-3"
-      >
+    <div class="">
+      <div class="cs-text text-xl leading-lg text-foreground leading-[1.25]">
         Создатели
       </div>
 
       <p>{{ item?.author_name }}</p>
     </div>
 
-    <div class="mb-3">
-      <div
-        class="cs-text text-xl leading-lg text-foreground leading-[1.25] mb-3"
-      >
+    <div class="">
+      <div class="cs-text text-xl leading-lg text-foreground leading-[1.25]">
         Переводчики
       </div>
 
@@ -126,8 +130,11 @@ const totalVotes = computed(() => {
 
           <div class="flex col-span-2 items-center gap-4">
             <UProgress
-              color="info"
               class="w-full"
+              :ui="{
+                base: 'light:bg-[#F2F2F2] dark:bg-[#003386]',
+                indicator: 'light:bg-[#3881F6] dark:bg-[#3881F6]',
+              }"
               :modelValue="rate(rates.stars)"
               :max="totalVotes"
             />
@@ -140,6 +147,8 @@ const totalVotes = computed(() => {
       </div>
     </div>
   </div>
+
+  <item-rate :guid="item.id" />
 </template>
 
 <style lang="scss" scoped>

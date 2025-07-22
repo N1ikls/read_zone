@@ -21,7 +21,7 @@ const onRate = async (rating: number) => {
   <UModal v-model:open="open">
     <u-button
       color="info"
-      class="px-2 min-w-[20px] text-xs rounded-full h-[20px]"
+      class="bg-[#003386] w-full lg:w-[182px] h-[32px] justify-center font-bold text-lg rounded-[10px] hover:bg-[none]"
       @click="isAuth() ? (open = true) : (open = false)"
     >
       Оценить
