@@ -185,7 +185,7 @@ const { user } = useAuth();
   top: 0;
   left: 0;
   width: 100%;
-  height: 340px;
+  height: 352px;
   background-color: #f5f5f5;
   z-index: -1;
 }

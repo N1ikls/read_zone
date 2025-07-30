@@ -49,7 +49,6 @@ watch(
 
     <template #title>
       <r-header
-        size="v-large"
         bottom="0"
         class="uppercase text-[#003386]"
       >

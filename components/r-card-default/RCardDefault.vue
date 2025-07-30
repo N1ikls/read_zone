@@ -26,7 +26,7 @@ const { item } = defineProps<{
           mode="svg"
           class="text-[#0862e0]"
         />
-        {{ item.rate.toFixed(1) }}
+        {{ item.rate?.toFixed(1) }}
       </p>
     </span>
 

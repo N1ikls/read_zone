@@ -1,42 +1,29 @@
 <script setup lang="ts">
 import { RCard, RHeader } from '@/components';
-import { ItemThing, ItemFilters } from '@/entities/main';
+import { ItemThing, ItemFilters, ItemCarousel } from '@/entities/main';
 import type { Book } from '~/shared/types';
 
 const limit = ref<number>(4);
-const { data: news } = useFetch<Book[]>('/api/new', {
+
+const { data } = await useFetch<Book[]>('/api/slider-books', {
+  server: false,
+});
+const { data: news } = await useFetch<Book[]>('/api/new', {
   query: {
     limit,
   },
 });
-const { data, status } = useFetch<Book[]>('/api/slider-books');
-const { data: read } = useFetch('/api/read-now');
-const { data: top } = useFetch('/api/top-genres');
+const { data: read } = await useFetch('/api/read-now');
+const { data: top } = await useFetch('/api/top-genres');
 </script>
 
 <template>
   <div class="light:bg-[#E0EAFF] min-h-screen pt-4">
     <div class="wrapper">
-      <section class="main">
-        <UCarousel
-          v-slot="{ item }"
-          class="cursor-grab"
-          loop
-          drag-free
-          :duration="0"
-          wheel-gestures
-          :items="data || []"
-          :ui="{ item: 'basis-1/7' }"
-        >
-          <nuxt-link :to="`/book/${item.id}`">
-            <r-card-default :item="item" />
-          </nuxt-link>
-        </UCarousel>
-      </section>
+      <item-carousel :items="data" />
 
       <section class="news mt-4">
         <r-header
-          bold
           bottom="0"
           class="text-[#003386]"
           >Новинки
@@ -67,10 +54,7 @@ const { data: top } = useFetch('/api/top-genres');
           </div>
 
           <div class="grid__read-now">
-            <r-header
-              class="grid__read-now__title text-[#003386]"
-              bold
-            >
+            <r-header class="grid__read-now__title text-[#003386]">
               Сейчас читают
             </r-header>
 

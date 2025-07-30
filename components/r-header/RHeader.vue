@@ -56,6 +56,7 @@ const classes = computed(() => ({
   margin: 0;
   padding: 0;
   line-height: 100%;
+  font-weight: 500;
   letter-spacing: 0.015em;
   padding-bottom: v-bind(bottom);
   font-family: 'Aspa', sans-serif;
