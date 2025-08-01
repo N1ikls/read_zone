@@ -3,6 +3,7 @@ const open = defineModel<boolean>({
   default: false,
 });
 
+const router = useRouter();
 const my18 = useCookie<boolean>('my-18', {
   default: () => false,
 });
@@ -17,6 +18,7 @@ const onUpdate = () => {
 const onClose = () => {
   isShow.value = false;
   open.value = false;
+  router.push('/');
 };
 </script>
 

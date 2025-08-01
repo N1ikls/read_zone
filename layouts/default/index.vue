@@ -15,7 +15,9 @@ const slots = useSlots();
       v-if="slots?.title"
       class="r-page-layout__title my-2 md:my-4"
     >
-      <slot name="title" />
+      <div class="text-2xl leading-xl font-semibold text-foreground cs-text">
+        <slot name="title" />
+      </div>
 
       <slot name="title-extra" />
     </div>
@@ -34,8 +36,6 @@ const slots = useSlots();
     justify-content: space-between;
     flex-wrap: wrap;
     gap: 20px;
-    font-weight: bold;
-    font-size: 32px;
   }
 
   &__breadcrumb {
