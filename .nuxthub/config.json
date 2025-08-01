@@ -1,0 +1,6 @@
+{
+  "database": true,
+  "kv": false,
+  "blob": false,
+  "cache": false
+}
