@@ -10,8 +10,10 @@ const { item } = defineProps<{
 }>();
 
 const { data: tags } = await useFetch('/api/tag', {
+  key: `tags-${item.id}`,
   method: 'get',
   query: { book_id: item.id },
+  default: () => [],
 });
 
 const isHiddenDescription = ref(false);

@@ -28,10 +28,12 @@ const isRotated = ref<boolean>(unref(queries).order === 'asc');
 const guid = computed(() => route.params.id as string);
 
 const { data } = await useFetch<Book>('/api/book', {
+  key: `book-edit-${guid.value}`,
   method: 'get',
   query: {
     id: guid,
   },
+  default: () => null,
 });
 
 const { data: chapters, refresh } = await useFetch<Chapter[]>('/api/chapters', {
@@ -41,6 +43,7 @@ const { data: chapters, refresh } = await useFetch<Chapter[]>('/api/chapters', {
     book_id: guid,
     number: computed(() => queries.value.order),
   },
+  default: () => [],
 });
 
 const normalizedChapters = computed(() => chapters.value ?? []);

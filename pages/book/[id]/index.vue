@@ -32,10 +32,12 @@ const { data } = await useAsyncData('book', async () => {
 });
 
 const { data: authorBooks } = await useFetch<Book[]>('/api/book/search', {
+  key: 'author-books',
   method: 'get',
   query: {
     author_id: data.value?.author_id,
   },
+  default: () => [],
 });
 
 const active = computed({

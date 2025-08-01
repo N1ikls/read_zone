@@ -35,7 +35,7 @@ export async function seed(knex) {
 
   const csvData = [];
   await new Promise((resolve, reject) => {
-    fs.createReadStream('/Users/kiforenko_na/read_zone/manga_2.csv')
+    fs.createReadStream('./manga_2.csv')
       .pipe(csv())
       .on('data', (row) => csvData.push(row))
       .on('end', resolve)

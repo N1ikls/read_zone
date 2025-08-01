@@ -5,13 +5,24 @@ import type { Book } from '~/shared/types';
 
 const limit = ref<number>(4);
 const { data: news } = useFetch<Book[]>('/api/new', {
+  key: 'news',
   query: {
     limit,
   },
+  default: () => [],
 });
-const { data, status } = useFetch<Book[]>('/api/slider-books');
-const { data: read } = useFetch('/api/read-now');
-const { data: top } = useFetch('/api/top-genres');
+const { data, status } = useFetch<Book[]>('/api/slider-books', {
+  key: 'slider-books',
+  default: () => [],
+});
+const { data: read } = useFetch('/api/read-now', {
+  key: 'read-now',
+  default: () => [],
+});
+const { data: top } = useFetch('/api/top-genres', {
+  key: 'top-genres',
+  default: () => [],
+});
 </script>
 
 <template>
@@ -106,7 +117,7 @@ const { data: top } = useFetch('/api/top-genres');
         </r-header>
 
         <r-banner
-          v-for="(genre, index) in top?.slice(0, 4)"
+          v-for="(genre, index) in Array.isArray(top) ? top.slice(0, 4) : []"
           :key="index"
         >
           {{ genre.name }}

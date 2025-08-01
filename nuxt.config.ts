@@ -3,6 +3,7 @@ export default defineNuxtConfig({
   ssr: true,
   devServer: {
     port: 3001,
+    host: '0.0.0.0', // Разрешает подключения с любых IP-адресов
   },
   modules: [
     '@nuxt/eslint',

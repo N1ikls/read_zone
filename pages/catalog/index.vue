@@ -14,7 +14,9 @@ const queries = useGetRouteQuery({
 const debounceParsedQueries = ref(unref(queries));
 
 const { data } = useFetch<CatalogResponse>('/api/catalog', {
+  key: 'catalog',
   query: debounceParsedQueries,
+  default: () => ({ items: [], total: 0, page: 1, limit: 100 }),
 });
 
 watch(

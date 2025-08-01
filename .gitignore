@@ -18,7 +18,27 @@ logs
 .fleet
 .idea
 
-# Local env files
+# Environment files with secrets
 .env
 .env.*
 !.env.example
+*.env.local
+*.env.production
+*.env.staging
+*.env.development
+*.env.backup
+*.env.bak
+
+# Documentation with Sensitive Information
+documentation/
+
+# All test scripts and development utilities
+test/
+
+# IDE and Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*.sublime-*
+.atom/

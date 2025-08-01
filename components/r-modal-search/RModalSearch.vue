@@ -16,7 +16,9 @@ const searchHistory = useCookie<Array<{ query: string; date: string }>>(
   },
 );
 const { data } = await useFetch<Book[]>('/api/book/search', {
+  key: 'search-modal',
   query: queries,
+  default: () => [],
 });
 
 const isHistory = computed(

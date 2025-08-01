@@ -14,8 +14,14 @@ const catalogState = useCatalogState();
 
 const { showSidebar } = catalogState;
 
-const { data: tag } = useFetch('/api/tag');
-const { data: genres } = useFetch('/api/genres');
+const { data: tag } = useFetch('/api/tag', {
+  key: 'catalog-tags',
+  default: () => [],
+});
+const { data: genres } = useFetch('/api/genres', {
+  key: 'catalog-genres',
+  default: () => [],
+});
 
 const tagsValue = ref(splitQueryValue(queries?.tags));
 const genresValue = ref(splitQueryValue(queries?.genres));

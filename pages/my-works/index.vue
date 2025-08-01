@@ -21,8 +21,10 @@ const debounceParsedQueries = ref(unref(queries));
 const name = ref<string | null>(queries.value?.name);
 
 const { data } = useFetch('/api/user/my-works', {
+  key: 'my-works',
   method: 'get',
   query: debounceParsedQueries,
+  default: () => ({ items: [], total: 0, page: 1, limit: 10 }),
 });
 
 const onUpdate = (value: AcceptableValue, key: string) => {

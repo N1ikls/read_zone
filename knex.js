@@ -8,9 +8,10 @@ export default {
   client: 'pg',
   connection: {
     port: 5432,
-    host: '127.0.0.1',
-    user: 'kiforenko_na',
-    database: 'db_test',
+    host: 'localhost',
+    user: 'postgres',
+    password: 'postgres',
+    database: 'read_zone_db',
   },
   migrations: {
     directory: __dirname + '/migrations',

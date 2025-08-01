@@ -17,11 +17,13 @@ const queries = useGetRouteQuery({
 const isRotated = ref<boolean>(unref(queries).order === 'asc');
 
 const { data, refresh } = await useFetch<Chapter[]>('/api/chapters', {
+  key: `chapters-${item.id}`,
   method: 'get',
   query: {
     book_id: item.id,
     number: computed(() => queries.value.order),
   },
+  default: () => [],
 });
 
 const toggleRotation = () => {

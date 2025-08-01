@@ -13,7 +13,9 @@ const close = () => {
 
 const logout = async () => {
   const { data } = await useFetch('/api/auth/logout', {
+    key: 'logout',
     method: 'POST',
+    default: () => ({ ok: false }),
   });
 
   if (!data.value?.ok) return;

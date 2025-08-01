@@ -18,10 +18,12 @@ const bookmark = ref<string | undefined>();
 const status = ref<string | undefined>(statuses);
 
 const { data } = await useFetch('/api/bookmarks/status', {
+  key: `bookmark-status-${route.params.id}`,
   method: 'get',
   query: {
     guid: route.params.id,
   },
+  default: () => null,
 });
 
 const onUpdate = async (value: string) => {
