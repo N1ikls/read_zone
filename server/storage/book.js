@@ -293,6 +293,103 @@ export default class extends BaseStorage {
     return false;
   }
 
+  // Получение новинок с ротацией
+  async getNovelties(offset = 0, limit = 6) {
+    // Дата 7 дней назад
+    const weekAgo = new Date();
+    weekAgo.setDate(weekAgo.getDate() - 7);
+
+    // Базовый запрос для новинок
+    const baseQuery = this.knex(this.table)
+      .where(`${this.table}.created_at`, '>=', weekAgo)
+      .whereIn(`${this.table}.status`, ['progress', 'done']) // published статусы
+      .where(function () {
+        // Подзапрос для проверки наличия хотя бы одной опубликованной главы
+        this.whereExists(function () {
+          this.select('*')
+            .from('chapter')
+            .whereRaw('chapter.book_id = book.id')
+            .where(function () {
+              this.where('status', 'done').orWhere('is_public', true);
+            });
+        });
+      })
+      .orderBy(`${this.table}.created_at`, 'desc');
+
+    // Получаем общее количество новинок (без ORDER BY для count)
+    const countQuery = this.knex(this.table)
+      .where(`${this.table}.created_at`, '>=', weekAgo)
+      .whereIn(`${this.table}.status`, ['progress', 'done'])
+      .where(function () {
+        this.whereExists(function () {
+          this.select('*')
+            .from('chapter')
+            .whereRaw('chapter.book_id = book.id')
+            .where(function () {
+              this.where('status', 'done').orWhere('is_public', true);
+            });
+        });
+      });
+
+    const totalCount = await countQuery.count('* as count').first();
+    const total = parseInt(totalCount.count) || 0;
+
+    if (total === 0) {
+      return {
+        books: [],
+        total: 0,
+        offset: 0,
+        hasMore: false,
+      };
+    }
+
+    // Циклическая ротация: если offset больше общего количества, начинаем сначала
+    const normalizedOffset = offset % total;
+
+    // Получаем книги с учетом ротации
+    const books = await baseQuery
+      .clone()
+      .offset(normalizedOffset)
+      .limit(limit)
+      .select([`${this.table}.*`, `${this.tableAuthor}.name as author_name`])
+      .leftJoin(
+        this.tableAuthor,
+        `${this.tableAuthor}.id`,
+        `${this.table}.author_id`,
+      );
+
+    // Если получили меньше книг чем нужно и есть еще книги в начале списка
+    if (books.length < limit && normalizedOffset > 0) {
+      const remainingLimit = limit - books.length;
+      const additionalBooks = await baseQuery
+        .clone()
+        .offset(0)
+        .limit(remainingLimit)
+        .select([`${this.table}.*`, `${this.tableAuthor}.name as author_name`])
+        .leftJoin(
+          this.tableAuthor,
+          `${this.tableAuthor}.id`,
+          `${this.table}.author_id`,
+        );
+
+      books.push(...additionalBooks);
+    }
+
+    // Обрабатываем книги (простая обработка без afterFetch)
+    const processedBooks = books.map((book) => ({ ...book }));
+
+    // Прикрепляем жанры
+    await this.attachGenres(processedBooks);
+
+    return {
+      books: processedBooks,
+      total,
+      offset: normalizedOffset,
+      hasMore: total > limit,
+      nextOffset: (normalizedOffset + limit) % total,
+    };
+  }
+
   preprocessSelectQuery(query, filter, options) {
     if (options.filterByFandoms) {
       query.innerJoin(this.tableBookFandom, (join) => {

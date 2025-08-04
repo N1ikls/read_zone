@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { RCard, RHeader } from '@/components';
 import { ItemThing, ItemFilters, ItemCarousel } from '@/entities/main';
+import BookNovelties from '@/components/BookNovelties.vue';
 import type { Book } from '~/shared/types';
 
 const limit = ref<number>(4);
@@ -30,6 +31,14 @@ const { data: top } = useFetch('/api/top-genres', {
   <div class="light:bg-[#E0EAFF] min-h-screen pt-4">
     <div class="wrapper">
       <item-carousel :items="data" />
+
+      <!-- Секция новинок недели -->
+      <section class="novelties-section mt-8 mb-8">
+        <BookNovelties
+          :limit="6"
+          :auto-rotate="true"
+        />
+      </section>
 
       <section class="news mt-4">
         <r-header
@@ -122,6 +131,13 @@ const { data: top } = useFetch('/api/top-genres', {
 <style lang="scss" scoped>
 .container {
   padding-top: 100px;
+}
+
+.novelties-section {
+  background: white;
+  border-radius: 10px;
+  padding: 24px;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
 }
 
 .news {

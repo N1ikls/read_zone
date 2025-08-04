@@ -42,6 +42,56 @@ export async function seed(knex) {
       .on('error', reject);
   });
 
+  // Добавляем специальную тестовую книгу для уведомлений
+  const testBookUuid = uuidv4();
+  const testChaptersCount = 5;
+  const testTranslatorId = getRandomUserId();
+
+  books.push({
+    id: testBookUuid,
+    created_by: getRandomUserId(),
+    translator_id: testTranslatorId,
+    author_id: getRandomAuthorId(),
+    name: 'Тестовая книга для уведомлений',
+    alt_name: 'Test Notification Book',
+    description:
+      'Специальная книга для тестирования системы уведомлений и отображения в разделе новинок.',
+    cover: 'https://via.placeholder.com/300x400/4F46E5/FFFFFF?text=Test+Book',
+    year: 2025,
+    type: 'manga',
+    release_type: 'web',
+    status: 'progress',
+    age_rate: 12,
+    source_lang: 'Русский',
+    source_status: 'progress',
+    background: null,
+    rate: 4.5,
+    chapters_count: testChaptersCount,
+    created_at: new Date(), // Текущая дата для попадания в новинки
+    updated_at: new Date(),
+  });
+
+  // Добавляем главы для тестовой книги
+  for (let i = 0; i < testChaptersCount; i++) {
+    chapters.push({
+      created_by: testTranslatorId,
+      book_id: testBookUuid,
+      number: i + 1,
+      status: 'done',
+      volume: `Том 1`,
+      is_public: true,
+      price: null,
+      name: `Глава ${i + 1}: Тестовая глава`,
+      content: `<p>Содержимое тестовой главы ${i + 1}. Эта глава создана для тестирования системы уведомлений.</p>`,
+      created_at: new Date(),
+      updated_at: new Date(),
+    });
+  }
+
+  // Добавляем жанры для тестовой книги
+  genres.push({ book_id: testBookUuid, genre_id: getRandomGenreId() });
+  genres.push({ book_id: testBookUuid, genre_id: getRandomGenreId() });
+
   for (let id = 1; id <= 100; id++) {
     const row = csvData[id];
     const bookUuid = uuidv4();
@@ -60,6 +110,7 @@ export async function seed(knex) {
       alt_name: `Title ${id} name`,
       description:
         row.synopsis || helper.randomContent(`Описание книги ${id} `, 30),
+      cover: row.main_picture || null,
       year: helper.random(1900, 2023),
       type: ['manga', 'oel', 'manhva', 'manhua', 'rumanga', 'comic'][
         helper.random(0, 5)
