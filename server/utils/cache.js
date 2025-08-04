@@ -15,7 +15,7 @@ class MemoryCache {
    */
   get(key) {
     const item = this.cache.get(key);
-    
+
     if (!item) {
       return null;
     }
@@ -96,7 +96,7 @@ class MemoryCache {
       total: this.cache.size,
       active,
       expired,
-      memoryUsage: this.estimateMemoryUsage()
+      memoryUsage: this.estimateMemoryUsage(),
     };
   }
 
@@ -118,10 +118,7 @@ class MemoryCache {
 // Создаем глобальный экземпляр кэша
 const noveltiesCache = new MemoryCache();
 
-// Автоматическая очистка истекших элементов каждые 10 минут
-setInterval(() => {
-  noveltiesCache.cleanup();
-}, 10 * 60 * 1000);
+// Автоматическая очистка отключена - кэш очищается вручную при необходимости
 
 /**
  * Генерирует ключ кэша для новинок
@@ -130,14 +127,8 @@ setInterval(() => {
  * @param {boolean} manual - ручная ротация
  * @returns {string} ключ кэша
  */
-export const generateCacheKey = (offset, limit, manual = false) => {
-  // Для автоматической ротации используем временные интервалы
-  if (!manual) {
-    const now = new Date();
-    const interval = Math.floor(now.getTime() / (5 * 60 * 1000)); // 5-минутные интервалы
-    return `novelties:auto:${interval}:${limit}`;
-  }
-  
+export const generateCacheKey = (offset, limit, manual = true) => {
+  // Всегда используем ручную ротацию
   return `novelties:manual:${offset}:${limit}`;
 };
 
@@ -148,27 +139,31 @@ export const generateCacheKey = (offset, limit, manual = false) => {
  * @param {number} ttl - время жизни кэша (опционально)
  * @returns {Promise<any>} результат
  */
-export const getCachedNovelties = async (cacheKey, fetchFunction, ttl = 5 * 60 * 1000) => {
+export const getCachedNovelties = async (
+  cacheKey,
+  fetchFunction,
+  ttl = 5 * 60 * 1000,
+) => {
   // Пытаемся получить из кэша
   const cached = noveltiesCache.get(cacheKey);
   if (cached) {
     return {
       ...cached,
       fromCache: true,
-      cacheKey
+      cacheKey,
     };
   }
 
   // Если нет в кэше, выполняем функцию
   const result = await fetchFunction();
-  
+
   // Сохраняем в кэш
   noveltiesCache.set(cacheKey, result, ttl);
-  
+
   return {
     ...result,
     fromCache: false,
-    cacheKey
+    cacheKey,
   };
 };
 
@@ -200,13 +195,14 @@ export const invalidateNoveltiesCache = (pattern = null) => {
  */
 export const getNoveltiesCacheStats = () => {
   const stats = noveltiesCache.getStats();
-  const noveltiesKeys = Array.from(noveltiesCache.cache.keys())
-    .filter(key => key.startsWith('novelties:'));
-  
+  const noveltiesKeys = Array.from(noveltiesCache.cache.keys()).filter((key) =>
+    key.startsWith('novelties:'),
+  );
+
   return {
     ...stats,
     noveltiesEntries: noveltiesKeys.length,
-    noveltiesKeys: noveltiesKeys
+    noveltiesKeys: noveltiesKeys,
   };
 };
 
@@ -252,5 +248,5 @@ export const cacheHelpers = {
     } catch (error) {
       console.error('Error refreshing cache:', error);
     }
-  }
+  },
 };

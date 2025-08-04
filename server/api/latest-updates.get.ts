@@ -10,7 +10,7 @@ export default defineApiHandler(async (event) => {
         'book.id',
         'book.name as title',
         'book.description',
-        'book.cover',
+        'book.background as cover',
         'book.status',
         'book.created_by as user_id',
         'book.created_at as book_created_at',

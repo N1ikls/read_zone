@@ -52,6 +52,7 @@ export default class extends BaseStorage {
       'author_id',
       'author_name',
       'background',
+      'cover',
       'bookmark',
       'bookmarks_count',
       'chapters_count',
@@ -72,7 +73,19 @@ export default class extends BaseStorage {
       'user_rate',
       'viewers_count',
       'year',
+      'created_at',
     ];
+  }
+
+  afterFetch(book) {
+    if (book.year) book.year = Number(book.year);
+
+    // Добавляем поле cover как алиас для background для обратной совместимости
+    if (book.background && !book.cover) {
+      book.cover = book.background;
+    }
+
+    return book;
   }
 
   async attachFandoms(books) {
@@ -299,7 +312,7 @@ export default class extends BaseStorage {
     const weekAgo = new Date();
     weekAgo.setDate(weekAgo.getDate() - 7);
 
-    // Базовый запрос для новинок
+    // Базовый запрос для новинок за последние 7 дней
     const baseQuery = this.knex(this.table)
       .where(`${this.table}.created_at`, '>=', weekAgo)
       .whereIn(`${this.table}.status`, ['progress', 'done']) // published статусы
@@ -358,25 +371,11 @@ export default class extends BaseStorage {
         `${this.table}.author_id`,
       );
 
-    // Если получили меньше книг чем нужно и есть еще книги в начале списка
-    if (books.length < limit && normalizedOffset > 0) {
-      const remainingLimit = limit - books.length;
-      const additionalBooks = await baseQuery
-        .clone()
-        .offset(0)
-        .limit(remainingLimit)
-        .select([`${this.table}.*`, `${this.tableAuthor}.name as author_name`])
-        .leftJoin(
-          this.tableAuthor,
-          `${this.tableAuthor}.id`,
-          `${this.table}.author_id`,
-        );
+    // Циклическое заполнение теперь контролируется RotationManager
+    // Убираем старую логику циклического заполнения
 
-      books.push(...additionalBooks);
-    }
-
-    // Обрабатываем книги (простая обработка без afterFetch)
-    const processedBooks = books.map((book) => ({ ...book }));
+    // Обрабатываем книги через afterFetch для правильной обработки полей
+    const processedBooks = books.map((book) => this.afterFetch({ ...book }));
 
     // Прикрепляем жанры
     await this.attachGenres(processedBooks);

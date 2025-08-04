@@ -41,6 +41,10 @@ export default class Storage {
     this.#knex = knex;
   }
 
+  get knex() {
+    return this.#knex;
+  }
+
   get author() {
     return (this.#author ||= new Author(this.#knex));
   }
