@@ -286,10 +286,13 @@ const { data } = useFetch<Book[]>('/api/slider-books', {
   server: false,
 });
 
-const { data: read } = useFetch('/api/read-now', {
-  key: 'read-now-data',
+const { data: read } = useFetch('/api/currently-reading', {
+  key: 'currently-reading-data',
+  query: { limit: 5 },
   default: () => [],
   server: false,
+  // Обновляем данные каждые 5 минут для актуальности
+  refresh: 'manual',
 });
 const { data: top } = useFetch('/api/top-genres', {
   key: 'top-genres',
