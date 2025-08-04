@@ -2,6 +2,7 @@ import { applyFilter } from '../utils/query-builder';
 import BaseStorage from './base-storage.js';
 import errors from '../utils/errors';
 import Validator from 'validatorjs';
+import NotificationHelper from '../utils/notification-helper.js';
 
 export default class extends BaseStorage {
   get table() {
@@ -407,14 +408,50 @@ export default class extends BaseStorage {
       throw new errors.Forbidden('Нет прав для обновления статуса');
     }
 
+    const oldStatus = book.status;
+
     await this.knex(this.table).where('id', bookId).update({
       status,
       updated_by: actor.id,
       updated_at: this.knex.fn.now(),
     });
+
+    // Создаем уведомления об изменении статуса
+    if (oldStatus !== status) {
+      try {
+        const notificationHelper = new NotificationHelper({
+          user: { knex: this.knex },
+          notification: {
+            createBulk: async (notifications) => {
+              return await this.knex('notifications').insert(notifications);
+            },
+          },
+        });
+
+        // Получаем автора
+        const author = await this.knex('user')
+          .where('id', book.author_id)
+          .first();
+
+        if (author) {
+          await notificationHelper.notifyBookStatusChange(
+            book,
+            author,
+            oldStatus,
+            status,
+          );
+        }
+      } catch (error) {
+        console.error(
+          'Ошибка при создании уведомлений об изменении статуса:',
+          error,
+        );
+      }
+    }
   }
 
   async save(book, actor) {
+    const isNewBook = !book.id;
     const savedBook = await super.save(book, actor);
 
     await Promise.all([
@@ -424,6 +461,28 @@ export default class extends BaseStorage {
       'genres' in book ? this.setGenres(savedBook, book.genres, actor) : null,
       'tags' in book ? this.setTags(savedBook, book.tags, actor) : null,
     ]);
+
+    // Создаем уведомления для новой книги
+    if (isNewBook && savedBook.status === 'published') {
+      try {
+        const notificationHelper = new NotificationHelper(
+          this.knex.storage || {
+            user: this.knex.user,
+            notification: this.knex.notification,
+          },
+        );
+
+        // Получаем автора
+        const author = await this.knex('user')
+          .where('id', savedBook.author_id)
+          .first();
+        if (author) {
+          await notificationHelper.notifyNewBook(savedBook, author);
+        }
+      } catch (error) {
+        console.error('Ошибка при создании уведомлений о новой книге:', error);
+      }
+    }
 
     return savedBook;
   }

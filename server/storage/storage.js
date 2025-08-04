@@ -8,6 +8,7 @@ import ChapterError from './chapter-error';
 import Fandom from './fandom';
 import Genre from './genre';
 import News from './news';
+import Notification from './notification';
 import Pay from './pay';
 import ReadingHistory from './reading-history';
 import Tag from './tag';
@@ -28,6 +29,7 @@ export default class Storage {
   #fandom;
   #genre;
   #news;
+  #notification;
   #pay;
   #readingHistory;
   #tag;
@@ -68,6 +70,9 @@ export default class Storage {
   }
   get news() {
     return (this.#news ||= new News(this.#knex));
+  }
+  get notification() {
+    return (this.#notification ||= new Notification(this.#knex));
   }
   get pay() {
     return (this.#pay ||= new Pay(this.#knex));

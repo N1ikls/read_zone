@@ -42,3 +42,5 @@ test/
 *.swo
 *.sublime-*
 .atom/
+
+cookies.txt
