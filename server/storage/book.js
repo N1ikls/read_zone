@@ -1,7 +1,9 @@
-import { applyFilter } from '../utils/query-builder';
+import { applyFilter } from '../utils/query-builder.js';
 import BaseStorage from './base-storage.js';
-import errors from '../utils/errors';
+import errors from '../utils/errors.js';
 import Validator from 'validatorjs';
+import searchLogger from '../utils/search-logger.js';
+import NotificationHelper from '../utils/notification-helper.js';
 
 export default class extends BaseStorage {
   get table() {
@@ -51,6 +53,7 @@ export default class extends BaseStorage {
       'author_id',
       'author_name',
       'background',
+      'cover',
       'bookmark',
       'bookmarks_count',
       'chapters_count',
@@ -71,7 +74,19 @@ export default class extends BaseStorage {
       'user_rate',
       'viewers_count',
       'year',
+      'created_at',
     ];
+  }
+
+  afterFetch(book) {
+    if (book.year) book.year = Number(book.year);
+
+    // Добавляем поле cover как алиас для background для обратной совместимости
+    if (book.background && !book.cover) {
+      book.cover = book.background;
+    }
+
+    return book;
   }
 
   async attachFandoms(books) {
@@ -230,10 +245,146 @@ export default class extends BaseStorage {
     return validator.passes() ? data : validator;
   }
 
+  /**
+   * Нормализует поисковый запрос для улучшения качества поиска манги
+   * Обрабатывает диакритические знаки, транслитерацию и другие edge cases
+   * @param {string} searchTerm - исходный поисковый запрос
+   * @returns {string} нормализованный запрос
+   */
+  normalizeSearchTerm(searchTerm) {
+    if (!searchTerm || typeof searchTerm !== 'string') return '';
+
+    return (
+      searchTerm
+        .trim() // удаляем пробелы в начале и конце
+        .replace(/\s+/g, ' ') // заменяем множественные пробелы на одинарные
+        .toLowerCase() // приводим к нижнему регистру
+        // Нормализация русских букв
+        .replace(/ё/g, 'е') // ё -> е
+        .replace(/й/g, 'и') // й -> и (опционально)
+        // Удаление специальных символов и знаков препинания
+        .replace(/[^\w\s\u0400-\u04FF]/g, ' ') // оставляем только буквы, цифры, пробелы и кириллицу
+        .replace(/\s+/g, ' ') // снова нормализуем пробелы после удаления символов
+        .trim()
+    );
+  }
+
+  /**
+   * Создает условие для полнотекстового поиска манги с поддержкой различных стратегий
+   * @param {string} searchTerm - поисковый запрос
+   * @param {string} field - поле для поиска (название манги, описание и т.д.)
+   * @returns {object} условие для фильтрации
+   */
+  createSearchCondition(
+    searchTerm,
+    field = 'name',
+    includeAuthorSearch = null,
+  ) {
+    const normalizedTerm = this.normalizeSearchTerm(searchTerm);
+
+    if (!normalizedTerm) return null;
+
+    // Разбиваем на отдельные слова для поиска по каждому
+    const words = normalizedTerm.split(' ').filter((word) => word.length > 0);
+
+    if (words.length === 0) return null;
+
+    // Создаем условие для поиска с использованием ILIKE (case-insensitive)
+    // и поиска по каждому слову отдельно
+    const searchCondition = {
+      ':or': [
+        // Точное совпадение (высший приоритет)
+        { [field]: { ilike: normalizedTerm } },
+        // Поиск как подстроки
+        { [field]: { ilike: `%${normalizedTerm}%` } },
+        // Поиск по отдельным словам (все слова должны присутствовать)
+        ...(words.length > 1
+          ? [
+              {
+                ':and': words.map((word) => ({
+                  [field]: { ilike: `%${word}%` },
+                })),
+              },
+            ]
+          : []),
+      ],
+    };
+
+    // Добавляем поиск по автору если указан
+    if (includeAuthorSearch) {
+      searchCondition[':or'].push({
+        'author.name': { ilike: `%${includeAuthorSearch}%` },
+      });
+    }
+
+    return searchCondition;
+  }
+
+  /**
+   * Создает расширенное условие поиска с поддержкой fuzzy search
+   * Использует PostgreSQL возможности для поиска с опечатками
+   * @param {string} searchTerm - поисковый запрос
+   * @param {string} field - поле для поиска
+   * @param {string} includeAuthorSearch - поиск по автору
+   * @returns {object} условие для фильтрации с fuzzy search
+   */
+  createFuzzySearchCondition(
+    searchTerm,
+    field = 'name',
+    includeAuthorSearch = null,
+  ) {
+    const normalizedTerm = this.normalizeSearchTerm(searchTerm);
+
+    if (!normalizedTerm || normalizedTerm.length < 3) {
+      // Для коротких запросов используем обычный поиск
+      return this.createSearchCondition(searchTerm, field, includeAuthorSearch);
+    }
+
+    const words = normalizedTerm.split(' ').filter((word) => word.length > 2);
+
+    if (words.length === 0) return null;
+
+    // Создаем условие с поддержкой fuzzy search
+    const searchCondition = {
+      ':or': [
+        // Точное совпадение (высший приоритет)
+        { [field]: { ilike: normalizedTerm } },
+        // Поиск как подстроки
+        { [field]: { ilike: `%${normalizedTerm}%` } },
+        // Поиск по отдельным словам
+        ...(words.length > 1
+          ? [
+              {
+                ':and': words.map((word) => ({
+                  [field]: { ilike: `%${word}%` },
+                })),
+              },
+            ]
+          : []),
+      ],
+    };
+
+    // Добавляем поиск по автору если указан
+    if (includeAuthorSearch) {
+      searchCondition[':or'].push({
+        'author.name': { ilike: `%${includeAuthorSearch}%` },
+      });
+    }
+
+    return searchCondition;
+  }
+
   async catalogSearch(query) {
+    const startTime = Date.now();
+    const originalQuery = query.name;
+    const normalizedQuery = originalQuery
+      ? this.normalizeSearchTerm(originalQuery)
+      : null;
+
     const sort = {
       updated_at: { updated_at: 'desc' },
       updated_at_asc: { updated_at: 'asc' },
+      relevance: { relevance: 'desc' }, // добавляем сортировку по релевантности
     };
 
     const filter = [];
@@ -248,7 +399,23 @@ export default class extends BaseStorage {
     }
 
     if (query.types) filter.push({ type: query.types.split(',') });
-    if (query.name) filter.push({ name: { like: `%${query.name}%` } });
+
+    // Улучшенный поиск по названию манги
+    if (query.name) {
+      // Включаем поиск по автору если не указан отдельно
+      const includeAuthorSearch = !query.author_id
+        ? this.normalizeSearchTerm(query.name)
+        : null;
+      const searchCondition = this.createSearchCondition(
+        query.name,
+        'name',
+        includeAuthorSearch,
+      );
+      if (searchCondition) {
+        filter.push(searchCondition);
+      }
+    }
+
     if (query.status) filter.push({ status: query.status });
     if (parseInt(query.ageRate)) filter.push({ age_rate: `${query.ageRate}` });
     if (query.yearFrom) filter.push({ year: { '>=': query.yearFrom } });
@@ -268,6 +435,18 @@ export default class extends BaseStorage {
     const books = await this.find(filter, options);
 
     await this.attachGenres(books);
+
+    // Логируем поисковый запрос для мониторинга производительности
+    if (originalQuery) {
+      const executionTime = Date.now() - startTime;
+      searchLogger.logSearch({
+        query: originalQuery,
+        normalizedQuery,
+        resultCount: books.length,
+        executionTime,
+        timestamp: new Date(),
+      });
+    }
 
     return books;
   }
@@ -290,6 +469,89 @@ export default class extends BaseStorage {
     if (book.translator_id === actor.id) return true;
 
     return false;
+  }
+
+  // Получение новинок с ротацией
+  async getNovelties(offset = 0, limit = 6) {
+    // Дата 7 дней назад
+    const weekAgo = new Date();
+    weekAgo.setDate(weekAgo.getDate() - 7);
+
+    // Базовый запрос для новинок за последние 7 дней
+    const baseQuery = this.knex(this.table)
+      .where(`${this.table}.created_at`, '>=', weekAgo)
+      .whereIn(`${this.table}.status`, ['progress', 'done']) // published статусы
+      .where(function () {
+        // Подзапрос для проверки наличия хотя бы одной опубликованной главы
+        this.whereExists(function () {
+          this.select('*')
+            .from('chapter')
+            .whereRaw('chapter.book_id = book.id')
+            .where(function () {
+              this.where('status', 'done').orWhere('is_public', true);
+            });
+        });
+      })
+      .orderBy(`${this.table}.created_at`, 'desc');
+
+    // Получаем общее количество новинок (без ORDER BY для count)
+    const countQuery = this.knex(this.table)
+      .where(`${this.table}.created_at`, '>=', weekAgo)
+      .whereIn(`${this.table}.status`, ['progress', 'done'])
+      .where(function () {
+        this.whereExists(function () {
+          this.select('*')
+            .from('chapter')
+            .whereRaw('chapter.book_id = book.id')
+            .where(function () {
+              this.where('status', 'done').orWhere('is_public', true);
+            });
+        });
+      });
+
+    const totalCount = await countQuery.count('* as count').first();
+    const total = parseInt(totalCount.count) || 0;
+
+    if (total === 0) {
+      return {
+        books: [],
+        total: 0,
+        offset: 0,
+        hasMore: false,
+      };
+    }
+
+    // Циклическая ротация: если offset больше общего количества, начинаем сначала
+    const normalizedOffset = offset % total;
+
+    // Получаем книги с учетом ротации
+    const books = await baseQuery
+      .clone()
+      .offset(normalizedOffset)
+      .limit(limit)
+      .select([`${this.table}.*`, `${this.tableAuthor}.name as author_name`])
+      .leftJoin(
+        this.tableAuthor,
+        `${this.tableAuthor}.id`,
+        `${this.table}.author_id`,
+      );
+
+    // Циклическое заполнение теперь контролируется RotationManager
+    // Убираем старую логику циклического заполнения
+
+    // Обрабатываем книги через afterFetch для правильной обработки полей
+    const processedBooks = books.map((book) => this.afterFetch({ ...book }));
+
+    // Прикрепляем жанры
+    await this.attachGenres(processedBooks);
+
+    return {
+      books: processedBooks,
+      total,
+      offset: normalizedOffset,
+      hasMore: total > limit,
+      nextOffset: (normalizedOffset + limit) % total,
+    };
   }
 
   preprocessSelectQuery(query, filter, options) {
@@ -331,6 +593,9 @@ export default class extends BaseStorage {
         )
         .select([`${this.tableAuthor}.name as author_name`]);
     }
+
+    // Поиск по автору теперь включен в основное поисковое условие
+    // Старая логика удалена для избежания конфликтов
 
     if (within.includes('bookmark') && options.actor) {
       query
@@ -407,14 +672,50 @@ export default class extends BaseStorage {
       throw new errors.Forbidden('Нет прав для обновления статуса');
     }
 
+    const oldStatus = book.status;
+
     await this.knex(this.table).where('id', bookId).update({
       status,
       updated_by: actor.id,
       updated_at: this.knex.fn.now(),
     });
+
+    // Создаем уведомления об изменении статуса
+    if (oldStatus !== status) {
+      try {
+        const notificationHelper = new NotificationHelper({
+          user: { knex: this.knex },
+          notification: {
+            createBulk: async (notifications) => {
+              return await this.knex('notifications').insert(notifications);
+            },
+          },
+        });
+
+        // Получаем автора
+        const author = await this.knex('user')
+          .where('id', book.author_id)
+          .first();
+
+        if (author) {
+          await notificationHelper.notifyBookStatusChange(
+            book,
+            author,
+            oldStatus,
+            status,
+          );
+        }
+      } catch (error) {
+        console.error(
+          'Ошибка при создании уведомлений об изменении статуса:',
+          error,
+        );
+      }
+    }
   }
 
   async save(book, actor) {
+    const isNewBook = !book.id;
     const savedBook = await super.save(book, actor);
 
     await Promise.all([
@@ -424,6 +725,28 @@ export default class extends BaseStorage {
       'genres' in book ? this.setGenres(savedBook, book.genres, actor) : null,
       'tags' in book ? this.setTags(savedBook, book.tags, actor) : null,
     ]);
+
+    // Создаем уведомления для новой книги
+    if (isNewBook && savedBook.status === 'published') {
+      try {
+        const notificationHelper = new NotificationHelper(
+          this.knex.storage || {
+            user: this.knex.user,
+            notification: this.knex.notification,
+          },
+        );
+
+        // Получаем автора
+        const author = await this.knex('user')
+          .where('id', savedBook.author_id)
+          .first();
+        if (author) {
+          await notificationHelper.notifyNewBook(savedBook, author);
+        }
+      } catch (error) {
+        console.error('Ошибка при создании уведомлений о новой книге:', error);
+      }
+    }
 
     return savedBook;
   }

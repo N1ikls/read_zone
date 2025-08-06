@@ -1,6 +1,6 @@
 import BaseStorage from './base-storage.js';
-
 import errors from '../utils/errors';
+import NotificationHelper from '../utils/notification-helper.js';
 
 export default class extends BaseStorage {
   get table() {
@@ -147,7 +147,39 @@ export default class extends BaseStorage {
       .where('id', chapter.id)
       .first();
 
-    return this.afterFetch(newChapter);
+    const processedChapter = this.afterFetch(newChapter);
+
+    // Создаем уведомления о новой главе
+    if (processedChapter.status === 'published' || processedChapter.is_public) {
+      try {
+        // Получаем книгу и автора
+        const book = await this.knex('book').where('id', data.book_id).first();
+        const author = await this.knex('user')
+          .where('id', book.author_id)
+          .first();
+
+        if (book && author) {
+          const notificationHelper = new NotificationHelper({
+            user: { knex: this.knex },
+            notification: {
+              createBulk: async (notifications) => {
+                return await this.knex('notifications').insert(notifications);
+              },
+            },
+          });
+
+          await notificationHelper.notifyNewChapter(
+            processedChapter,
+            book,
+            author,
+          );
+        }
+      } catch (error) {
+        console.error('Ошибка при создании уведомлений о новой главе:', error);
+      }
+    }
+
+    return processedChapter;
   }
 
   async getLiked(chapter_ids, user) {

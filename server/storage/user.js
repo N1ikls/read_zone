@@ -19,12 +19,16 @@ export default class extends BaseStorage {
   get publicProperties() {
     return [
       'id',
+      'email',
       'name',
+      'role',
       'avatar',
       'books_count',
       'chapters_in_month',
       'likers_count',
       'subscribers_count',
+      'created_at',
+      'updated_at',
     ];
   }
 
@@ -147,5 +151,84 @@ export default class extends BaseStorage {
       .select('*');
 
     return this.afterFetch(newUser[0]);
+  }
+
+  // Оптимизированный метод получения пользователя
+  async findOneOptimized(filter) {
+    // Кеш для часто запрашиваемых пользователей
+    if (!this._userCache) {
+      this._userCache = new Map();
+    }
+
+    // Проверяем кеш (время жизни 5 минут)
+    const cacheKey = JSON.stringify(filter);
+    const cached = this._userCache.get(cacheKey);
+    if (cached && Date.now() - cached.timestamp < 300000) {
+      return cached.user;
+    }
+
+    // Оптимизированный запрос - выбираем только нужные поля
+    const user = await this.knex(this.table)
+      .where(filter)
+      .select([
+        'id',
+        'email',
+        'name',
+        'role',
+        'avatar',
+        'books_count',
+        'chapters_in_month',
+        'likers_count',
+        'subscribers_count',
+        'created_at',
+        'updated_at',
+        'password',
+      ])
+      .first();
+
+    if (!user) return null;
+
+    const processedUser = this.afterFetch(user);
+
+    // Сохраняем в кеш
+    this._userCache.set(cacheKey, {
+      user: processedUser,
+      timestamp: Date.now(),
+    });
+
+    // Очищаем старые записи из кеша
+    if (this._userCache.size > 100) {
+      const now = Date.now();
+      for (const [key, value] of this._userCache.entries()) {
+        if (now - value.timestamp > 300000) {
+          this._userCache.delete(key);
+        }
+      }
+    }
+
+    return processedUser;
+  }
+
+  // Метод для очистки кеша пользователя при обновлении
+  clearUserCache(userId) {
+    if (!this._userCache) return;
+
+    for (const [key] of this._userCache.entries()) {
+      if (key.includes(userId)) {
+        this._userCache.delete(key);
+      }
+    }
+  }
+
+  // Переопределяем save для очистки кеша
+  async save(entity, actor) {
+    const result = await super.save(entity, actor);
+
+    // Очищаем кеш для обновленного пользователя
+    if (result && result.id) {
+      this.clearUserCache(result.id);
+    }
+
+    return result;
   }
 }

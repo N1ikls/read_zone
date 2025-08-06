@@ -33,6 +33,7 @@
     "es-toolkit": "^1.39.1",
     "eslint-plugin-prettier": "^5.2.6",
     "next-auth": "^4.21.1",
+    "node-fetch": "^3.3.2",
     "numeral": "^2.0.6",
     "nuxt": "^3.16.2",
     "nuxt-charts": "^0.1.11",

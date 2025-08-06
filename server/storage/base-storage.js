@@ -1,5 +1,5 @@
-import { applyFilter, applyOptions } from '../utils/query-builder';
-import errors from '../utils/errors';
+import { applyFilter, applyOptions } from '../utils/query-builder.js';
+import errors from '../utils/errors.js';
 import Validator from 'validatorjs';
 
 export default class BaseStorage {
@@ -195,8 +195,21 @@ export default class BaseStorage {
 
   // Views
   async view(entity, viewer) {
-    const data = { [`${this.table}_id`]: entity.id, viewer_id: viewer.id };
-    await this.knex(this.tableViewer).insert(data).onConflict().merge();
+    const data = {
+      [`${this.table}_id`]: entity.id,
+      viewer_id: viewer.id,
+      created_at: new Date(),
+    };
+
+    // Для book_viewer теперь разрешаем множественные просмотры (новый первичный ключ включает created_at)
+    // Для других таблиц (chapter_viewer) сохраняем старое поведение
+    if (this.tableViewer === 'book_viewer') {
+      // Всегда создаем новую запись для отслеживания каждого просмотра книги
+      await this.knex(this.tableViewer).insert(data);
+    } else {
+      // Для глав сохраняем старое поведение - один просмотр на пользователя
+      await this.knex(this.tableViewer).insert(data).onConflict().merge();
+    }
 
     return this.viewers_recount(entity);
   }

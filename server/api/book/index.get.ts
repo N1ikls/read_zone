@@ -7,7 +7,12 @@ export default defineApiHandler(async (event) => {
 
   const { id } = getQuery(event);
 
-  const book = await storage.book.catalogSearch({ id });
+  const books = await storage.book.catalogSearch({ id });
+
+  if (!books || (isArray(books) && books.length === 0)) return null;
+
+  // Получаем первую книгу из результата
+  const book = isArray(books) ? books[0] : books;
 
   if (!book) return null;
 
@@ -15,5 +20,5 @@ export default defineApiHandler(async (event) => {
 
   const is_writeable = await storage.book.isWriteable(book, user);
 
-  return isArray(book) ? { ...book?.at(0), rate_counts, is_writeable } : null;
+  return { ...book, rate_counts, is_writeable };
 });

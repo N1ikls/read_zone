@@ -1,5 +1,6 @@
 import BaseStorage from './base-storage.js';
 import errors from '../utils/errors';
+import NotificationHelper from '../utils/notification-helper.js';
 
 export default class extends BaseStorage {
   get isDislikeable() {
@@ -92,5 +93,94 @@ export default class extends BaseStorage {
         })
         .select(`${this.tableLiker}.positive as is_liked`);
     }
+  }
+
+  async save(comment, actor) {
+    const isNewComment = !comment.id;
+    const savedComment = await super.save(comment, actor);
+
+    // Создаем уведомления для нового комментария
+    if (isNewComment) {
+      try {
+        const notificationHelper = new NotificationHelper({
+          user: { knex: this.knex },
+          notification: {
+            create: async (notificationData) => {
+              return await this.knex('notifications').insert(notificationData);
+            },
+          },
+        });
+
+        // Определяем тип сущности и получаем её
+        let targetEntity = null;
+        let targetType = null;
+
+        if (this.entityIdProperty === 'book_id') {
+          targetEntity = await this.knex('book')
+            .where('id', savedComment.book_id)
+            .first();
+          targetType = 'book';
+        } else if (this.entityIdProperty === 'chapter_id') {
+          targetEntity = await this.knex('chapter')
+            .where('id', savedComment.chapter_id)
+            .first();
+          targetType = 'chapter';
+        }
+
+        if (targetEntity) {
+          // Проверяем, это ответ на комментарий или новый комментарий
+          if (savedComment.parent_id) {
+            // Это ответ на комментарий
+            const parentComment = await this.knex(this.table)
+              .where('id', savedComment.parent_id)
+              .first();
+
+            if (parentComment) {
+              await notificationHelper.notifyCommentReply(
+                savedComment,
+                parentComment,
+                actor,
+              );
+            }
+          } else {
+            // Это новый комментарий к контенту
+            await notificationHelper.notifyNewComment(
+              savedComment,
+              targetEntity,
+              targetType,
+              actor,
+            );
+          }
+        }
+      } catch (error) {
+        console.error('Ошибка при создании уведомлений о комментарии:', error);
+      }
+    }
+
+    return savedComment;
+  }
+
+  async like(entity, liker, positive = true) {
+    const result = await super.like(entity, liker, positive);
+
+    // Создаем уведомление о лайке комментария
+    if (positive) {
+      try {
+        const notificationHelper = new NotificationHelper({
+          user: { knex: this.knex },
+          notification: {
+            create: async (notificationData) => {
+              return await this.knex('notifications').insert(notificationData);
+            },
+          },
+        });
+
+        await notificationHelper.notifyCommentLike(entity, liker);
+      } catch (error) {
+        console.error('Ошибка при создании уведомления о лайке:', error);
+      }
+    }
+
+    return result;
   }
 }

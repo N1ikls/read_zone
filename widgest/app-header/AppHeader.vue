@@ -61,6 +61,9 @@ const isDark = computed({
     <div class="flex items-center gap-3">
       <r-modal-search />
 
+      <!-- Уведомления для авторизованных пользователей -->
+      <NotificationDropdown v-if="user" />
+
       <ClientOnly v-if="!colorMode?.forced">
         <u-switch
           unchecked-icon="my-icons:sun"

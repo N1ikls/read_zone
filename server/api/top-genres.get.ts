@@ -40,7 +40,7 @@ export default defineApiHandler(async (event) => {
           .select([
             'book.id',
             'book.name as title',
-            'book.cover',
+            'book.background as cover',
             'book.created_at',
           ])
           .join('book_genre', 'book.id', 'book_genre.book_id')
