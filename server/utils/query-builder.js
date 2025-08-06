@@ -1,4 +1,4 @@
-import error from './errors';
+import error from './errors.js';
 
 export function applyFilter(query, filter, table, junction = ':and') {
   if (Array.isArray(filter)) {
@@ -45,7 +45,12 @@ function applyFieldFilter(query, table, junction, field, condition) {
           else if (comparator === '!=') builder.whereNotIn(field, value);
           else throw new error.DBWrongFilter();
         } else {
-          builder.andWhere(field, comparator, value);
+          // Добавляем поддержку ILIKE для case-insensitive поиска
+          if (comparator === 'ilike') {
+            builder.whereRaw(`${field} ILIKE ?`, [value]);
+          } else {
+            builder.andWhere(field, comparator, value);
+          }
         }
       });
     }

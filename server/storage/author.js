@@ -49,7 +49,15 @@ export default class extends BaseStorage {
     }
 
     if (query.id) filter.push({ id: query.id });
-    if (query.name) filter.push({ name: { like: `%${query.name}%` } });
+    // Улучшенный поиск по имени создателя манги с нормализацией
+    if (query.name) {
+      const normalizedName = query.name
+        .trim()
+        .replace(/\s+/g, ' ')
+        .toLowerCase()
+        .replace(/ё/g, 'е');
+      filter.push({ name: { ilike: `%${normalizedName}%` } });
+    }
     if (query.min_books)
       filter.push({ books_count: { '>=': query.min_books } });
     if (query.min_subs)

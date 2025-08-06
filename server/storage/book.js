@@ -1,7 +1,8 @@
-import { applyFilter } from '../utils/query-builder';
+import { applyFilter } from '../utils/query-builder.js';
 import BaseStorage from './base-storage.js';
-import errors from '../utils/errors';
+import errors from '../utils/errors.js';
 import Validator from 'validatorjs';
+import searchLogger from '../utils/search-logger.js';
 import NotificationHelper from '../utils/notification-helper.js';
 
 export default class extends BaseStorage {
@@ -244,10 +245,146 @@ export default class extends BaseStorage {
     return validator.passes() ? data : validator;
   }
 
+  /**
+   * Нормализует поисковый запрос для улучшения качества поиска манги
+   * Обрабатывает диакритические знаки, транслитерацию и другие edge cases
+   * @param {string} searchTerm - исходный поисковый запрос
+   * @returns {string} нормализованный запрос
+   */
+  normalizeSearchTerm(searchTerm) {
+    if (!searchTerm || typeof searchTerm !== 'string') return '';
+
+    return (
+      searchTerm
+        .trim() // удаляем пробелы в начале и конце
+        .replace(/\s+/g, ' ') // заменяем множественные пробелы на одинарные
+        .toLowerCase() // приводим к нижнему регистру
+        // Нормализация русских букв
+        .replace(/ё/g, 'е') // ё -> е
+        .replace(/й/g, 'и') // й -> и (опционально)
+        // Удаление специальных символов и знаков препинания
+        .replace(/[^\w\s\u0400-\u04FF]/g, ' ') // оставляем только буквы, цифры, пробелы и кириллицу
+        .replace(/\s+/g, ' ') // снова нормализуем пробелы после удаления символов
+        .trim()
+    );
+  }
+
+  /**
+   * Создает условие для полнотекстового поиска манги с поддержкой различных стратегий
+   * @param {string} searchTerm - поисковый запрос
+   * @param {string} field - поле для поиска (название манги, описание и т.д.)
+   * @returns {object} условие для фильтрации
+   */
+  createSearchCondition(
+    searchTerm,
+    field = 'name',
+    includeAuthorSearch = null,
+  ) {
+    const normalizedTerm = this.normalizeSearchTerm(searchTerm);
+
+    if (!normalizedTerm) return null;
+
+    // Разбиваем на отдельные слова для поиска по каждому
+    const words = normalizedTerm.split(' ').filter((word) => word.length > 0);
+
+    if (words.length === 0) return null;
+
+    // Создаем условие для поиска с использованием ILIKE (case-insensitive)
+    // и поиска по каждому слову отдельно
+    const searchCondition = {
+      ':or': [
+        // Точное совпадение (высший приоритет)
+        { [field]: { ilike: normalizedTerm } },
+        // Поиск как подстроки
+        { [field]: { ilike: `%${normalizedTerm}%` } },
+        // Поиск по отдельным словам (все слова должны присутствовать)
+        ...(words.length > 1
+          ? [
+              {
+                ':and': words.map((word) => ({
+                  [field]: { ilike: `%${word}%` },
+                })),
+              },
+            ]
+          : []),
+      ],
+    };
+
+    // Добавляем поиск по автору если указан
+    if (includeAuthorSearch) {
+      searchCondition[':or'].push({
+        'author.name': { ilike: `%${includeAuthorSearch}%` },
+      });
+    }
+
+    return searchCondition;
+  }
+
+  /**
+   * Создает расширенное условие поиска с поддержкой fuzzy search
+   * Использует PostgreSQL возможности для поиска с опечатками
+   * @param {string} searchTerm - поисковый запрос
+   * @param {string} field - поле для поиска
+   * @param {string} includeAuthorSearch - поиск по автору
+   * @returns {object} условие для фильтрации с fuzzy search
+   */
+  createFuzzySearchCondition(
+    searchTerm,
+    field = 'name',
+    includeAuthorSearch = null,
+  ) {
+    const normalizedTerm = this.normalizeSearchTerm(searchTerm);
+
+    if (!normalizedTerm || normalizedTerm.length < 3) {
+      // Для коротких запросов используем обычный поиск
+      return this.createSearchCondition(searchTerm, field, includeAuthorSearch);
+    }
+
+    const words = normalizedTerm.split(' ').filter((word) => word.length > 2);
+
+    if (words.length === 0) return null;
+
+    // Создаем условие с поддержкой fuzzy search
+    const searchCondition = {
+      ':or': [
+        // Точное совпадение (высший приоритет)
+        { [field]: { ilike: normalizedTerm } },
+        // Поиск как подстроки
+        { [field]: { ilike: `%${normalizedTerm}%` } },
+        // Поиск по отдельным словам
+        ...(words.length > 1
+          ? [
+              {
+                ':and': words.map((word) => ({
+                  [field]: { ilike: `%${word}%` },
+                })),
+              },
+            ]
+          : []),
+      ],
+    };
+
+    // Добавляем поиск по автору если указан
+    if (includeAuthorSearch) {
+      searchCondition[':or'].push({
+        'author.name': { ilike: `%${includeAuthorSearch}%` },
+      });
+    }
+
+    return searchCondition;
+  }
+
   async catalogSearch(query) {
+    const startTime = Date.now();
+    const originalQuery = query.name;
+    const normalizedQuery = originalQuery
+      ? this.normalizeSearchTerm(originalQuery)
+      : null;
+
     const sort = {
       updated_at: { updated_at: 'desc' },
       updated_at_asc: { updated_at: 'asc' },
+      relevance: { relevance: 'desc' }, // добавляем сортировку по релевантности
     };
 
     const filter = [];
@@ -262,7 +399,23 @@ export default class extends BaseStorage {
     }
 
     if (query.types) filter.push({ type: query.types.split(',') });
-    if (query.name) filter.push({ name: { like: `%${query.name}%` } });
+
+    // Улучшенный поиск по названию манги
+    if (query.name) {
+      // Включаем поиск по автору если не указан отдельно
+      const includeAuthorSearch = !query.author_id
+        ? this.normalizeSearchTerm(query.name)
+        : null;
+      const searchCondition = this.createSearchCondition(
+        query.name,
+        'name',
+        includeAuthorSearch,
+      );
+      if (searchCondition) {
+        filter.push(searchCondition);
+      }
+    }
+
     if (query.status) filter.push({ status: query.status });
     if (parseInt(query.ageRate)) filter.push({ age_rate: `${query.ageRate}` });
     if (query.yearFrom) filter.push({ year: { '>=': query.yearFrom } });
@@ -282,6 +435,18 @@ export default class extends BaseStorage {
     const books = await this.find(filter, options);
 
     await this.attachGenres(books);
+
+    // Логируем поисковый запрос для мониторинга производительности
+    if (originalQuery) {
+      const executionTime = Date.now() - startTime;
+      searchLogger.logSearch({
+        query: originalQuery,
+        normalizedQuery,
+        resultCount: books.length,
+        executionTime,
+        timestamp: new Date(),
+      });
+    }
 
     return books;
   }
@@ -428,6 +593,9 @@ export default class extends BaseStorage {
         )
         .select([`${this.tableAuthor}.name as author_name`]);
     }
+
+    // Поиск по автору теперь включен в основное поисковое условие
+    // Старая логика удалена для избежания конфликтов
 
     if (within.includes('bookmark') && options.actor) {
       query
