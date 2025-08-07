@@ -284,6 +284,7 @@ const { data } = useFetch<Book[]>('/api/slider-books', {
   key: 'slider-books-data',
   default: () => [],
   server: false,
+  lazy: true,
 });
 
 const { data: read } = useFetch('/api/currently-reading', {
@@ -333,15 +334,11 @@ onActivated(async () => {
             <!-- Заголовок с информацией о новинках -->
             <header class="novelties-header">
               <div class="novelties-header__main">
-                <r-header
-                  id="novelties-heading"
-                  bottom="0"
-                  class="text-[#003386] novelties-title"
-                  role="heading"
-                  aria-level="2"
+                <div
+                  class="text-[#003386] text-[70px] !font-(family-name:--font-aspa)"
                 >
-                  Новинки недели
-                </r-header>
+                  Новинки
+                </div>
                 <p
                   class="novelties-subtitle"
                   id="novelties-description"
@@ -443,14 +440,11 @@ onActivated(async () => {
             role="complementary"
             aria-labelledby="reading-now-heading"
           >
-            <r-header
-              id="reading-now-heading"
-              class="grid__read-now__title text-[#003386]"
-              role="heading"
-              aria-level="2"
+            <div
+              class="text-[#003386] text-[40px] !font-(family-name:--font-aspa) px-[35px] py-5 leading-8"
             >
               Сейчас читают
-            </r-header>
+            </div>
 
             <div
               class="reading-now-list"

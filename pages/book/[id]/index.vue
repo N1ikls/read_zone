@@ -20,19 +20,24 @@ const my18 = useCookie<boolean>('my-18', {
 
 const openAgeRate = ref(false);
 
-const { data } = await useAsyncData('book', async () => {
-  const book = await $fetch<Book>('/api/book', {
-    method: 'get',
-    query: {
-      id: route.params.id,
-    },
-  });
-  if (!book) return null;
-  return book;
-});
+const guid = computed(() => route.params?.id);
+
+const { data } = await useAsyncData(
+  computed(() => `book-${guid.value}`),
+  async () => {
+    const book = await $fetch<Book>('/api/book', {
+      method: 'get',
+      query: {
+        id: guid.value,
+      },
+    });
+    if (!book) return null;
+    return book;
+  },
+);
 
 const { data: authorBooks } = await useFetch<Book[]>('/api/book/search', {
-  key: 'author-books',
+  key: computed(() => `author-books-${data.value?.author_id}`),
   method: 'get',
   query: {
     author_id: data.value?.author_id,
