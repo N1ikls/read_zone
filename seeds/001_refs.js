@@ -1,8 +1,36 @@
 import * as helper from './helper.js';
 
 export async function seed(knex) {
+  const fandomNames = [
+    'Марвел',
+    'Гарри Поттер',
+    'Ван Пис',
+    'Наруто',
+    'Атака титанов',
+    'Моя геройская академия',
+    'Токийский гуль',
+    'Демон-истребитель',
+    'Джоджо',
+    'Берсерк',
+    'Хвост феи',
+    'Блич',
+    'Драгон Болл',
+    'Покемон',
+    'Сейлор Мун',
+    'Евангелион',
+    'Стальной алхимик',
+    'Тетрадь смерти',
+    'Код Гиас',
+    'Однажды в сказке',
+  ];
+
   const fandoms = [];
-  for (let id = 1; id <= helper.FANDOMS_COUNT; id++) {
+  for (let i = 0; i < Math.min(helper.FANDOMS_COUNT, fandomNames.length); i++) {
+    fandoms.push({ name: fandomNames[i] });
+  }
+
+  // Если нужно больше фэндомов, добавляем с номерами
+  for (let id = fandomNames.length + 1; id <= helper.FANDOMS_COUNT; id++) {
     fandoms.push({ name: `Фандом ${id}` });
   }
 

@@ -182,14 +182,17 @@ export default class extends BaseStorage {
     }
 
     if ('age_rate' in book) {
-      data.age_rate = book.age_rate?.trim();
+      data.age_rate =
+        typeof book.age_rate === 'string'
+          ? book.age_rate.trim()
+          : book.age_rate;
       rules.age_rate = 'required|in:0,16,18';
     }
 
     if ('author_id' in book) {
       data.author_id = book.author_id;
-      rules.author_id = 'required|integer|min:1';
-    } else if (!book.id) rules.author_id = 'required|integer|min:1';
+      rules.author_id = 'required|string';
+    } else if (!book.id) rules.author_id = 'required|string';
 
     if ('background' in book) data.background = book.background;
 
@@ -220,12 +223,18 @@ export default class extends BaseStorage {
 
     if ('translator_id' in book) {
       data.translator_id = book.translator_id;
-      rules.translator_id = 'required|integer|min:1';
+      rules.translator_id = 'required|string';
     }
 
     if ('type' in book) {
       data.type = book.type?.trim();
-      rules.type = 'required|in:original,translation,orig_fanfic,trans_fanfic';
+      rules.type = 'required|in:manga,oel,manhva,manhua,rumanga,comic';
+    }
+
+    if ('release_type' in book) {
+      data.release_type = book.release_type?.trim();
+      rules.release_type =
+        'required|in:4coma,collection,dodzinsi,color,single,web,webtoon';
     }
 
     if ('year' in book) {
@@ -416,7 +425,8 @@ export default class extends BaseStorage {
       }
     }
 
-    if (query.status) filter.push({ status: query.status });
+    if (query.status && query.status !== 'all')
+      filter.push({ status: query.status });
     if (parseInt(query.ageRate)) filter.push({ age_rate: `${query.ageRate}` });
     if (query.yearFrom) filter.push({ year: { '>=': query.yearFrom } });
     if (query.yearTo) filter.push({ year: { '<=': query.yearTo } });
@@ -431,6 +441,8 @@ export default class extends BaseStorage {
     if (query.fandoms) options.filterByFandoms = query.fandoms.split(',');
     if (query.id) filter.push({ id: query.id });
     if (query.author_id) filter.push({ author_id: query.author_id });
+    if (query.translator_id)
+      filter.push({ translator_id: query.translator_id });
 
     const books = await this.find(filter, options);
 
@@ -770,7 +782,7 @@ export default class extends BaseStorage {
             return { book_id: book.id, fandom_id: fandom.id };
           }),
         )
-        .onConflict()
+        .onConflict(['book_id', 'fandom_id'])
         .merge();
     }
   }
@@ -794,7 +806,7 @@ export default class extends BaseStorage {
             return { book_id: book.id, genre_id: genre.id };
           }),
         )
-        .onConflict()
+        .onConflict(['book_id', 'genre_id'])
         .merge();
     }
   }
@@ -816,7 +828,7 @@ export default class extends BaseStorage {
             return { book_id: book.id, tag_id: tag.id };
           }),
         )
-        .onConflict()
+        .onConflict(['book_id', 'tag_id'])
         .merge();
     }
   }
@@ -836,5 +848,36 @@ export default class extends BaseStorage {
       name: tag.name,
       // другие нужные поля тега
     }));
+  }
+
+  async updateTypographySettings(bookId, settings) {
+    // Сохраняем настройки типографики в JSON поле в таблице book
+    // Или можно создать отдельную таблицу book_typography_settings
+    await this.knex(this.table)
+      .where('id', bookId)
+      .update({
+        typography_settings: JSON.stringify(settings),
+        updated_at: this.knex.fn.now(),
+      });
+
+    return settings;
+  }
+
+  async getTypographySettings(bookId) {
+    const book = await this.knex(this.table)
+      .where('id', bookId)
+      .select('typography_settings')
+      .first();
+
+    if (book && book.typography_settings) {
+      try {
+        return JSON.parse(book.typography_settings);
+      } catch (error) {
+        console.error('Ошибка парсинга настроек типографики:', error);
+        return null;
+      }
+    }
+
+    return null;
   }
 }

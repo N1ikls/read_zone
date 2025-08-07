@@ -5,3 +5,4 @@ export { ItemChapter } from './item-chapter';
 export { ModalAgeRate } from './modal-age-rate';
 export { ModalNewChapter } from './modal-new-chapter';
 export { ModalActionChapter } from './modal-action-chapter';
+export { ModalNewBook } from './modal-new-book';

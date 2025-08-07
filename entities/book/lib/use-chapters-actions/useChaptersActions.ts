@@ -48,8 +48,8 @@ export const useChaptersActions = ({ refresh }: UseChaptersActions) => {
     }
   };
 
-  const edit = () => {
-    toast.add({ title: 'Удалено', color: 'primary' });
+  const edit = (item: Chapter) => {
+    navigateTo(`/chapter/${item.id}/editor`);
   };
 
   const options = (item: Chapter): DropdownMenuItem[] => [
@@ -57,7 +57,7 @@ export const useChaptersActions = ({ refresh }: UseChaptersActions) => {
       label: 'Редактировать',
       icon: 'i-lucide-edit',
       color: 'info',
-      onSelect: () => edit(),
+      onSelect: () => edit(item),
     },
     {
       label: item.is_public ? 'Заблокировать' : 'Разблокировать',

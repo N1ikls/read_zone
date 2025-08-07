@@ -63,6 +63,14 @@ export default class BaseStorage {
         for (const message of messages) errorList.push({ field, message });
       }
 
+      console.error('=== ОШИБКИ ВАЛИДАЦИИ STORAGE ===');
+      console.error('Таблица:', this.table);
+      console.error('Ошибки валидации:');
+      errorList.forEach((err, index) => {
+        console.error(`  ${index + 1}. Поле "${err.field}": ${err.message}`);
+      });
+      console.error('Данные для валидации:', data.data);
+
       throw new errors.DBValidation(errorList);
     }
 
@@ -72,7 +80,10 @@ export default class BaseStorage {
       await this.knex(this.table).where({ id: entity.id }).update(data);
       id = entity.id;
     } else {
-      [id] = await this.knex(this.table).insert(data);
+      const [insertResult] = await this.knex(this.table)
+        .insert(data)
+        .returning('id');
+      id = insertResult.id;
     }
 
     return await this.findOne({ id });

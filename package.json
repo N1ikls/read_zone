@@ -7,7 +7,7 @@
     "dev": "nuxt dev --clear",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "migration": "knex migrate:latest --knexfile knex.js",
+    "migration": "node scripts/migrate.js",
     "reset": "knex migrate:rollback --all --knexfile knex.js",
     "seed": "knex seed:run --knexfile knex.js",
     "postinstall": "nuxt prepare"

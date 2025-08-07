@@ -7,34 +7,54 @@ export default defineApiHandler(async (event) => {
     throw createError({ statusCode: 401, message: 'Необходима авторизация' });
   }
 
-  const { status = 'all', name, page = 1, limit = 10 } = getQuery(event);
+  const { type = 'all', fandom, name, page = 1, limit = 10 } = getQuery(event);
 
+  // Получаем все книги переводчика
   const books = await storage.book.catalogSearch({
-    author_id: user.id,
+    translator_id: user.id,
     name,
-    status,
   });
 
+  // Получаем закладки пользователя для дополнительной информации
   const bookmarks = await storage.bookmark.getByUserId(user.id);
+
+  // Добавляем информацию о закладках к книгам
   const booksWithBookmarks = books.map((book) => {
     const bookmark = bookmarks.find((b) => b.book_id === book.id);
     return {
       ...book,
       bookmark_type: bookmark?.type,
       is_bookmarked: !!bookmark,
+      is_writeable: book.translator_id === user.id, // Пользователь может редактировать свои переводы
     };
   });
 
+  // Фильтруем по статусу работы (не закладки)
+  let filteredBooks = booksWithBookmarks;
+  if (type !== 'all') {
+    filteredBooks = booksWithBookmarks.filter((book) => book.status === type);
+  }
+
+  // Фильтруем по фэндому если указан
+  if (fandom && fandom !== 'all') {
+    // Сначала получаем фэндомы для всех книг
+    await storage.book.attachFandoms(filteredBooks);
+    filteredBooks = filteredBooks.filter(
+      (book) => book.fandoms && book.fandoms.some((f) => f.id === fandom),
+    );
+  }
+
   const start = (Number(page) - 1) * Number(limit);
   const end = start + Number(limit);
-  const paginatedBooks = booksWithBookmarks.slice(start, end);
+  const paginatedBooks = filteredBooks.slice(start, end);
 
   await storage.book.attachGenres(paginatedBooks);
+  await storage.book.attachFandoms(paginatedBooks);
   // await storage.book.attachAuthors(paginatedBooks);
 
   return {
     items: paginatedBooks,
-    total: booksWithBookmarks.length,
+    total: filteredBooks.length,
     page: Number(page),
     limit: Number(limit),
   };

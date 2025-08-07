@@ -78,7 +78,7 @@ export default class extends BaseStorage {
         ]);
 
       const name = author.name.trim();
-      if (author.length === 0)
+      if (name.length === 0)
         throw new errors.DBValidation([
           { field: 'name', message: 'У автора должно быть имя' },
         ]);

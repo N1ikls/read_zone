@@ -1,14 +1,31 @@
 <script setup lang="ts">
-const { item = {} } = defineProps<{
-  item: Record<string, string | number | string[]>;
+interface Genre {
+  id: number;
+  name: string;
+}
+
+interface BookItem {
+  id: string | number;
+  bookmark_type?: string;
+  genres?: Genre[];
+  [key: string]: any;
+}
+
+const { item } = defineProps<{
+  item: BookItem;
 }>();
+
+// Функция для перехода к управлению главами
+const navigateToEditor = () => {
+  navigateTo(`/book/${item.id}/edit`);
+};
 </script>
 
 <template>
   <div class="w-full">
-    <div class="flex items-center justify-end">
+    <div class="flex items-center justify-end gap-2">
       <div
-        class="type w-30 text-center p-5 pt-[6px] pb-[6px] bg-[#0048B8] text-[#FFFFFF] rounded-[6px] font-normal text-sm"
+        class="type w-30 text-center p-5 pt-[6px] pb-[6px] bg-[#0048B8] text-[#FFFFFF] rounded-[6px] font-normal text-sm flex items-center justify-center"
       >
         <slot name="status" />
       </div>
@@ -86,18 +103,35 @@ const { item = {} } = defineProps<{
           </span>
         </template>
 
-        <template
-          v-if="item.rate"
-          #extra
-        >
-          <div class="extra rate">
-            <u-icon
-              mode="svg"
-              name="my-icons:rate"
-            />
+        <template #extra>
+          <div class="flex items-center gap-3">
+            <!-- Кнопка редактирования -->
+            <u-button
+              v-if="item.is_writeable"
+              variant="ghost"
+              size="xs"
+              class="p-1 hover:bg-gray-100 rounded"
+              @click.stop="navigateToEditor"
+            >
+              <u-icon
+                name="i-lucide-pencil"
+                class="w-4 h-4 text-blue-600"
+              />
+            </u-button>
 
-            <div class="text-[#131313] text-lg font-semibold">
-              {{ item.rate }}
+            <!-- Рейтинг -->
+            <div
+              v-if="item.rate"
+              class="extra rate"
+            >
+              <u-icon
+                mode="svg"
+                name="my-icons:rate"
+              />
+
+              <div class="text-[#131313] text-lg font-semibold">
+                {{ item.rate }}
+              </div>
             </div>
           </div>
         </template>
@@ -155,6 +189,7 @@ const { item = {} } = defineProps<{
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 1;
+    line-clamp: 1;
     word-break: break-all;
     overflow-wrap: break-word;
   }
