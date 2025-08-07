@@ -6,57 +6,63 @@ const { item } = defineProps<{
   item: Book;
 }>();
 </script>
+
 <template>
-  <r-thing>
-    <template #avatar>
-      <img :src="item.background" />
-    </template>
+  <nuxt-link
+    :to="`/book/${item.id}`"
+    :key="item.id"
+  >
+    <r-thing>
+      <template #avatar>
+        <img :src="item.background" />
+      </template>
 
-    {{ item?.name }}
+      {{ item?.name }}
 
-    <template
-      v-if="item.genres"
-      #content
-    >
-      <span
-        v-for="(genre, index) in item.genres"
-        class="tag"
-        :key="index"
+      <template
+        v-if="item.genres"
+        #content
       >
-        {{ genre.name }}
-      </span>
-    </template>
-
-    <template
-      v-if="item.rate"
-      #extra
-    >
-      <div class="extra">
-        <span>
-          <u-icon
-            mode="svg"
-            name="my-icons:rate"
-          />
+        <span
+          v-for="(genre, index) in item.genres"
+          class="tag"
+          :key="index"
+        >
+          {{ genre.name }}
         </span>
+      </template>
 
-        <span>{{ item.rate.toFixed(1) }}</span>
-      </div>
-    </template>
+      <template
+        v-if="item.rate"
+        #extra
+      >
+        <div class="extra">
+          <span>
+            <u-icon
+              mode="svg"
+              name="my-icons:rate"
+            />
+          </span>
 
-    <template
-      v-if="item.description"
-      #description
-    >
-      {{ item.description }}
-    </template>
+          <span>{{ item.rate.toFixed(1) }}</span>
+        </div>
+      </template>
 
-    <template
-      v-if="item.actions"
-      #actions
-    >
-      {{ item.actions }}
-    </template>
-  </r-thing>
+      <template
+        v-if="item.description"
+        #description
+      >
+        {{ item.description }}
+      </template>
+
+      <template
+        v-if="item.actions"
+        #actions
+      >
+        {{ item.actions }}
+      </template>
+    </r-thing>
+  </nuxt-link>
 </template>
 
 <style lang="scss" scoped>

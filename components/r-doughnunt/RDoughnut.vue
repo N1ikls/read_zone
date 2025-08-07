@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { Doughnut } from 'vue-chartjs';
-import type { ChartData, ChartOptions } from 'chart.js';
+import type { ChartData } from 'chart.js';
 
 defineProps<{
   amount: string;
@@ -27,7 +27,6 @@ defineProps<{
         :data="data"
         :options="options"
       >
-        dsada
       </doughnut>
     </div>
   </div>

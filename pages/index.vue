@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { RCard, RHeader } from '@/components';
+import { RHeader } from '@/components';
 import { ItemThing, ItemFilters, ItemCarousel } from '@/entities/main';
 import type { Book } from '~/shared/types';
 
@@ -15,6 +15,8 @@ const { data: news } = useFetch<Book[]>('/api/new', {
 const { data } = useFetch<Book[]>('/api/slider-books', {
   key: 'slider-books',
   default: () => [],
+  lazy: true,
+  server: false,
 });
 const { data: read } = useFetch('/api/read-now', {
   key: 'read-now',
@@ -32,11 +34,9 @@ const { data: top } = useFetch('/api/top-genres', {
       <item-carousel :items="data" />
 
       <section class="news mt-4">
-        <r-header
-          bottom="0"
-          class="text-[#003386]"
-          >Новинки
-        </r-header>
+        <div class="text-[#003386] text-[70px] !font-(family-name:--font-aspa)">
+          Новинки
+        </div>
 
         <div class="grid mt-8">
           <div class="grid__news">
@@ -63,9 +63,11 @@ const { data: top } = useFetch('/api/top-genres', {
           </div>
 
           <div class="grid__read-now">
-            <r-header class="grid__read-now__title text-[#003386]">
+            <div
+              class="text-[#003386] text-[40px] !font-(family-name:--font-aspa) px-[35px] py-5 leading-8"
+            >
               Сейчас читают
-            </r-header>
+            </div>
 
             <div
               v-for="(item, key) in read"

@@ -1,29 +1,31 @@
 <script lang="ts" setup>
+import { isEmpty } from 'es-toolkit/compat';
 import type { Book } from '~/shared/types';
 
 defineProps<{
-  items: Book[] | null;
+  items: Book[];
 }>();
 </script>
 
 <template>
-  <UCarousel
-    v-if="items"
-    v-slot="{ item }"
-    loop
-    drag-free
-    :duration="0"
-    wheel-gestures
-    :items="items"
-    :ui="{ item: 'basis-1/7' }"
-  >
-    <nuxt-link
-      :to="`/book/${item.id}`"
-      :key="item.id"
+  <template v-if="!isEmpty(items)">
+    <UCarousel
+      v-slot="{ item }"
+      loop
+      drag-free
+      arrows
+      wheel-gestures
+      :items="items"
+      :ui="{ item: 'basis-1/7' }"
     >
-      <r-card-default :item="item" />
-    </nuxt-link>
-  </UCarousel>
+      <nuxt-link
+        :to="`/book/${item.id}`"
+        :key="item.id"
+      >
+        <r-card-default :item="item" />
+      </nuxt-link>
+    </UCarousel>
+  </template>
 
   <div
     v-else

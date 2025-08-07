@@ -13,13 +13,11 @@ const revenueData = computed(() => ({
   datasets: [
     {
       backgroundColor: ['#EF9B15', '#18BDDA', '#129558'],
-      data: stats?.revenue
-        ? [
-            stats.revenue.chapters,
-            stats.revenue.donations,
-            stats.revenue.subscriptions,
-          ]
-        : [0, 0, 0],
+      data: [
+        stats.value?.revenue?.chapters || 0,
+        stats.value?.revenue?.donations || 0,
+        stats.value?.revenue?.subscriptions || 0,
+      ],
       borderRadius: 0,
       borderWidth: 0,
       radius: '85%',
@@ -36,13 +34,11 @@ const expensesData = computed(() => ({
   datasets: [
     {
       backgroundColor: ['#E75023', '#FF6B35', '#F7931E'],
-      data: stats?.expenses
-        ? [
-            stats.expenses.advertising,
-            stats.expenses.server || 0,
-            stats.expenses.other || 0,
-          ]
-        : [0, 0, 0],
+      data: [
+        stats.value.expenses.advertising || 0,
+        stats.value.expenses.server || 0,
+        stats.value.expenses.other || 0,
+      ],
       borderRadius: 0,
       borderWidth: 0,
       radius: '85%',
@@ -63,20 +59,20 @@ const formatAmount = (amount: number) => {
 };
 
 const totalRevenue = computed(() => {
-  if (!stats?.revenue) return formatAmount(0);
+  if (!stats.value?.revenue) return formatAmount(0);
   const total =
-    stats.revenue.chapters +
-    stats.revenue.donations +
-    stats.revenue.subscriptions;
+    stats.value.revenue.chapters +
+    stats.value.revenue.donations +
+    stats.value.revenue.subscriptions;
   return formatAmount(total);
 });
 
 const totalExpenses = computed(() => {
-  if (!stats?.expenses) return formatAmount(0);
+  if (!stats.value?.expenses) return formatAmount(0);
   const total =
-    stats.expenses.advertising +
-    (stats.expenses.server || 0) +
-    (stats.expenses.other || 0);
+    stats.value.expenses.advertising +
+    (stats.value.expenses.server || 0) +
+    (stats.value.expenses.other || 0);
   return formatAmount(total);
 });
 </script>

@@ -81,7 +81,7 @@ const logout = async () => {
     <UAvatar
       class="cursor-pointer"
       icon="i-lucide-image"
-      size="2xl"
+      size="lg"
     />
 
     <template #content-bottom>

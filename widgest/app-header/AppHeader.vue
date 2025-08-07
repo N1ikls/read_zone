@@ -16,6 +16,10 @@ const isDark = computed({
     colorMode.preference = _isDark ? 'dark' : 'light';
   },
 });
+
+const { data: count } = await useFetch('/api/notifications/count', {
+  method: 'get',
+});
 </script>
 
 <template>
@@ -72,6 +76,22 @@ const isDark = computed({
           <div class="h-5 w-9" />
         </template>
       </ClientOnly>
+
+      <u-chip
+        :text="count"
+        :show="!!count"
+        size="3xl"
+        color="info"
+      >
+        <u-button
+          class="rounded-full"
+          icon="my-icons:notify"
+          size="lg"
+          color="neutral"
+          variant="subtle"
+          to="/notifications"
+        />
+      </u-chip>
 
       <u-button
         v-if="!user"
