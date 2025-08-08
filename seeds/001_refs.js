@@ -36,9 +36,38 @@ export async function seed(knex) {
 
   await knex('fandom').insert(fandoms).onConflict().ignore();
 
+  // Жанры: используем реальные названия вместо заглушек
+  const genreNames = [
+    'Фэнтези',
+    'Приключения',
+    'Комедия',
+    'Романтика',
+    'Драма',
+    'Ужасы',
+    'Триллер',
+    'Детектив',
+    'Научная фантастика',
+    'Повседневность',
+    'Боевые искусства',
+    'История',
+    'Психология',
+    'Спорт',
+    'Сёнэн',
+    'Сейнен',
+    'Сёдзё',
+    'Дзёсэй',
+    'Исэкай',
+    'Мистика',
+  ];
+
   const genres = [];
-  for (let id = 1; id <= helper.GENRES_COUNT; id++) {
-    genres.push({ name: `Жанр ${id}` });
+  // сначала — реальные имена
+  for (let i = 0; i < Math.min(helper.GENRES_COUNT, genreNames.length); i++) {
+    genres.push({ name: genreNames[i] });
+  }
+  // если нужно больше жанров, докидываем заглушки с номерами
+  for (let i = genreNames.length + 1; i <= helper.GENRES_COUNT; i++) {
+    genres.push({ name: `Жанр ${i}` });
   }
 
   await knex('genre').insert(genres).onConflict().ignore();
