@@ -15,8 +15,10 @@ export default {
   },
   migrations: {
     directory: __dirname + '/migrations',
+    loadExtensions: ['.js'],
   },
   seeds: {
     directory: __dirname + '/seeds',
+    loadExtensions: ['.js'],
   },
 };

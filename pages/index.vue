@@ -292,13 +292,25 @@ const { data: read } = useFetch('/api/currently-reading', {
   query: { limit: 5 },
   default: () => [],
   server: false,
-  // Обновляем данные каждые 5 минут для актуальности
-  refresh: 'manual',
+  // Обновление выполняется вручную через возвращаемый метод refresh() при необходимости
 });
 const { data: top } = useFetch('/api/top-genres', {
   key: 'top-genres',
   default: () => [],
 });
+
+// Популярные жанры: показать больше/меньше и переход по жанрам
+const showAllTopGenres = ref(false);
+const topGenres = computed(() => (Array.isArray(top.value) ? top.value : []));
+const topGenresToShow = computed(() =>
+  showAllTopGenres.value ? topGenres.value : topGenres.value.slice(0, 4),
+);
+const getGenreCover = (genre: any) =>
+  genre?.recent_books?.[0]?.cover || '/test_banner_2.png';
+const buildGenreLink = (id: string | number) => `/catalog?genres=${id}`;
+const toggleShowGenres = () => {
+  showAllTopGenres.value = !showAllTopGenres.value;
+};
 
 // Инициализация новинок при загрузке страницы
 onMounted(async () => {
@@ -484,25 +496,40 @@ onActivated(async () => {
           class="text-[#003386]"
           bold
         >
-          Популярыне жанры
+          Популярные жанры
         </r-header>
 
-        <r-banner
-          v-for="(genre, index) in Array.isArray(top) ? top.slice(0, 4) : []"
-          :key="index"
-        >
-          {{ genre.name }}
-        </r-banner>
+        <div class="genres__list">
+          <r-banner
+            v-for="genre in topGenresToShow"
+            :key="genre.id"
+            :cover="getGenreCover(genre)"
+            :subtitle="`Более ${genre.books_count || 0} манг`"
+            :to="buildGenreLink(genre.id)"
+          >
+            {{ genre.name }}
+          </r-banner>
+        </div>
 
-        <u-button
-          block
-          color="info"
-          size="lg"
-          class="text-[18px] font-bold rounded-[10px]"
-          to="/catalog"
-        >
-          Перейти в каталог
-        </u-button>
+        <div class="flex gap-3">
+          <u-button
+            color="info"
+            size="lg"
+            class="text-[18px] font-bold rounded-[10px] flex-1"
+            @click="toggleShowGenres"
+          >
+            {{ showAllTopGenres ? 'Показать меньше' : 'Больше' }}
+          </u-button>
+
+          <u-button
+            color="info"
+            size="lg"
+            class="text-[18px] font-bold rounded-[10px] flex-1"
+            to="/catalog"
+          >
+            Перейти в каталог
+          </u-button>
+        </div>
       </section>
     </div>
   </div>

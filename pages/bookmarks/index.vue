@@ -143,7 +143,7 @@ watch(
           />
         </template>
       </div>
-      <!-- 
+
       <div class="w-73 sidebar">
         <u-button
           v-for="(name, key) in Status"
@@ -155,7 +155,7 @@ watch(
         >
           {{ name }}
         </u-button>
-      </div> -->
+      </div>
     </div>
   </NuxtLayout>
 </template>

@@ -1,4 +1,5 @@
 export enum Status {
+  'all' = 'Все',
   'discarded' = 'Заброшен',
   'done' = 'Завершенный',
   'frozen' = 'Заморожено',

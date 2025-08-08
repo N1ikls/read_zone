@@ -9,7 +9,11 @@ defineProps<{
 <template>
   <UBreadcrumb
     :items="options"
-    :ui="{ list: 'gap-0', item: 'font-normal text-[15px] text-[#999999]' }"
+    :ui="{
+      list: 'gap-2',
+      item: 'font-normal text-[15px] text-[#999999]',
+      separator: 'mx-2',
+    }"
   >
     <template #item-label="{ active, item }">
       <span
@@ -20,7 +24,7 @@ defineProps<{
       </span>
     </template>
     <template #separator>
-      <span class="text-[#999999]">/</span>
+      <span class="text-[#999999] select-none">/</span>
     </template>
   </UBreadcrumb>
 </template>
