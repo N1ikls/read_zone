@@ -567,6 +567,7 @@ export default class extends BaseStorage {
   }
 
   preprocessSelectQuery(query, filter, options) {
+    let isGrouped = false;
     if (options.filterByFandoms) {
       query.innerJoin(this.tableBookFandom, (join) => {
         join
@@ -574,6 +575,7 @@ export default class extends BaseStorage {
           .onIn(`${this.tableBookFandom}.fandom_id`, options.filterByFandoms);
       });
       query.groupBy(`${this.table}.id`);
+      isGrouped = true;
     }
 
     if (options.filterByGenres) {
@@ -583,6 +585,7 @@ export default class extends BaseStorage {
           .onIn(`${this.tableBookGenre}.genre_id`, options.filterByGenres);
       });
       query.groupBy(`${this.table}.id`);
+      isGrouped = true;
     }
 
     if (options.filterByTags) {
@@ -592,6 +595,7 @@ export default class extends BaseStorage {
           .onIn(`${this.tableBookTag}.tag_id`, options.filterByTags);
       });
       query.groupBy(`${this.table}.id`);
+      isGrouped = true;
     }
 
     const within = options.with || [];
@@ -604,6 +608,10 @@ export default class extends BaseStorage {
           `${this.table}.author_id`,
         )
         .select([`${this.tableAuthor}.name as author_name`]);
+      if (isGrouped) {
+        // Если уже был groupBy по book.id из фильтров-пивотов, добавим недостающие поля
+        query.groupBy([`${this.tableAuthor}.name`]);
+      }
     }
 
     // Поиск по автору теперь включен в основное поисковое условие
@@ -627,6 +635,9 @@ export default class extends BaseStorage {
           `${this.table}.translator_id`,
         )
         .select([`${this.tableTranslator}.name as translator_name`]);
+      if (isGrouped) {
+        query.groupBy([`${this.tableTranslator}.name`]);
+      }
     }
 
     if (within.includes('reading_history') && options.actor) {

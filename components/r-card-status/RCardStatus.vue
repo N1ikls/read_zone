@@ -29,6 +29,19 @@ const navigateToEditor = () => {
       >
         <slot name="status" />
       </div>
+
+      <u-button
+        v-if="item.is_writeable"
+        variant="ghost"
+        size="xs"
+        class="edit-btn w-6 h-6 p-0 flex items-center justify-center rounded-[6px] border border-[#97BFFF] bg-[#FFFFFF] hover:bg-[#F2F9FF]"
+        @click.stop="navigateToEditor"
+      >
+        <u-icon
+          name="my-icons:edit-pencil"
+          class="w-4 h-4"
+        />
+      </u-button>
     </div>
     <div class="item-card">
       <r-thing>
@@ -105,20 +118,6 @@ const navigateToEditor = () => {
 
         <template #extra>
           <div class="flex items-center gap-3">
-            <!-- Кнопка редактирования -->
-            <u-button
-              v-if="item.is_writeable"
-              variant="ghost"
-              size="xs"
-              class="p-1 hover:bg-gray-100 rounded"
-              @click.stop="navigateToEditor"
-            >
-              <u-icon
-                name="i-lucide-pencil"
-                class="w-4 h-4 text-blue-600"
-              />
-            </u-button>
-
             <!-- Рейтинг -->
             <div
               v-if="item.rate"

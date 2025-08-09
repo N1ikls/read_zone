@@ -6,6 +6,7 @@ import type { CatalogResponse } from '~/shared/types';
 import { isEmpty } from 'es-toolkit/compat';
 
 import { ACTIONS_BUTTONS } from './consts';
+import type { BreadcrumbItem } from '@nuxt/ui';
 
 const queries = useGetRouteQuery({
   name: null,
@@ -32,10 +33,20 @@ watch(
     debounceParsedQueries.value = newValue;
   }, 1000),
 );
+
+const breadcrumb = computed<BreadcrumbItem[]>(() => [
+  { to: '/', label: 'Главная' },
+  { to: '/user', label: 'Профиль' },
+  { label: 'Моя мастерская' },
+]);
 </script>
 
 <template>
   <NuxtLayout name="default">
+    <template #breadcrumb>
+      <r-breadcrumb :options="breadcrumb" />
+    </template>
+
     <template #title> Моя мастерская </template>
 
     <template v-if="isItems">

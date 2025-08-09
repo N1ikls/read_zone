@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { RCard, RHeader } from '@/components';
-import { ItemThing, ItemFilters, ItemCarousel } from '@/entities/main';
+import { RHeader } from '@/components';
+import { ItemThing, ItemCarousel } from '@/entities/main';
+import { ItemImg, ItemHomeCard } from '@/entities/workshop';
 import type { Book } from '~/shared/types';
+import type { CatalogResponse } from '~/shared/types';
 
 // Отключаем кэширование страницы для обеспечения актуальности новинок
 useHead({
@@ -298,6 +300,42 @@ const { data: top } = useFetch('/api/top-genres', {
   default: () => [],
 });
 
+// Данные для раздела «Мастерская» на главной
+const { data: workshop } = useFetch<CatalogResponse>('/api/catalog', {
+  key: 'home-workshop',
+  query: { limit: 12 },
+  default: () => ({ items: [], total: 0, page: 1, limit: 12 }),
+  server: false,
+});
+
+// Мастерская: пагинация 2x4
+const WORKSHOP_PAGE_SIZE = 8 as const;
+const workshopPage = ref(0);
+const workshopItems = computed(() =>
+  Array.isArray(workshop.value?.items) ? workshop.value!.items : [],
+);
+const totalWorkshopPages = computed(() =>
+  Math.max(1, Math.ceil(workshopItems.value.length / WORKSHOP_PAGE_SIZE)),
+);
+const paginatedWorkshopItems = computed(() => {
+  const start = workshopPage.value * WORKSHOP_PAGE_SIZE;
+  return workshopItems.value.slice(start, start + WORKSHOP_PAGE_SIZE);
+});
+
+const canPrevWorkshop = computed(() => workshopPage.value > 0);
+const canNextWorkshop = computed(
+  () => workshopPage.value < totalWorkshopPages.value - 1,
+);
+const prevWorkshop = () => {
+  if (canPrevWorkshop.value) workshopPage.value -= 1;
+};
+const nextWorkshop = () => {
+  if (canNextWorkshop.value) workshopPage.value += 1;
+};
+watch(workshop, () => {
+  workshopPage.value = 0;
+});
+
 // Популярные жанры: показать больше/меньше и переход по жанрам
 const showAllTopGenres = ref(false);
 const topGenres = computed(() => (Array.isArray(top.value) ? top.value : []));
@@ -485,18 +523,6 @@ onActivated(async () => {
         </div>
       </section>
 
-      <section class="filters">
-        <div class="filters__grid">
-          <div
-            v-for="(item, key) in [1, 3, 4, 5, 6, 1, 1, 1, 1]"
-            :key="key"
-            class="filters__grid-item"
-          >
-            <ItemFilters :item="{ item }" />
-          </div>
-        </div>
-      </section>
-
       <section class="genres mt-8">
         <r-header
           class="text-[#003386]"
@@ -535,6 +561,168 @@ onActivated(async () => {
           >
             Перейти в каталог
           </u-button>
+        </div>
+      </section>
+
+      <!-- Мастерская: секция под популярными жанрами -->
+      <section class="home-workshop mt-10">
+        <r-header
+          class="text-[#003386]"
+          bold
+        >
+          Мастерская
+        </r-header>
+
+        <div
+          class="bg-white light:bg-[#FFFFFF] rounded-[10px] p-4 mt-3 shadow-sm"
+        >
+          <div class="mb-3">
+            <p class="text-[20px] font-semibold text-[#0A0A0A]">
+              Создавайте, ищите и загружайте
+              <span class="text-[#0862E0]">контент!</span>
+            </p>
+          </div>
+
+          <div class="flex items-center justify-between mb-3">
+            <!-- Левый блок: чипы -->
+            <div class="flex items-center gap-2">
+              <UButton
+                color="info"
+                variant="soft"
+                class="rounded-[10px] h-[32px] px-3 text-[14px]"
+              >
+                Иллюстрации
+                <UIcon
+                  class="ml-1"
+                  name="i-lucide-x"
+                />
+              </UButton>
+              <UButton
+                color="neutral"
+                variant="soft"
+                class="rounded-[10px] h-[32px] px-3 text-[14px]"
+                >Название</UButton
+              >
+              <UButton
+                color="neutral"
+                variant="soft"
+                class="rounded-[10px] h-[32px] px-3 text-[14px]"
+                >Название</UButton
+              >
+            </div>
+
+            <!-- Правый блок: поиск и две иконки -->
+            <div class="flex items-center gap-2">
+              <UInput
+                size="md"
+                icon="i-lucide-search"
+                placeholder="Найти"
+                :ui="{
+                  base: 'rounded-[10px] h-9 placeholder:text-[#C2C2C2] placeholder:italic placeholder-text-base',
+                }"
+              />
+              <UButton
+                color="neutral"
+                variant="soft"
+                class="rounded-[10px] h-[32px] w-[32px]"
+              >
+                <UIcon name="i-lucide-layout-grid" />
+              </UButton>
+              <UButton
+                color="neutral"
+                variant="soft"
+                class="rounded-[10px] h-[32px] w-[32px]"
+              >
+                <UIcon name="i-lucide-sliders" />
+              </UButton>
+            </div>
+          </div>
+
+          <!-- Сетка 2x4 мастерской с навигацией -->
+          <template v-if="workshop && workshop.items && workshop.items.length">
+            <div class="relative">
+              <UButton
+                color="neutral"
+                variant="soft"
+                class="hidden md:flex absolute -left-8 top-1/2 -translate-y-1/2 z-10 rounded-full w-9 h-9 items-center justify-center shadow"
+                :disabled="!canPrevWorkshop"
+                @click="prevWorkshop"
+              >
+                <UIcon name="i-lucide-chevron-left" />
+              </UButton>
+
+              <div
+                class="grid gap-4"
+                style="
+                  grid-template-columns: repeat(4, 1fr);
+                  grid-template-rows: repeat(2, 1fr);
+                  grid-auto-flow: row;
+                "
+              >
+                <div
+                  v-for="item in paginatedWorkshopItems"
+                  :key="item.id"
+                >
+                  <NuxtLink :to="`/workshop/${item.id}`">
+                    <ItemHomeCard
+                      :item="item"
+                      :is-new="item.id === workshop.items[0]?.id"
+                    />
+                  </NuxtLink>
+                </div>
+              </div>
+
+              <UButton
+                color="neutral"
+                variant="soft"
+                class="hidden md:flex absolute -right-8 top-1/2 -translate-y-1/2 z-10 rounded-full w-9 h-9 items-center justify-center shadow"
+                :disabled="!canNextWorkshop"
+                @click="nextWorkshop"
+              >
+                <UIcon name="i-lucide-chevron-right" />
+              </UButton>
+            </div>
+          </template>
+
+          <template v-else>
+            <div
+              class="grid gap-4"
+              style="
+                grid-template-columns: repeat(4, 1fr);
+                grid-template-rows: repeat(2, 1fr);
+                grid-auto-flow: row;
+              "
+            >
+              <USkeleton
+                v-for="n in 8"
+                :key="n"
+                class="aspect-[1] rounded-[15px]"
+              />
+            </div>
+          </template>
+        </div>
+      </section>
+
+      <!-- Последние обновления и Топ авторов -->
+      <section
+        class="news mt-4"
+        aria-label="Последние обновления и Топ авторов"
+      >
+        <div class="grid">
+          <article
+            class="grid__news"
+            role="region"
+            aria-labelledby="latest-updates-heading"
+          >
+            <HomeLatestUpdates :initial-limit="4" />
+          </article>
+          <aside
+            class="grid__read-now"
+            role="complementary"
+            aria-labelledby="top-authors-heading"
+          >
+            <HomeTopAuthors :limit="10" />
+          </aside>
         </div>
       </section>
     </div>
