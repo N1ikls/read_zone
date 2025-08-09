@@ -1,9 +1,26 @@
+<script setup lang="ts">
+const props = defineProps<{
+  cover?: string;
+  subtitle?: string;
+  to?: string;
+}>();
+
+const coverSrc = computed(() => props.cover || '/test_banner_2.png');
+const handleGo = () => {
+  if (props.to) navigateTo(props.to);
+};
+</script>
+
 <template>
-  <div class="banner w-full mb-5">
-    <span class="relative">
+  <div
+    class="banner w-full mb-5 cursor-pointer"
+    @click="handleGo"
+  >
+    <span class="relative block">
       <img
         class="w-full object-cover"
-        src="../../public/test_banner_2.png"
+        :src="coverSrc"
+        alt="Баннер жанра"
       />
 
       <div class="banner__text select-none absolute left-10 bottom-5">
@@ -11,13 +28,17 @@
           <slot />
         </p>
 
-        <p class="text-[#F8F8F8] text-[14px] mono">Более 100 манг</p>
+        <p class="text-[#F8F8F8] text-[14px] mono">
+          {{ props.subtitle || 'Более 100 манг' }}
+        </p>
       </div>
 
       <div class="banner__actions select-none absolute right-10 bottom-7">
         <u-button
           icon="my-icons:arrow"
           class="w-[52px] h-[52px] rounded-full justify-center bg-[#C5DCFF] hover:bg-[none] cursor-pointer"
+          aria-label="Перейти к жанру"
+          @click.stop="handleGo"
         />
       </div>
     </span>

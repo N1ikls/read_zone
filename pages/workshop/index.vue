@@ -4,6 +4,7 @@ import { ItemCard, ItemFilter } from '@/entities/workshop';
 
 import type { CatalogResponse } from '~/shared/types';
 import { isEmpty } from 'es-toolkit/compat';
+import { ROUTES_WORKSHOP } from './consts';
 
 const queries = useGetRouteQuery({
   name: null,
@@ -34,6 +35,10 @@ watch(
 
 <template>
   <NuxtLayout name="default">
+    <template #breadcrumb>
+      <r-breadcrumb :options="ROUTES_WORKSHOP" />
+    </template>
+
     <template #title>
       <div class="text-2xl leading-xl font-semibold text-foreground cs-text">
         Мастерская
