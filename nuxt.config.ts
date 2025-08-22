@@ -24,6 +24,11 @@ export default defineNuxtConfig({
       pathPrefix: false,
       extensions: ['.vue'],
     },
+    {
+      path: '~/widgest',
+      pathPrefix: false,
+      extensions: ['.vue'],
+    },
   ],
   vue: {
     propsDestructure: true,

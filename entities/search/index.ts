@@ -1,1 +1,1 @@
-export { ItemCard } from './ui';
+export { ItemCard, RModalSearch } from './ui';
