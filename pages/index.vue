@@ -2,6 +2,8 @@
 import { RHeader } from '@/components';
 import { ItemThing, ItemCarousel } from '@/entities/main';
 import { ItemImg, ItemHomeCard } from '@/entities/workshop';
+import { HomeLatestUpdates } from '@/widgest/home-latest-updates';
+import { HomeTopAuthors } from '@/widgest/home-top-authors';
 import type { Book } from '~/shared/types';
 import type { CatalogResponse } from '~/shared/types';
 

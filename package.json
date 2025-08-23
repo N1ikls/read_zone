@@ -9,7 +9,10 @@
     "preview": "nuxt preview",
     "migration": "node scripts/migrate.js",
     "reset": "knex migrate:rollback --all --knexfile knex.js",
-    "seed": "knex seed:run --knexfile knex.js",
+    "seed": "node scripts/run-seeds.js",
+    "seed-knex": "knex seed:run --knexfile knex.js",
+    "check-db": "node scripts/check-database.js",
+    "setup-db": "npm run migration && npm run seed && npm run check-db",
     "postinstall": "nuxt prepare"
   },
   "dependencies": {

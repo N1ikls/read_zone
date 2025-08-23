@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { RText } from '@/components';
 import { ModalAuth, useAuth } from '@/entities/auth';
+import { RModalSearch } from '@/entities/search';
+import { NotificationDropdown } from '@/widgest/notification-dropdown';
 import { ItemAvatar } from './ui';
 
 const { showModal } = useAuth();
@@ -59,7 +61,7 @@ const isDark = computed({
     </nav>
 
     <div class="flex items-center gap-3">
-      <r-modal-search />
+      <RModalSearch />
 
       <!-- Уведомления для авторизованных пользователей -->
       <NotificationDropdown v-if="user" />
