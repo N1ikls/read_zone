@@ -139,28 +139,6 @@ const handleKeydown = (event: KeyboardEvent) => {
 
   &--clickable {
     cursor: pointer;
-
-    &:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-
-      .avatar-wrapper img {
-        transform: scale(1.05);
-      }
-
-      .book-title {
-        color: #0862e0;
-      }
-    }
-
-    &:focus {
-      outline: 2px solid #0862e0;
-      outline-offset: 2px;
-    }
-
-    &:active {
-      transform: translateY(0);
-    }
   }
 
   &--loading {

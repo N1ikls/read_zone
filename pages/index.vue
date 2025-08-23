@@ -474,7 +474,6 @@ onActivated(async () => {
                 v-for="(item, key) in displayBooks"
                 :key="item.id || key"
                 class="grid-item"
-                role="listitem"
               >
                 <ItemThing
                   :item="item"
@@ -954,14 +953,6 @@ onActivated(async () => {
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border: 0;
-}
-
-// Focus management
-.novelties-list:focus-within,
-.reading-now-list:focus-within {
-  outline: 2px solid #0862e0;
-  outline-offset: 2px;
-  border-radius: 4px;
 }
 
 // High contrast mode support
