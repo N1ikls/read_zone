@@ -121,7 +121,6 @@ const slots = useSlots();
       align-items: center;
       margin-top: 10px;
       font-size: 12px;
-      line-height: 10px;
       color: #000000;
       font-weight: 400;
     }

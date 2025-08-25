@@ -87,7 +87,9 @@ const toggleRotation = () => {
       <nuxt-link
         v-for="(item, index) in data"
         :key="index"
-        :to="!item.is_public ? undefined : `/book/${item.book_id}/${item.id}`"
+        :to="
+          !item.is_public ? undefined : `/book/${item.book_id}/${item.number}`
+        "
         @click.self
       >
         <item-card
