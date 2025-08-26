@@ -1,5 +1,8 @@
 <template>
-  <div class="relative">
+  <div
+    v-if="user"
+    class="relative"
+  >
     <!-- Кнопка уведомлений -->
     <button
       @click="toggleDropdown"
@@ -183,22 +186,45 @@ const closeDropdown = () => {
   isOpen.value = false;
 };
 
-await useAsyncData('notifications', async () => {
-  const notification = await $fetch('/api/notifications', {
-    method: 'get',
-    query: {
-      limit: 10,
-    },
+// Получаем информацию о пользователе
+let user = ref(null);
+try {
+  const userData = await $fetch('/api/auth/me');
+  user.value = userData;
+} catch (error) {
+  console.log('User not authenticated');
+}
+
+// Загружаем уведомления только если пользователь авторизован
+if (user.value) {
+  await useAsyncData('notifications', async () => {
+    try {
+      const notification = await $fetch('/api/notifications', {
+        method: 'get',
+        query: {
+          limit: 10,
+        },
+      });
+
+      if (!notification) return null;
+      notifications.value = notification.notifications;
+      unreadCount.value = notification.unread_count;
+
+      return notification;
+    } catch (error) {
+      // Если ошибка авторизации, просто не загружаем уведомления
+      if (error.statusCode === 401) {
+        console.log('User not authorized for notifications');
+        return null;
+      }
+      throw error;
+    }
   });
-
-  if (!notification) return null;
-  notifications.value = notification.notifications;
-  unreadCount.value = notification.unread_count;
-
-  return notification;
-});
+}
 
 const markAllAsRead = async () => {
+  if (!user.value) return;
+
   try {
     await $fetch('/api/notifications/mark-read', {
       method: 'POST',
@@ -215,7 +241,7 @@ const markAllAsRead = async () => {
 
 const handleNotificationClick = async (notification) => {
   // Помечаем как прочитанное если не прочитано
-  if (!notification.is_read) {
+  if (!notification.is_read && user.value) {
     try {
       await $fetch('/api/notifications/mark-read', {
         method: 'POST',
@@ -249,6 +275,8 @@ const handleNotificationClick = async (notification) => {
 };
 
 const deleteNotification = async (notificationId) => {
+  if (!user.value) return;
+
   try {
     await $fetch(`/api/notifications/${notificationId}`, {
       method: 'DELETE',
@@ -312,6 +340,7 @@ onUnmounted(() => {
 .line-clamp-2 {
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
