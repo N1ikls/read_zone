@@ -64,7 +64,9 @@ const isDark = computed({
       <RModalSearch />
 
       <!-- Уведомления для авторизованных пользователей -->
-      <NotificationDropdown v-if="user" />
+      <ClientOnly>
+        <NotificationDropdown v-if="user" />
+      </ClientOnly>
 
       <ClientOnly v-if="!colorMode?.forced">
         <u-switch
