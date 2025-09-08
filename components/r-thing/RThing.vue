@@ -1,5 +1,9 @@
 <script setup lang="ts">
 const slots = useSlots();
+
+const { clamp = '2' } = defineProps<{
+  clamp?: string;
+}>();
 </script>
 
 <template>
@@ -41,7 +45,7 @@ const slots = useSlots();
 
       <div
         v-if="slots?.description"
-        class="r-thing__description"
+        class="r-thing__description ellipsis"
       >
         <slot name="description" />
 
@@ -105,7 +109,6 @@ const slots = useSlots();
   &__header {
     display: flex;
     flex-direction: column;
-    margin-bottom: 4px;
     font-size: 20px;
     font-weight: 700;
 
@@ -119,7 +122,7 @@ const slots = useSlots();
     &-text {
       display: flex;
       align-items: center;
-      margin-top: 10px;
+      margin-top: 8px;
       font-size: 12px;
       color: #000000;
       font-weight: 400;
@@ -145,6 +148,7 @@ const slots = useSlots();
   }
 
   &__description {
+    margin-top: 4px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -152,7 +156,7 @@ const slots = useSlots();
     overflow: hidden;
     display: -webkit-box;
     -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: v-bind(clamp);
     word-break: break-all;
     overflow-wrap: break-word;
 

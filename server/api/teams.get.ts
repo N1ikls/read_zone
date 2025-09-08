@@ -15,6 +15,7 @@ export default defineApiHandler(async (event: any) => {
     // Парсим параметры запроса
     const query = getQuery(event);
     const {
+      guid,
       offset = 0,
       limit = 20,
       search,
@@ -30,6 +31,10 @@ export default defineApiHandler(async (event: any) => {
 
     if (search) {
       filter.name = { like: `%${search}%` };
+    }
+
+    if (guid) {
+      filter.id = guid;
     }
 
     // Строим опции для сортировки и пагинации
@@ -87,7 +92,7 @@ export default defineApiHandler(async (event: any) => {
       success: true,
       message: 'Команды получены успешно',
       timestamp: new Date().toISOString(),
-      data: {
+      items: {
         teams: enrichedTeams,
         total,
         offset: parsedOffset,
@@ -115,7 +120,7 @@ export default defineApiHandler(async (event: any) => {
       success: false,
       message:
         'Ошибка получения команд: ' + (error.message || 'Неизвестная ошибка'),
-      data: { teams: [], total: 0 },
+      items: { teams: [], total: 0 },
     };
   }
 });

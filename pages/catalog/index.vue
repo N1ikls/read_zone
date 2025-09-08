@@ -1,14 +1,13 @@
 <script setup lang="ts">
 import { debounce } from 'es-toolkit';
 
-import { ItemCatalog } from './ui';
-import { ROUTES } from './consts';
+import { ItemsCard } from '@/entities/catalog';
 import type { CatalogResponse } from '~/shared/types';
 
 const queries = useGetRouteQuery({
   name: null,
   page: 1,
-  limit: 100,
+  limit: 10,
 });
 
 const debounceParsedQueries = ref(unref(queries));
@@ -35,9 +34,9 @@ watch(
       </div>
     </template>
 
-    <ItemCatalog
-      :queries="queries"
+    <items-card
       :data="data"
+      :queries="queries"
     />
   </NuxtLayout>
 </template>

@@ -39,7 +39,7 @@ const isDark = computed({
         </r-text>
       </NuxtLink>
 
-      <nuxt-link to="/faq">
+      <nuxt-link to="/teams">
         <r-text
           size="large"
           class="font-semibold"
@@ -64,11 +64,11 @@ const isDark = computed({
       <RModalSearch />
 
       <!-- Уведомления для авторизованных пользователей -->
-      <ClientOnly>
-        <NotificationDropdown v-if="user" />
+      <ClientOnly v-if="user">
+        <NotificationDropdown />
       </ClientOnly>
 
-      <ClientOnly v-if="!colorMode?.forced">
+      <!-- <ClientOnly v-if="!colorMode?.forced">
         <u-switch
           unchecked-icon="my-icons:sun"
           checked-icon="my-icons:is-dark"
@@ -78,7 +78,7 @@ const isDark = computed({
         <template #fallback>
           <div class="h-5 w-9" />
         </template>
-      </ClientOnly>
+      </ClientOnly> -->
 
       <u-button
         v-if="!user"

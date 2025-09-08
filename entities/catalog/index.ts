@@ -1,4 +1,4 @@
-export { ItemFilter, ItemCard, ItemSidebar, ItemGrid } from './ui';
+export { ItemFilter, ItemCard, ItemSidebar, ItemGrid, ItemsCard } from './ui';
 
 export { useCatalogState } from './models';
 

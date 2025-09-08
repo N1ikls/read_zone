@@ -36,19 +36,33 @@ const isEmptyItems = computed(() => isEmpty(data?.items));
     <div class="column">
       <ItemFilter :queries="queries" />
 
-      <template v-if="!isEmptyItems">
+      <div
+        class="grid gap-4"
+        v-if="!isEmptyItems"
+      >
         <item-grid
           v-if="isGrid"
           :items="data!.items"
         />
 
-        <ItemCard
+        <div
           v-else
-          v-for="(item, index) in data!.items"
-          :key="index"
-          :item="item"
+          class="flex flex-col gap-4 flex-1"
+        >
+          <ItemCard
+            v-for="(item, index) in data!.items"
+            :key="index"
+            :item="item"
+          />
+        </div>
+
+        <r-pagination
+          :page="Number(queries?.page)"
+          :limit="Number(queries?.limit)"
+          :total="Number(data?.total)"
+          @update-page="handlePageChange"
         />
-      </template>
+      </div>
     </div>
 
     <ItemSidebar
@@ -56,14 +70,6 @@ const isEmptyItems = computed(() => isEmpty(data?.items));
       :queries="queries"
     />
   </div>
-
-  <r-pagination
-    v-if="!isEmptyItems"
-    :page="Number(queries?.page)"
-    :limit="Number(queries?.limit)"
-    :total="Number(data?.total)"
-    @update-page="handlePageChange"
-  />
 </template>
 
 <style lang="scss" scoped>

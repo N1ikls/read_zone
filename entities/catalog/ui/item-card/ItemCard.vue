@@ -50,7 +50,7 @@ const { item } = defineProps<{
       </template>
 
       <template #content>
-        <div class="item-card__content">
+        <div class="item-card__content mt-2">
           <div class="item-card__content-extra">
             <icon name="my-icons:timer" />
 
@@ -121,7 +121,6 @@ const { item } = defineProps<{
   padding: 20px;
   background-color: #f5f5f5;
   border-radius: 10px;
-  margin-bottom: 16px;
   cursor: pointer;
   transition: box-shadow 0.3s ease;
   &:hover {

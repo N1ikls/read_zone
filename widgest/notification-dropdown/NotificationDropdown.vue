@@ -1,8 +1,5 @@
 <template>
-  <div
-    v-if="user"
-    class="relative"
-  >
+  <div class="relative">
     <!-- Кнопка уведомлений -->
     <button
       @click="toggleDropdown"

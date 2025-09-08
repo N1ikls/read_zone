@@ -1,13 +1,53 @@
 <script setup lang="ts">
-const route = useRoute();
+import numeral from 'numeral';
+import { WORK_BY_FORMAT, TEAM_BY_SIZE, PLATFORM_BY } from './consts';
+import { debounce } from 'es-toolkit';
+import { isEmpty } from 'es-toolkit/compat';
 
-const name = ref('');
+const route = useRoute();
+const setRouteQueries = useSetRouteQuery();
+const queries = useGetRouteQuery({
+  search: null,
+  page: 1,
+  limit: 10,
+});
+
+const search = ref('');
+const debounceParsedQueries = ref(unref(queries));
 
 const ROUTES = [
   { label: 'Главная', to: '/' },
   { label: 'Сообщество', to: '/catalog' },
   { label: 'Команды' },
 ];
+
+const { data } = await useFetch('/api/teams', {
+  key: 'teams-list',
+  method: 'get',
+  query: debounceParsedQueries,
+  default: () => ({ teams: [], total: 0 }),
+});
+
+const handlePageChange = (page: number) => {
+  setRouteQueries({ page: page.toString() });
+};
+
+const onUpdateName = (value: string) => {
+  setRouteQueries(resetPaginationQuery({ search: value }));
+};
+
+const onSortDesc = (value: string) => {
+  setRouteQueries(resetPaginationQuery({ sort: value }));
+};
+
+watch(search, (value) => onUpdateName(value));
+
+watch(
+  queries,
+  debounce((newValue) => {
+    debounceParsedQueries.value = newValue;
+  }, 1000),
+);
 </script>
 
 <template>
@@ -20,7 +60,7 @@ const ROUTES = [
 
     <div class="flex gap-4 items-center mb-4">
       <UInput
-        v-model="name"
+        v-model="search"
         icon="i-lucide-search"
         size="md"
         :ui="{
@@ -32,7 +72,7 @@ const ROUTES = [
         placeholder="Найти по названию команды"
       >
         <template
-          v-if="name"
+          v-if="search"
           #trailing
         >
           <UButton
@@ -41,7 +81,7 @@ const ROUTES = [
             size="sm"
             icon="i-lucide-circle-x"
             aria-label="Clear input"
-            @click="name = ''"
+            @click="search = ''"
           />
         </template>
       </UInput>
@@ -68,98 +108,187 @@ const ROUTES = [
     </div>
 
     <div class="flex gap-4">
-      <div class="sidebar w-[250px]">
-        <div class="text-[14px] mb-4">По формату работ</div>
+      <div class="sidebar w-[250px] flex flex-col gap-6">
+        <div class="sidebar__item">
+          <div class="text-[14px] mb-4">По формату работ</div>
 
-        <u-button block> Манхва </u-button>
-      </div>
-
-      <div class="flex flex-col flex-1 gap-4">
-        <div
-          v-for="i in 5"
-          :key="i"
-          class="list grid grid-cols-[1fr_180px] gap-2"
-        >
-          <div class="bg-[var(--bg-card)] rounded-[10px] p-4">
-            <r-thing>
-              <template #avatar>
-                <img
-                  style="height: 210px; width: 160px"
-                  class="select-none size-full object-cover transition-all duration-200"
-                  src="../../public/test_banner_2.png"
-                />
-              </template>
-
-              <span class="item-card__title"> Название команды</span>
-
-              <template #text>
-                <span class="text-[15px]"> Участники: Аноним</span>
-              </template>
-
-              <template #content>
-                <div
-                  class="light:bg-[#FFFFFF] px-[6px] py-[8px] rounded-[10px] flex gap-1 items-center"
-                >
-                  <icon
-                    name="my-icons:people"
-                    class="text-[20px]"
-                    mode="svg"
-                  />
-
-                  <span class="text-[12px]">2,5 тыс </span>
-                </div>
-
-                <div
-                  class="light:bg-[#FFFFFF] px-[6px] py-[8px] rounded-[10px] flex gap-1 items-center"
-                >
-                  <icon
-                    name="my-icons:like"
-                    class="text-[20px]"
-                    mode="svg"
-                  />
-
-                  <span class="text-[12px]">2,2 млн</span>
-                </div>
-
-                <div
-                  class="light:bg-[#FFFFFF] px-[6px] py-[8px] rounded-[10px] flex gap-1 items-center"
-                >
-                  <icon
-                    name="my-icons:read-board"
-                    class="text-[20px] stroke-[1.5px]"
-                    mode="svg"
-                  />
-
-                  <span class="text-[12px]">270 работ</span>
-                </div>
-
-                <div
-                  class="p-[6px] bg-white/30 backdrop-blur-fallback rounded-[10px]"
-                >
-                  <span class="ellipsis">
-                    Описание команды – это описание команды, а рыбный текст -
-                    это текст, выполняющий исключительно утилитарную функцию. Он
-                    не вписывается в контекст сайта, на котором используется, и
-                    нужен только для заполнения пространства. Зачастую такой
-                    текст даже не имеет четкого смысла и представляет собой
-                    набор слов и фраз, которые вроде бы формируют грамматически
-                    верные конструкции, но какой-либо мысли в них не
-                    прослеживается.
-                  </span>
-                </div>
-              </template>
-            </r-thing>
-          </div>
-
-          <div
-            class="bg-[#222222] rounded-[10px] flex items-center justify-center h-full w-full"
-          >
-            <img
-              class="z-10 object-cover w-[150px]"
-              src="../../public/teams-flag.png"
-            />
+          <div class="grid gap-2">
+            <u-button
+              v-for="item in WORK_BY_FORMAT"
+              :key="item.link"
+              color="secondary"
+              block
+              class="text-[#000000]"
+            >
+              {{ item.name }}
+            </u-button>
           </div>
         </div>
+
+        <div class="sidebar__item">
+          <div class="text-[14px] mb-4">По размеру команды</div>
+
+          <div class="grid gap-2">
+            <u-button
+              v-for="item in TEAM_BY_SIZE"
+              :key="item.link"
+              color="secondary"
+              block
+              class="text-[#000000]"
+            >
+              {{ item.name }}
+            </u-button>
+          </div>
+        </div>
+
+        <div class="sidebar__item">
+          <div class="text-[14px] mb-4">По платформам</div>
+
+          <div class="grid gap-2">
+            <u-button
+              v-for="item in PLATFORM_BY"
+              :key="item.link"
+              color="secondary"
+              block
+              class="text-[#000000]"
+            >
+              {{ item.name }}
+            </u-button>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex flex-col flex-1 gap-4 items-center">
+        <div class="flex flex-col flex-1 gap-4">
+          <nuxt-link
+            v-for="team in data.items.teams"
+            :key="team.id"
+            :to="`teams/${team.id}`"
+            class="list grid grid-cols-[1fr_180px] gap-2"
+          >
+            <div class="bg-[var(--bg-card)] list__card rounded-[10px] p-4">
+              <r-thing clamp="6">
+                <template #avatar>
+                  <span
+                    class="relative inline-flex shrink-0 aspect-[2/3] overflow-hidden rounded-sm select-none w-20 md:w-24 lg:w-37"
+                  >
+                    <NuxtImg
+                      style="
+                        position: absolute;
+                        height: 100%;
+                        width: 100%;
+                        inset: 0px;
+                        color: transparent;
+                      "
+                      placeholder
+                      class="select-none size-full object-cover transition-all duration-200"
+                      :src="team.avatar || '/test_banner_2.png'"
+                      :alt="team.name"
+                    />
+                  </span>
+                </template>
+
+                <span
+                  class="item-card__title"
+                  :class="{ 'text-[#FFFFFF]': team.background }"
+                >
+                  {{ team?.name }}
+                </span>
+
+                <template #text>
+                  <span
+                    class="text-[15px]"
+                    :class="{ 'text-[#FFFFFF]': team.background }"
+                  >
+                    Участники: Аноним</span
+                  >
+                </template>
+
+                <template #content>
+                  <div
+                    class="light:bg-[#FFFFFF] px-[6px] py-[8px] rounded-[10px] flex gap-1 items-center"
+                  >
+                    <icon
+                      name="my-icons:people"
+                      class="text-[20px]"
+                      mode="svg"
+                    />
+
+                    <span class="text-[12px]">
+                      {{
+                        numeral(team?.teammates_count)
+                          .format('0.[0]a')
+                          .toUpperCase()
+                      }}
+                    </span>
+                  </div>
+
+                  <div
+                    class="light:bg-[#FFFFFF] px-[6px] py-[8px] rounded-[10px] flex gap-1 items-center"
+                  >
+                    <icon
+                      name="my-icons:chart"
+                      class="text-[20px]"
+                      mode="svg"
+                    />
+
+                    <span class="text-[12px]">
+                      {{
+                        numeral(team?.likers_count)
+                          .format('0.[0]a')
+                          .toUpperCase()
+                      }}
+                    </span>
+                  </div>
+
+                  <div
+                    class="light:bg-[#FFFFFF] px-[6px] py-[8px] rounded-[10px] flex gap-1 items-center"
+                  >
+                    <icon
+                      name="my-icons:read-board"
+                      class="text-[20px] stroke-[1.5px]"
+                      mode="svg"
+                    />
+
+                    <span class="text-[12px]">
+                      {{
+                        numeral(team?.subscribers_count)
+                          .format('0.[0]a')
+                          .toUpperCase()
+                      }}</span
+                    >
+                  </div>
+                </template>
+
+                <template #description>
+                  <div
+                    class="p-[6px] bg-white/30 backdrop-blur-fallback rounded-[10px]"
+                    :class="{ 'text-[#FFFFFF]': team.background }"
+                  >
+                    {{ team?.description }}
+                  </div>
+                </template>
+              </r-thing>
+            </div>
+
+            <div
+              class="bg-[#222222] rounded-[10px] flex items-center justify-center h-full w-full"
+            >
+              <img
+                class="z-10 object-cover w-[150px]"
+                src="../../public/teams-flag.png"
+              />
+            </div>
+          </nuxt-link>
+        </div>
+
+        <r-pagination
+          v-if="!isEmpty(data.items.teams)"
+          :page="Number(queries?.page)"
+          :limit="Number(queries?.limit)"
+          :total="Number(data.items?.total)"
+          @update-page="handlePageChange"
+        />
       </div>
     </div>
   </NuxtLayout>
@@ -172,19 +301,15 @@ const ROUTES = [
 :deep(.r-thing__header-content) {
   margin-top: 6px;
 }
-
+.list {
+  &__card {
+    background-position: 50% 50%;
+    background-size: cover;
+    background-repeat: no-repeat;
+  }
+}
 .backdrop-blur-fallback {
   backdrop-filter: blur(4.7px);
   -webkit-backdrop-filter: blur(4.7px);
-}
-
-.ellipsis {
-  font-size: 12px;
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 6;
-  word-break: break-all;
-  overflow-wrap: break-word;
 }
 </style>
