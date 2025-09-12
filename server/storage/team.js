@@ -33,6 +33,7 @@ export default class extends BaseStorage {
       'likers_count',
       'subscribers_count',
       'books',
+      'created_by'
     ];
   }
 
@@ -105,7 +106,7 @@ export default class extends BaseStorage {
     const [creator, teammates] = await Promise.all([
       this.knex('user')
         .where('id', team.created_by)
-        .select('user.*', this.knex.raw('"creator" as team_role')),
+        .select('user.*', this.knex.raw("'creator' as team_role")),
       this.knex('user')
         .innerJoin(
           this.tableTeammate,
