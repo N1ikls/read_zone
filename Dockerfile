@@ -4,6 +4,10 @@ FROM node:20-alpine
 # Устанавливаем рабочую директорию
 WORKDIR /app
 
+# Аргумент для выбора Nitro preset на этапе сборки
+ARG NITRO_PRESET=node-server
+ENV NITRO_PRESET=$NITRO_PRESET
+
 # Копируем package.json и package-lock.json
 COPY package*.json ./
 

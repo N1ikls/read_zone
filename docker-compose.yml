@@ -24,12 +24,13 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        NITRO_PRESET: node-server
     restart: unless-stopped
     ports:
       - "3000:3000"
     environment:
       - NODE_ENV=production
-      - NITRO_PRESET=node-server
       - DB_HOST=database
       - DB_PORT=5432
       - DB_USER=postgres
