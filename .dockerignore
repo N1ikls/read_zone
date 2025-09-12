@@ -40,6 +40,9 @@ Thumbs.db
 docs/
 documentation/
 
+# Но включаем нужные файлы данных
+!manga_2.csv
+
 # Testing
 test/
 tests/

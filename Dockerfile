@@ -20,4 +20,4 @@ RUN npm run build
 EXPOSE 3000
 
 # Запускаем setup-db перед стартом приложения, затем preview
-CMD ["sh", "-c", " npm run migration && npm run seed && npm run preview"]
+CMD ["sh", "-c", " npm run migration && npm run preview"]
