@@ -25,9 +25,20 @@ const { data } = await useFetch('/api/teams', {
     return {
       ...obj,
       ...(teams?.at(0) || {}),
-    } as Team & { total: number; offset: number; limit: number; hasMore: boolean; };
+    } as Team & {
+      total: number;
+      offset: number;
+      limit: number;
+      hasMore: boolean;
+    };
   },
-  default: () => ({} as Team & { total: number; offset: number; limit: number; hasMore: boolean; }),
+  default: () =>
+    ({}) as Team & {
+      total: number;
+      offset: number;
+      limit: number;
+      hasMore: boolean;
+    },
 });
 
 const active = computed({
@@ -216,7 +227,7 @@ const active = computed({
             <TeamInfo :item="data" />
           </template>
           <template #work>
-            <TeamWorks :item="data" />
+            <TeamWorks />
           </template>
         </UTabs>
       </section>
