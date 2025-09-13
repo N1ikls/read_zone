@@ -62,12 +62,21 @@ export default defineApiHandler(async (event: any) => {
             teammates = await storage.team.getTeammates(team);
           }
 
+          teammates.map((teammate: any) => {
+            if (teammate.team_role === 'creator' || teammate.team_role === 'admin') {
+              teammate.is_admin = true;
+            } else {
+              teammate.is_admin = false;
+            }
+          });
+
           // Получаем книги команды
           const books = await storage.team.getBooks(team);
 
           return {
             ...team,
             teammates_count: teammates?.length || 0,
+            teammates: teammates || [],
             books_count: books?.length || 0,
             books: books?.slice(0, 3) || [], // Показываем только первые 3 книги
           };
@@ -79,6 +88,7 @@ export default defineApiHandler(async (event: any) => {
           return {
             ...team,
             teammates_count: 0,
+            teammates: [],
             books_count: 0,
             books: [],
           };

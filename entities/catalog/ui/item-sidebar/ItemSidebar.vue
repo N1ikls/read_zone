@@ -8,11 +8,16 @@ const { queries = {} } = defineProps<{
   queries: Record<string, string | number | string[] | undefined>;
 }>();
 
-const setRouteQueries = useSetRouteQuery();
-
 const catalogState = useCatalogState();
-
+const setRouteQueries = useSetRouteQuery();
 const { showSidebar } = catalogState;
+
+const tagsValue = ref(splitQueryValue(queries?.tags as string));
+const genresValue = ref(splitQueryValue(queries?.genres as string));
+const ageRateValue = ref(splitQueryValue(queries?.ageRate as string));
+const typesValue = ref(splitQueryValue(queries?.types as string));
+const releaseTypeValue = ref(splitQueryValue(queries?.release_type as string));
+const statusValue = ref(splitQueryValue(queries?.status as string));
 
 const { data: tag } = useFetch('/api/tag', {
   key: 'catalog-tags',
@@ -23,18 +28,14 @@ const { data: genres } = useFetch('/api/genres', {
   default: () => [],
 });
 
-const tagsValue = ref(splitQueryValue(queries?.tags));
-const genresValue = ref(splitQueryValue(queries?.genres));
-
-const onUpdateString = (key: string, value: SelectValue) => {
+const onUpdateString = (key: string, value: SelectValue | Event) => {
   setRouteQueries(
     resetPaginationQuery({
       [key]: value as string | string[],
     }),
   );
 };
-
-const onUpdateArray = (key: string, value: string[] | string) => {
+const onUpdateArray = (key: string, value: string[] | string | Event) => {
   setRouteQueries(
     resetPaginationQuery({
       [key]: Array.isArray(value) ? value.join(',') : (value as string),
@@ -67,7 +68,7 @@ const onUpdateArray = (key: string, value: string[] | string) => {
             valueKey="id"
             v-model="genresValue"
             :items="genres"
-            @update:model-value="(value) => onUpdateArray('genres', value)"
+            @update:model-value="(value: any) => onUpdateArray('genres', value)"
           >
             <template
               v-if="genresValue.length"
@@ -96,7 +97,7 @@ const onUpdateArray = (key: string, value: string[] | string) => {
             valueKey="id"
             v-model="tagsValue"
             :items="tag"
-            @update:model-value="(value) => onUpdateArray('tags', value)"
+            @update:model-value="(value: any) => onUpdateArray('tags', value)"
           >
             <template
               v-if="tagsValue.length"
@@ -123,14 +124,18 @@ const onUpdateArray = (key: string, value: string[] | string) => {
           <div class="sidebar__item-input">
             <u-input
               placeholder="от"
-              @update:value="(value) => onUpdateString('chaptersFrom', value)"
+              @update:model-value="
+                (value: any) => onUpdateString('chaptersFrom', value)
+              "
               :value="queries?.chaptersFrom"
             />
             <span />
 
             <u-input
               placeholder="до"
-              @update:value="(value) => onUpdateString('chaptersTo', value)"
+              @update:model-value="
+                (value: any) => onUpdateString('chaptersTo', value)
+              "
               :value="queries?.chaptersTo"
             />
           </div>
@@ -142,13 +147,17 @@ const onUpdateArray = (key: string, value: string[] | string) => {
           <div class="sidebar__item-input">
             <u-input
               placeholder="от"
-              @update:value="(value) => onUpdateString('yearFrom', value)"
+              @update:model-value="
+                (value: any) => onUpdateString('yearFrom', value)
+              "
               :value="queries?.yearFrom"
             />
             <span />
             <u-input
               placeholder="до"
-              @update:value="(value) => onUpdateString('yearTo', value)"
+              @update:model-value="
+                (value: any) => onUpdateString('yearTo', value)
+              "
               :value="queries?.yearTo"
             />
           </div>
@@ -160,13 +169,17 @@ const onUpdateArray = (key: string, value: string[] | string) => {
           <div class="sidebar__item-input">
             <u-input
               placeholder="от"
-              @update:value="(value) => onUpdateString('rateFrom', value)"
+              @update:model-value="
+                (value: any) => onUpdateString('rateFrom', value)
+              "
               :value="queries?.rateFrom"
             />
             <span />
             <u-input
               placeholder="до"
-              @update:value="(value) => onUpdateString('rateTo', value)"
+              @update:model-value="
+                (value: any) => onUpdateString('rateTo', value)
+              "
               :value="queries?.rateTo"
             />
           </div>
@@ -176,10 +189,12 @@ const onUpdateArray = (key: string, value: string[] | string) => {
           <label>Возрастной рейтинг</label>
           <u-checkbox-group
             color="secondary"
-            :value="splitQueryValue(queries?.ageRate)"
+            v-model="ageRateValue"
+            @update:model-value="
+              (value: any) => onUpdateString('ageRate', value)
+            "
             name="checkboxgroup"
             :items="BOOKS_AGE"
-            @change="(value) => onUpdateArray('ageRate', value)"
             :ui="{
               fieldset: 'sidebar__item-checkbox',
             }"
@@ -194,9 +209,9 @@ const onUpdateArray = (key: string, value: string[] | string) => {
               fieldset: 'sidebar__item-checkbox',
             }"
             name="checkboxgroup"
-            :value="splitQueryValue(queries?.types)"
+            v-model="typesValue"
+            @update:model-value="(value: any) => onUpdateString('types', value)"
             :items="BOOKS_TYPE"
-            @change="(value) => onUpdateArray('types', value)"
           />
         </div>
 
@@ -208,9 +223,11 @@ const onUpdateArray = (key: string, value: string[] | string) => {
               fieldset: 'sidebar__item-checkbox',
             }"
             name="checkboxgroup"
-            :value="splitQueryValue(queries?.release_type)"
+            v-model="releaseTypeValue"
+            @update:model-value="
+              (value: any) => onUpdateString('release_type', value)
+            "
             :items="RELEASE_TYPE"
-            @change="(value) => onUpdateArray('release_type', value)"
           />
         </div>
 
@@ -218,13 +235,15 @@ const onUpdateArray = (key: string, value: string[] | string) => {
           <label>Статус перевода</label>
           <u-checkbox-group
             color="secondary"
-            :value="splitQueryValue(queries?.status)"
+            v-model="statusValue"
+            @update:model-value="
+              (value: any) => onUpdateString('status', value)
+            "
             :ui="{
               fieldset: 'sidebar__item-checkbox',
             }"
             name="checkboxgroup"
             :items="STATUS"
-            @change="(value) => onUpdateArray('status', value)"
           />
         </div>
 

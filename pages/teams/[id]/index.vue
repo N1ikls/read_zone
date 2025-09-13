@@ -2,6 +2,7 @@
 import numeral from 'numeral';
 import { TABS } from './consts';
 import { TeamInfo, TeamWorks } from '@/entities/teams';
+import type { TeamsApiResponse, Team } from '@/shared/types';
 
 const route = useRoute();
 const router = useRouter();
@@ -18,15 +19,26 @@ const guid = computed(() => route.params?.id);
 const { data } = await useFetch('/api/teams', {
   key: computed(() => `team-${guid.value}`),
   query: { guid: guid.value },
-  transform: (response) => {
+  transform: (response: TeamsApiResponse) => {
     const { teams, ...obj } = response?.items;
 
     return {
       ...obj,
       ...(teams?.at(0) || {}),
+    } as Team & {
+      total: number;
+      offset: number;
+      limit: number;
+      hasMore: boolean;
     };
   },
-  default: () => ({}),
+  default: () =>
+    ({}) as Team & {
+      total: number;
+      offset: number;
+      limit: number;
+      hasMore: boolean;
+    },
 });
 
 const active = computed({
@@ -215,7 +227,7 @@ const active = computed({
             <TeamInfo :item="data" />
           </template>
           <template #work>
-            <TeamWorks :item="data" />
+            <TeamWorks />
           </template>
         </UTabs>
       </section>

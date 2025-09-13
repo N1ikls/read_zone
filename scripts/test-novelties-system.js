@@ -4,10 +4,10 @@ import fetch from 'node-fetch';
 const db = knex({
   client: 'pg',
   connection: {
-    port: 5432,
+    port: 5555,
     host: 'localhost',
-    user: 'postgres',
-    password: 'postgres',
+    user: 'botcheks',
+    password: 'fekfrkenfekrjne3434',
     database: 'read_zone_db',
   }
 });
