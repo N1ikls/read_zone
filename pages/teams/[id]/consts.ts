@@ -4,19 +4,19 @@ export const TABS: TabsItem[] = [
   {
     label: 'О команде',
     value: 'main',
-    icon: '',
+    icon: 'my-icons:list-statistic',
     slot: 'main' as const,
   },
   {
     label: 'Работы',
     value: 'work',
-    icon: '',
+    icon: 'my-icons:models',
     slot: 'work' as const,
   },
   {
     label: 'Новости',
     value: 'news',
-    icon: '',
+    icon: 'my-icons:ban-list',
     slot: 'news' as const,
   },
 ];

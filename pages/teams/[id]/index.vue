@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import numeral from 'numeral';
 import { TABS } from './consts';
-import { TeamInfo, TeamWorks } from '@/entities/teams';
+import { TeamInfo, TeamWorks, ModalRequest } from '@/entities/teams';
+import { useAuth } from '~/entities/auth';
 
 const route = useRoute();
 const router = useRouter();
@@ -12,6 +13,8 @@ const ROUTES = [
   { label: 'Команды' },
   { label: 'Название команды' },
 ];
+
+const { user } = useAuth();
 
 const guid = computed(() => route.params?.id);
 
@@ -179,17 +182,10 @@ const active = computed({
                     block
                     size="xl"
                   >
-                    Подписаться</u-button
-                  >
-                  <u-button
-                    class="font-bold"
-                    color="info"
-                    variant="outline"
-                    block
-                    size="xl"
-                  >
-                    Подать заявку</u-button
-                  >
+                    Подписаться
+                  </u-button>
+
+                  <modal-request />
                 </div>
               </div>
             </div>

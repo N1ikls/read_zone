@@ -140,10 +140,7 @@ const { clamp = '2' } = defineProps<{
     margin-right: 12px;
     margin-top: 2px;
     :deep(img) {
-      width: 100px;
-      height: 132px;
       border-radius: 5px;
-      object-fit: cover;
     }
   }
 

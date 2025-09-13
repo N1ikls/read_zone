@@ -14,10 +14,23 @@ const { item } = defineProps<{
   >
     <r-thing>
       <template #avatar>
-        <img
-          class="w-full object-cover"
-          :src="item.background"
-        />
+        <span
+          class="relative inline-flex shrink-0 aspect-[2/3] overflow-hidden rounded-sm select-none h-40 md:h-35 lg:h-35"
+        >
+          <NuxtImg
+            class="select-none size-full object-cover transition-all duration-200"
+            style="
+              position: absolute;
+              height: 100%;
+              width: 100%;
+              inset: 0px;
+              color: transparent;
+            "
+            placeholder
+            :src="item.background"
+            :alt="item.alt_name"
+          />
+        </span>
       </template>
 
       <span class="item-card__title"> {{ item?.name }}</span>

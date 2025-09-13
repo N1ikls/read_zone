@@ -227,7 +227,7 @@ watch(
                     class="light:bg-[#FFFFFF] px-[6px] py-[8px] rounded-[10px] flex gap-1 items-center"
                   >
                     <icon
-                      name="my-icons:chart"
+                      name="my-icons:like"
                       class="text-[20px]"
                       mode="svg"
                     />

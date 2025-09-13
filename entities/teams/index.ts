@@ -1,1 +1,1 @@
-export { TeamInfo, TeamWorks } from './ui';
+export { TeamInfo, TeamWorks, ModalRequest } from './ui';
