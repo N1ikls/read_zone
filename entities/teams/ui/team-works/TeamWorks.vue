@@ -16,8 +16,8 @@ const queries = useGetRouteQuery({
 const { data } = useFetch<TeamBooksApiResponse>(
   computed(() => `/api/teams/${teamId.value}/books`),
   {
-    method: 'get',
-    query: queries,
+    method: 'post',
+    body: queries,
   },
 );
 
@@ -31,10 +31,6 @@ const catalogData = computed(() => ({
 
 <template>
   <div class="work mt-4">
-    <pre>
-      {{ data }}
-    </pre>
-
     <ItemsCard
       :data="catalogData"
       :queries="queries"
