@@ -1,8 +1,9 @@
 <script lang="ts" setup>
 import { ItemCard } from '@/entities/catalog';
+import type { Team } from '@/shared/types';
 
 const { item } = defineProps<{
-  item: Record<string, string>;
+  item: Team;
 }>();
 </script>
 
@@ -31,18 +32,22 @@ const { item } = defineProps<{
 
     <div class="team-info__sidebar">
       <div class="border-1 border-[#C2C2C2] rounded-[10px] p-2.5 mb-5">
-        <p class="text-[20px] mb-3">Участники 10</p>
+        <p class="text-[20px] mb-3">Участники {{ item?.teammates_count }}</p>
 
         <div class="px-2">
-          <div class="flex items-center gap-2">
+          <div
+            v-for="teammate in item?.teammates || []"
+            :key="teammate.id"
+            class="flex items-center gap-2"
+          >
             <UAvatar
-              src="/test_avatar.png"
+              :src="teammate.avatar || '/test_avatar.png'"
               class="size-12"
             />
 
             <div class="flex flex-col gap-0.5">
-              <p class="text-[14px]">Имя участника</p>
-              <p class="text-[12px] text-[#0048B8]">Должность</p>
+              <p class="text-[14px]">{{ teammate.name }}</p>
+              <p class="text-[12px] text-[#0048B8]">{{ teammate.team_role || 'Участник' }}</p>
             </div>
           </div>
         </div>

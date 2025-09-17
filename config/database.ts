@@ -1,9 +1,5 @@
-import { dirname } from 'path';
-import { fileURLToPath } from 'url';
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
-
-export default {
+// Конфигурация базы данных с использованием переменных окружения
+export const databaseConfig = {
   client: 'pg',
   connection: {
     host: process.env.VITE_DB_HOST || 'localhost',
@@ -13,11 +9,11 @@ export default {
     database: process.env.VITE_DB_NAME || 'read_zone_db',
   },
   migrations: {
-    directory: __dirname + '/migrations',
+    directory: './migrations',
     loadExtensions: ['.js'],
   },
   seeds: {
-    directory: __dirname + '/seeds',
+    directory: './seeds',
     loadExtensions: ['.js'],
   },
 };

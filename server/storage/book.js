@@ -401,7 +401,7 @@ export default class extends BaseStorage {
       with: ['author', 'translator'],
     };
 
-    if ('sort' in query) {
+    if (query.sort) {
       if (!sort?.[query.sort])
         throw new errors.BadRequest('Нет такой сортировки');
       options.order = sort[query.sort];
@@ -425,9 +425,33 @@ export default class extends BaseStorage {
       }
     }
 
-    if (query.status && query.status !== 'all')
-      filter.push({ status: query.status });
-    if (parseInt(query.ageRate)) filter.push({ age_rate: `${query.ageRate}` });
+    // Обрабатываем status как список значений (может быть строка с запятыми)
+    if (query.status && query.status !== 'all') {
+      if (query.status.includes(',')) {
+        filter.push({ status: query.status.split(',') });
+      } else {
+        filter.push({ status: query.status });
+      }
+    }
+    
+    // Обрабатываем ageRate как список значений
+    if (query.ageRate) {
+      if (query.ageRate.includes(',')) {
+        const ageRates = query.ageRate.split(',').map(rate => `${rate.trim()}`);
+        filter.push({ age_rate: ageRates });
+      } else if (parseInt(query.ageRate)) {
+        filter.push({ age_rate: `${query.ageRate}` });
+      }
+    }
+    
+    // Добавляем обработку release_type
+    if (query.release_type) {
+      if (query.release_type.includes(',')) {
+        filter.push({ release_type: query.release_type.split(',') });
+      } else {
+        filter.push({ release_type: query.release_type });
+      }
+    }
     if (query.yearFrom) filter.push({ year: { '>=': query.yearFrom } });
     if (query.yearTo) filter.push({ year: { '<=': query.yearTo } });
     if (query.chaptersFrom)
@@ -442,7 +466,7 @@ export default class extends BaseStorage {
     if (query.id) filter.push({ id: query.id });
     if (query.author_id) filter.push({ author_id: query.author_id });
     if (query.translator_id)
-      filter.push({ translator_id: query.translator_id });
+      filter.push({ translator_id: query.translator_id.split(',') });
 
     const books = await this.find(filter, options);
 

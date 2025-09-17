@@ -57,7 +57,7 @@ export default defineNuxtConfig({
   },
 
   nitro: {
-    preset: 'cloudflare-pages',
+    preset: process.env.NITRO_PRESET || 'cloudflare-pages',
     experimental: {
       wasm: true,
     },
@@ -81,7 +81,7 @@ export default defineNuxtConfig({
         target: 'es2022',
       },
     },
-    alias: {
+    alias: process.env.NITRO_PRESET === 'node-server' ? {} : {
       bcrypt: 'unenv/runtime/mock/proxy',
       mysql: 'unenv/runtime/mock/proxy',
       mysql2: 'unenv/runtime/mock/proxy',

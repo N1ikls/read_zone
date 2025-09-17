@@ -54,3 +54,113 @@ export interface CatalogResponse {
   limit: number;
   items: Book[];
 }
+
+export interface User {
+  id: string;
+  created_at: string;
+  updated_at: string | null;
+  email: string;
+  name: string;
+  role: '' | 'admin' | 'moderator';
+  avatar: string | null;
+  email_subscription: boolean;
+  books_count: number;
+  chapters_in_month: number;
+  likers_count: number;
+  subscribers_count: number;
+}
+
+export interface Teammate extends User {
+  team_role: 'creator' | 'admin' | '';
+}
+
+export interface Team {
+  id: string;
+  name: string;
+  description: string | null;
+  avatar: string | null;
+  background: string | null;
+  created_at: string;
+  updated_at: string | null;
+  created_by: string;
+  teammates_count: number;
+  books_count: number;
+  subscribers_count: number;
+  likers_count: number;
+  teammates: Teammate[];
+  books: Book[];
+}
+
+export interface TeamsApiRequest {
+  guid?: string;
+  offset?: number;
+  limit?: number;
+  search?: string;
+  sort?: string;
+  order?: 'asc' | 'desc';
+}
+
+export interface TeamsApiResponse {
+  success: boolean;
+  message: string;
+  timestamp: string;
+  items: {
+    teams: Team[];
+    total: number;
+    offset: number;
+    limit: number;
+    hasMore: boolean;
+  };
+  meta: {
+    pagination: {
+      offset: number;
+      limit: number;
+      total: number;
+      hasMore: boolean;
+      nextOffset: number | null;
+    };
+    filters: {
+      search: string | null;
+      sort: string;
+      order: string;
+    };
+  };
+}
+
+export interface TeamBooksApiRequest {
+  offset?: number;
+  limit?: number;
+  sort?: string;
+  order?: 'asc' | 'desc';
+  filters?: {
+    types?: string[];
+  };
+}
+
+export interface TeamBooksApiResponse {
+  success: boolean;
+  message: string;
+  timestamp: string;
+  items: {
+    books: Book[];
+    total: number;
+    page: number;
+    limit: number;
+    hasMore: boolean;
+  };
+  meta: {
+    team: {
+      id: string;
+      name: string;
+    };
+    pagination: {
+      page: number;
+      limit: number;
+      total: number;
+      hasMore: boolean;
+      nextPage: number | null;
+      totalPages: number;
+    };
+    filters: Record<string, any>;
+  };
+}
