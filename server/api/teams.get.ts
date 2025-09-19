@@ -73,12 +73,33 @@ export default defineApiHandler(async (event: any) => {
           // Получаем книги команды
           const books = await storage.team.getBooks(team);
 
+          // Если запрашивается конкретная команда (по guid), получаем комментарии
+          let comments = [];
+          if (guid && guid === team.id) {
+            try {
+              comments = await storage.teamComment.find(
+                { team_id: team.id },
+                {
+                  orderBy: [{ column: 'created_at', order: 'desc' }],
+                  with: ['is_liked'],
+                  actor: user,
+                  toPublic: true
+                }
+              );
+            } catch (error) {
+              console.error(`Ошибка получения комментариев для команды ${team.id}:`, error);
+              comments = [];
+            }
+          }
+
           return {
             ...team,
             teammates_count: teammates?.length || 0,
             teammates: teammates || [],
             books_count: books?.length || 0,
             books: books?.slice(0, 3) || [], // Показываем только первые 3 книги
+            comments: comments || [],
+            comments_count: comments?.length || 0,
           };
         } catch (error) {
           console.error(
