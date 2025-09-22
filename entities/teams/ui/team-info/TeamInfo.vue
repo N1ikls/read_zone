@@ -5,6 +5,48 @@ import type { Team } from '@/shared/types';
 const { item } = defineProps<{
   item: Team;
 }>();
+
+const emits = defineEmits<{
+  refresh: [];
+}>();
+
+const route = useRoute();
+
+const guid = computed(() => route.params?.id);
+
+const onCreateComment = async (value: string) => {
+  await $fetch(`/api/teams/${guid.value}/comments/create`, {
+    method: 'post',
+    body: {
+      content: value,
+    },
+  });
+
+  emits('refresh');
+};
+
+const onReply = async (id: string, value: string) => {
+  await $fetch(`/api/teams/${guid.value}/comments/create`, {
+    method: 'post',
+    body: {
+      parent_id: id,
+      content: value,
+    },
+  });
+
+  emits('refresh');
+};
+
+const onLike = async (id: string, positive: boolean) => {
+  await $fetch(`/api/teams/${guid.value}/comments/${id}/like`, {
+    method: 'post',
+    body: {
+      positive,
+    },
+  });
+
+  emits('refresh');
+};
 </script>
 
 <template>
@@ -47,7 +89,9 @@ const { item } = defineProps<{
 
             <div class="flex flex-col gap-0.5">
               <p class="text-[14px]">{{ teammate.name }}</p>
-              <p class="text-[12px] text-[#0048B8]">{{ teammate.team_role || 'Участник' }}</p>
+              <p class="text-[12px] text-[#0048B8]">
+                {{ teammate.team_role || 'Участник' }}
+              </p>
             </div>
           </div>
         </div>
@@ -79,5 +123,15 @@ const { item } = defineProps<{
         </div>
       </div>
     </div>
+  </div>
+
+  <div class="teams-comments">
+    <r-comments
+      :items="item.comments"
+      :count="item.comments_count"
+      @create="onCreateComment"
+      @like="onLike"
+      @reply="onReply"
+    />
   </div>
 </template>

@@ -46,14 +46,17 @@ export default class extends BaseStorage {
     }
 
     if (this.entityIdProperty in comment) {
-      if (
-        typeof comment[this.entityIdProperty] !== 'number' ||
-        comment[this.entityIdProperty] < 1
-      )
+      // Проверяем UUID (строка) или число
+      const entityId = comment[this.entityIdProperty];
+      const isValidUuid = typeof entityId === 'string' && entityId.length === 36 && /^[0-9a-f-]{36}$/i.test(entityId);
+      const isValidNumber = typeof entityId === 'number' && entityId > 0;
+      
+      if (!isValidUuid && !isValidNumber) {
         throw new errors.DBValidation([
           { message: 'Неправильный идентификатор сущности' },
         ]);
-      data[this.entityIdProperty] = comment[this.entityIdProperty];
+      }
+      data[this.entityIdProperty] = entityId;
     }
 
     if ('content' in comment) {
@@ -88,7 +91,8 @@ export default class extends BaseStorage {
         .leftJoin(this.tableLiker, function () {
           this.on(`${self.tableLiker}.${self.table}_id`, `${self.table}.id`).on(
             `${self.tableLiker}.liker_id`,
-            options.actor.id,
+            '=',
+            self.knex.raw('?', [options.actor.id])
           );
         })
         .select(`${this.tableLiker}.positive as is_liked`);

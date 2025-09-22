@@ -16,7 +16,7 @@ const ROUTES = [
 
 const guid = computed(() => route.params?.id);
 
-const { data } = await useFetch('/api/teams', {
+const { data, refresh } = await useFetch('/api/teams', {
   key: computed(() => `team-${guid.value}`),
   query: { guid: guid.value },
   transform: (response: TeamsApiResponse) => {
@@ -25,20 +25,9 @@ const { data } = await useFetch('/api/teams', {
     return {
       ...obj,
       ...(teams?.at(0) || {}),
-    } as Team & {
-      total: number;
-      offset: number;
-      limit: number;
-      hasMore: boolean;
-    };
+    } as Team;
   },
-  default: () =>
-    ({}) as Team & {
-      total: number;
-      offset: number;
-      limit: number;
-      hasMore: boolean;
-    },
+  default: () => ({}) as Team,
 });
 
 const active = computed({
@@ -224,7 +213,10 @@ const active = computed({
           }"
         >
           <template #main>
-            <TeamInfo :item="data" />
+            <TeamInfo
+              :item="data"
+              @refresh="refresh"
+            />
           </template>
           <template #work>
             <TeamWorks />
