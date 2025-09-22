@@ -74,6 +74,28 @@ export interface Teammate extends User {
   team_role: 'creator' | 'admin' | '';
 }
 
+export interface TeamComment {
+  id: string;
+  created_at: string;
+  created_by: string;
+  likers_count: number;
+  dislikers_count: number;
+  content: string;
+  user_name: string;
+  is_liked: boolean | null;
+  replies?: TeamComment[];
+}
+
+export interface CommentCreateData {
+  content: string;
+  team_id: string;
+  parent_id?: string | null;
+}
+
+export interface CommentUpdateData {
+  content: string;
+}
+
 export interface Team {
   id: string;
   name: string;
@@ -89,6 +111,8 @@ export interface Team {
   likers_count: number;
   teammates: Teammate[];
   books: Book[];
+  comments: TeamComment[];
+  comments_count: number;
 }
 
 export interface TeamsApiRequest {

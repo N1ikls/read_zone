@@ -4,6 +4,7 @@ export { RThing } from './r-thing';
 export { RLoader } from './r-loader';
 export { RHeader } from './r-header';
 export { RBanner } from './r-banner';
+export { RComments } from './r-comments';
 export { RProgress } from './r-progress';
 export { RListItem } from './r-list-item';
 export { RDoughnut } from './r-doughnunt';
