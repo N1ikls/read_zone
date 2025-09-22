@@ -164,11 +164,31 @@ export default class BaseStorage {
   }
 
   async like(entity, liker, positive = true) {
+    // Проверяем, есть ли уже лайк от этого пользователя
+    const existingLike = await this.knex(this.tableLiker)
+      .where({ [`${this.table}_id`]: entity.id, liker_id: liker.id })
+      .first();
+
     const data = { [`${this.table}_id`]: entity.id, liker_id: liker.id };
     if (this.isDislikeable) data.positive = positive;
-    await this.knex(this.tableLiker).insert(data).onConflict().merge();
+    
+    const conflictColumns = [`${this.table}_id`, 'liker_id'];
+    await this.knex(this.tableLiker).insert(data).onConflict(conflictColumns).merge();
 
-    return this.likers_recount(entity);
+    // Определяем действие
+    let action = 'added';
+    if (existingLike) {
+      // Если лайк уже был, проверяем изменился ли тип реакции
+      if (this.isDislikeable && existingLike.positive !== positive) {
+        action = 'changed';
+      } else {
+        action = 'updated';
+      }
+    }
+
+    await this.likers_recount(entity);
+
+    return { action };
   }
 
   async likers_count(entity, positive = true) {

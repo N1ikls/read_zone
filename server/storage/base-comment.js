@@ -14,6 +14,7 @@ export default class extends BaseStorage {
       'created_at',
       'created_by',
       'user_name',
+      'parent_id',
       'likers_count',
       'dislikers_count',
       'is_liked',
@@ -72,6 +73,26 @@ export default class extends BaseStorage {
         ]);
 
       data.content = content;
+    }
+
+    // Обрабатываем parent_id если он указан
+    if ('parent_id' in comment) {
+      if (comment.parent_id !== null && comment.parent_id !== undefined) {
+        // Проверяем UUID родительского комментария
+        const isValidUuid = typeof comment.parent_id === 'string' && 
+                           comment.parent_id.length === 36 && 
+                           /^[0-9a-f-]{36}$/i.test(comment.parent_id);
+        
+        if (!isValidUuid) {
+          throw new errors.DBValidation([
+            { field: 'parent_id', message: 'Неправильный ID родительского комментария' },
+          ]);
+        }
+        
+        data.parent_id = comment.parent_id;
+      } else {
+        data.parent_id = null;
+      }
     }
 
     return data;

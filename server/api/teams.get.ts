@@ -92,6 +92,8 @@ export default defineApiHandler(async (event: any) => {
             }
           }
 
+          console.log(comments);
+
           return {
             ...team,
             teammates_count: teammates?.length || 0,
