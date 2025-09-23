@@ -27,6 +27,20 @@ const onCreate = () => {
 const onLike = (id: string, isLike: boolean) => {
   emits('like', id, isLike);
 };
+
+const groupedComments = computed(() => {
+  const parents = items.filter((comment) => comment.parent_id === null);
+
+  return parents.map((parent) => ({
+    ...parent,
+    replies: items
+      .filter((reply) => reply.parent_id === parent.id)
+      .map((reply) => ({
+        ...reply,
+        parent_name: parent.user_name,
+      })),
+  }));
+});
 </script>
 
 <template>
@@ -61,7 +75,7 @@ const onLike = (id: string, isLike: boolean) => {
 
     <div class="r-comments__list mt-[40px] grid gap-4">
       <item-comment
-        v-for="(comment, index) in items"
+        v-for="(comment, index) in groupedComments"
         :key="index"
         :comment="comment"
         @reply="onReply"

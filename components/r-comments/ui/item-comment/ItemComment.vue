@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { isEmpty } from 'es-toolkit/compat';
 import numeral from 'numeral';
 import { useFormatDate } from '~/shared/lib';
 import type { TeamComment } from '~/shared/types';
@@ -42,7 +43,15 @@ const onLike = () => {
       />
 
       <div class="grid gap-1 flex-1">
-        <p class="text-[16px] font-bold">{{ comment.user_name }}</p>
+        <div class="flex gap-1 items-center">
+          <p class="text-[16px] font-bold">{{ comment.user_name }}</p>
+          <p
+            class="text-[#ADADAD] text-[12px] leading-[1.15]"
+            v-if="!!comment?.parent_name"
+          >
+            В ответ {{ comment.parent_name }}
+          </p>
+        </div>
         <p class="text-[12px] leading-[1.15]">{{ comment.content }}</p>
 
         <div class="comment__actions flex gap-2 justify-between items-center">
@@ -55,13 +64,6 @@ const onLike = () => {
             >
               Ответить
             </p>
-
-            <p
-              class="text-[12px] text-[#0048B8] cursor-pointer"
-              @click="handleReply"
-            >
-              Ещё
-            </p>
           </div>
 
           <div
@@ -71,7 +73,7 @@ const onLike = () => {
             <icon
               mode="svg"
               class="text-[12px]"
-              :class="{ 'is-liked ': comment.is_liked }"
+              :class="{ 'like ': !!comment.likers_count }"
               name="i-lucide-heart"
             />
 
@@ -104,25 +106,26 @@ const onLike = () => {
             </u-button>
           </template>
         </UTextarea>
-      </div>
-    </div>
 
-    <div
-      v-if="comment.replies && comment.replies.length"
-      class="replies"
-    >
-      <item-comment
-        v-for="reply in comment.replies"
-        :key="reply.id"
-        :comment="reply"
-        @reply="(id, name) => $emit('reply', id, name)"
-      />
+        <div
+          v-if="!isEmpty(comment?.replies)"
+          class="grid gap-2"
+        >
+          <item-comment
+            v-for="(item, index) in comment?.replies"
+            :key="index"
+            :comment="item"
+            @reply="onReply"
+            @like="onLike"
+          />
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
-.is-liked {
+.like {
   :deep(path) {
     fill: var(--color-red-700);
     stroke: var(--color-red-700);

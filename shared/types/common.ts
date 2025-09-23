@@ -83,7 +83,9 @@ export interface TeamComment {
   content: string;
   user_name: string;
   is_liked: boolean | null;
+  parent_id: string | null;
   replies?: TeamComment[];
+  parent_name?: string | null;
 }
 
 export interface CommentCreateData {
