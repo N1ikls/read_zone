@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { ItemCard } from '@/entities/catalog';
 import type { Team } from '@/shared/types';
+import { useAuth } from '~/entities/auth';
 
 const { item } = defineProps<{
   item: Team;
@@ -11,41 +12,53 @@ const emits = defineEmits<{
 }>();
 
 const route = useRoute();
+const { isAuth } = useAuthToast();
+const { isUser, user } = storeToRefs(useAuth());
 
 const guid = computed(() => route.params?.id);
 
 const onCreateComment = async (value: string) => {
-  await $fetch(`/api/teams/${guid.value}/comments/create`, {
-    method: 'post',
-    body: {
-      content: value,
-    },
-  });
+  if (!isAuth()) return;
 
-  emits('refresh');
+  try {
+    await $fetch(`/api/teams/${guid.value}/comments/create`, {
+      method: 'post',
+      body: {
+        content: value,
+      },
+    });
+    emits('refresh');
+  } catch {}
 };
 
 const onReply = async (id: string, value: string) => {
-  await $fetch(`/api/teams/${guid.value}/comments/create`, {
-    method: 'post',
-    body: {
-      parent_id: id,
-      content: value,
-    },
-  });
+  if (!isAuth()) return;
 
-  emits('refresh');
+  try {
+    await $fetch(`/api/teams/${guid.value}/comments/create`, {
+      method: 'post',
+      body: {
+        parent_id: id,
+        content: value,
+      },
+    });
+
+    emits('refresh');
+  } catch {}
 };
 
 const onLike = async (id: string, positive: boolean) => {
-  await $fetch(`/api/teams/${guid.value}/comments/${id}/like`, {
-    method: 'post',
-    body: {
-      positive,
-    },
-  });
+  if (!isAuth()) return;
 
-  emits('refresh');
+  try {
+    await $fetch(`/api/teams/${guid.value}/comments/${id}/like`, {
+      method: 'post',
+      body: {
+        positive,
+      },
+    });
+    emits('refresh');
+  } catch {}
 };
 </script>
 
@@ -76,7 +89,7 @@ const onLike = async (id: string, positive: boolean) => {
       <div class="border-1 border-[#C2C2C2] rounded-[10px] p-2.5 mb-5">
         <p class="text-[20px] mb-3">Участники {{ item?.teammates_count }}</p>
 
-        <div class="px-2">
+        <div class="px-2 grid gap-5">
           <div
             v-for="teammate in item?.teammates || []"
             :key="teammate.id"
@@ -129,6 +142,8 @@ const onLike = async (id: string, positive: boolean) => {
     <r-comments
       :items="item.comments"
       :count="item.comments_count"
+      :is-edit="isUser"
+      :guid="user?.id"
       @create="onCreateComment"
       @like="onLike"
       @reply="onReply"

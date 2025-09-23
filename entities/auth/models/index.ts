@@ -1,3 +1,4 @@
+import { isEmpty } from 'es-toolkit/compat';
 import { defineStore } from 'pinia';
 
 export interface IUser {
@@ -22,5 +23,7 @@ export const useAuth = defineStore('auth', () => {
     user.value = value;
   };
 
-  return { isShow, user, showModal, setUser };
+  const isUser = computed(() => !isEmpty(user.value));
+
+  return { isUser, isShow, user, showModal, setUser };
 });

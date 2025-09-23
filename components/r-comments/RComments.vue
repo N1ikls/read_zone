@@ -2,9 +2,15 @@
 import { ItemComment } from './ui';
 import type { TeamComment } from '~/shared/types';
 
-const { items = [], count = 0 } = defineProps<{
+const {
+  items = [],
+  count = 0,
+  isEdit = true,
+} = defineProps<{
   items: TeamComment[];
   count: number;
+  isEdit?: boolean;
+  guid?: string;
 }>();
 
 const emits = defineEmits<{
@@ -35,6 +41,10 @@ const groupedComments = computed(() => {
     ...parent,
     replies: items
       .filter((reply) => reply.parent_id === parent.id)
+      .sort(
+        (a, b) =>
+          new Date(a.created_at).getTime() - new Date(b.created_at).getTime(),
+      )
       .map((reply) => ({
         ...reply,
         parent_name: parent.user_name,
@@ -49,34 +59,34 @@ const groupedComments = computed(() => {
   >
     <div class="text-[16px] mb-4">Комментарии {{ count || '' }}</div>
 
-    <div class="comment-form">
-      <UTextarea
-        v-model="content"
-        color="info"
-        class="w-full text-[#999999]"
-        placeholder="Понравилась глава? Есть замечания? Напишите об этом!"
-      >
-        <template #trailing>
-          <u-button
-            color="info"
-            variant="ghost"
-            size="xs"
-            class="edit-btn w-6 h-6 p-0 flex items-center justify-center rounded-[6px] border border-[#97BFFF] bg-[#FFFFFF] hover:bg-[#F2F9FF]"
-            @click.stop="onCreate"
-          >
-            <u-icon
-              name="my-icons:edit-pencil"
-              class="w-4 h-4"
-            />
-          </u-button>
-        </template>
-      </UTextarea>
-    </div>
+    <UTextarea
+      v-if="isEdit"
+      v-model="content"
+      color="info"
+      class="w-full text-[#999999]"
+      placeholder="Понравилась глава? Есть замечания? Напишите об этом!"
+    >
+      <template #trailing>
+        <u-button
+          color="info"
+          variant="ghost"
+          size="xs"
+          class="edit-btn w-6 h-6 p-0 flex items-center justify-center rounded-[6px] border border-[#97BFFF] bg-[#FFFFFF] hover:bg-[#F2F9FF]"
+          @click.stop="onCreate"
+        >
+          <u-icon
+            name="my-icons:edit-pencil"
+            class="w-4 h-4"
+          />
+        </u-button>
+      </template>
+    </UTextarea>
 
     <div class="r-comments__list mt-[40px] grid gap-4">
       <item-comment
         v-for="(comment, index) in groupedComments"
         :key="index"
+        :guid="guid"
         :comment="comment"
         @reply="onReply"
         @like="onLike"
