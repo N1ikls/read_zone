@@ -65,9 +65,7 @@ export default defineApiHandler(async (event: any) => {
 
     return {
       success: true,
-      message: result.action === 'added' 
-        ? (positive ? 'Лайк добавлен' : 'Дизлайк добавлен')
-        : (positive ? 'Лайк убран' : 'Дизлайк убран'),
+      message: result.action,
       data: {
         comment: updatedComment,
         action: result.action,

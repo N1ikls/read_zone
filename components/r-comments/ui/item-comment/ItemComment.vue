@@ -1,9 +1,12 @@
 <script setup lang="ts">
+import { isEmpty } from 'es-toolkit/compat';
 import numeral from 'numeral';
 import { useFormatDate } from '~/shared/lib';
 import type { TeamComment } from '~/shared/types';
+import { ITEMS } from './consts';
 
-const { comment } = defineProps<{
+const { comment, guid } = defineProps<{
+  guid?: string;
   comment: TeamComment;
 }>();
 
@@ -12,6 +15,7 @@ const { smartFormat } = useFormatDate();
 const reply = ref(false);
 const content = ref('');
 
+const isEdit = computed(() => comment.created_by !== guid);
 const createdAt = computed(() => smartFormat(comment.created_at));
 
 const emit = defineEmits<{
@@ -21,14 +25,17 @@ const emit = defineEmits<{
 
 const handleReply = () => {
   reply.value = !reply.value;
+  content.value = '';
 };
 
 const onReply = () => {
-  handleReply();
   emit('reply', comment.id, content.value);
+  content.value = '';
+  reply.value = false;
 };
 
 const onLike = () => {
+  if (!isEdit.value) return;
   emit('like', comment.id, !comment.is_liked);
 };
 </script>
@@ -42,26 +49,48 @@ const onLike = () => {
       />
 
       <div class="grid gap-1 flex-1">
-        <p class="text-[16px] font-bold">{{ comment.user_name }}</p>
+        <div class="flex gap-1 flex-1 items-center justify-between">
+          <div class="flex gap-1 items-center flex-1">
+            <p class="text-[16px] font-bold leading-7">
+              {{ comment.user_name }}
+            </p>
+
+            <p
+              class="text-[#ADADAD] text-[12px] leading-[1.15]"
+              v-if="!!comment?.parent_name"
+            >
+              В ответ {{ comment.parent_name }}
+            </p>
+          </div>
+
+          <UDropdownMenu
+            v-if="isEdit"
+            :items="ITEMS"
+          >
+            <u-button
+              size="sm"
+              icon="my-icons:more"
+              color="info"
+              variant="ghost"
+            />
+          </UDropdownMenu>
+        </div>
+
         <p class="text-[12px] leading-[1.15]">{{ comment.content }}</p>
 
         <div class="comment__actions flex gap-2 justify-between items-center">
           <div class="flex gap-2 items-center">
             <p class="text-[12px] text-[#7B7B7B] font-light">{{ createdAt }}</p>
 
-            <p
-              class="text-[12px] text-[#0048B8] cursor-pointer"
+            <u-button
+              v-if="isEdit"
+              color="info"
+              variant="link"
+              class="text-[12px] text-[#0048B8] cursor-pointer p-0"
               @click="handleReply"
             >
               Ответить
-            </p>
-
-            <p
-              class="text-[12px] text-[#0048B8] cursor-pointer"
-              @click="handleReply"
-            >
-              Ещё
-            </p>
+            </u-button>
           </div>
 
           <div
@@ -71,15 +100,13 @@ const onLike = () => {
             <icon
               mode="svg"
               class="text-[12px]"
-              :class="{ 'is-liked ': comment.is_liked }"
+              :class="{ 'like ': !!comment.likers_count }"
               name="i-lucide-heart"
             />
 
             <span class="text-[12px] leading-[1.15]">
-              {{
-                numeral(comment.likers_count).format('0.[0]a').toUpperCase()
-              }}</span
-            >
+              {{ numeral(comment.likers_count).format('0.[0]a').toUpperCase() }}
+            </span>
           </div>
         </div>
 
@@ -104,25 +131,27 @@ const onLike = () => {
             </u-button>
           </template>
         </UTextarea>
-      </div>
-    </div>
 
-    <div
-      v-if="comment.replies && comment.replies.length"
-      class="replies"
-    >
-      <item-comment
-        v-for="reply in comment.replies"
-        :key="reply.id"
-        :comment="reply"
-        @reply="(id, name) => $emit('reply', id, name)"
-      />
+        <div
+          v-if="!isEmpty(comment?.replies)"
+          class="grid gap-2 pt-1"
+        >
+          <item-comment
+            v-for="(item, index) in comment?.replies"
+            :key="index"
+            :comment="item"
+            :guid="guid"
+            @reply="onReply"
+            @like="onLike"
+          />
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
-.is-liked {
+.like {
   :deep(path) {
     fill: var(--color-red-700);
     stroke: var(--color-red-700);
