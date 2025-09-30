@@ -47,7 +47,16 @@ export default defineApiHandler(async (event) => {
     }
 
     // Подсчет общего количества
-    const totalQuery = query.clone();
+    const totalQuery = storage.user.knex('complaints');
+    
+    // Применяем те же фильтры
+    if (status !== 'all') {
+      totalQuery.where('complaints.status', status);
+    }
+    if (type !== 'all') {
+      totalQuery.where('complaints.type', type);
+    }
+    
     const total = await totalQuery.count('* as count').first();
 
     // Пагинация

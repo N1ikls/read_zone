@@ -1,6 +1,6 @@
 import { requireModerator } from '../../../../utils/admin';
 
-export default defineApiHandler(async (event) => {
+export default defineApiHandler(async (event: any) => {
   const storage = event.context.storage;
   const complaintId = getRouterParam(event, 'id');
 
@@ -57,9 +57,15 @@ export default defineApiHandler(async (event) => {
         updated_at: new Date(),
       });
 
-    // Если жалоба принята и указано действие
-    if (status === 'resolved' && action) {
-      await handleComplaintAction(storage, complaint, action, moderator);
+    // Если жалоба принята, автоматически удаляем контент и применяем дополнительные действия
+    if (status === 'resolved') {
+      // Автоматически удаляем контент в зависимости от типа жалобы
+      await handleComplaintAction(storage, complaint, `delete_${complaint.type}`, moderator);
+      
+      // Если указано дополнительное действие (бан, мут, предупреждение)
+      if (action && action !== 'no_action') {
+        await handleComplaintAction(storage, complaint, action, moderator);
+      }
     }
 
     // Логируем действие модератора
@@ -79,10 +85,10 @@ export default defineApiHandler(async (event) => {
     // Уведомляем пользователя, подавшего жалобу
     await storage.user.knex('notifications').insert({
       user_id: complaint.user_id,
-      type: 'report',
+      type: 'system_announcement',
       title: 'Жалоба обработана',
-      content: `Ваша жалоба была ${status === 'resolved' ? 'принята' : 'отклонена'}. ${admin_comment || ''}`,
-      data: JSON.stringify({
+      message: `Ваша жалоба была ${status === 'resolved' ? 'принята' : 'отклонена'}. ${admin_comment || ''}`,
+      metadata: JSON.stringify({
         complaint_id: complaintId,
         resolution: status,
         handled_by: moderator.name,
@@ -100,7 +106,7 @@ export default defineApiHandler(async (event) => {
         action: action || null,
       },
     };
-  } catch (err) {
+  } catch (err: any) {
     console.error('Ошибка при обработке жалобы:', err);
 
     if (err.statusCode) {
@@ -127,6 +133,19 @@ async function handleComplaintAction(
         await storage.user.knex('user_bans').insert({
           user_id: complaint.target_user_id,
           banned_by: moderator.id,
+          type: 'ban',
+          reason: `По жалобе #${complaint.id}: ${complaint.reason}`,
+          expires_at: null, // Постоянный бан
+          is_active: true,
+        });
+      }
+      break;
+
+    case 'mute_user':
+      if (complaint.target_user_id) {
+        await storage.user.knex('user_bans').insert({
+          user_id: complaint.target_user_id,
+          banned_by: moderator.id,
           type: 'mute',
           reason: `По жалобе #${complaint.id}: ${complaint.reason}`,
           expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 дней
@@ -135,7 +154,16 @@ async function handleComplaintAction(
       }
       break;
 
-    case 'delete_content':
+    case 'delete_comment':
+      if (complaint.target_comment_id) {
+        // Удаляем комментарий
+        await storage.teamComment.knex('team_comment')
+          .where('id', complaint.target_comment_id)
+          .del();
+      }
+      break;
+
+    case 'delete_book':
       if (complaint.target_book_id) {
         // Помечаем книгу как удаленную (не удаляем физически)
         await storage.book
@@ -148,19 +176,35 @@ async function handleComplaintAction(
       }
       break;
 
+    case 'delete_chapter':
+      if (complaint.target_chapter_id) {
+        // Помечаем главу как удаленную
+        await storage.chapter
+          .knex('chapter')
+          .where('id', complaint.target_chapter_id)
+          .update({
+            status: 'deleted',
+            updated_at: new Date(),
+          });
+      }
+      break;
+
     case 'warning':
       if (complaint.target_user_id) {
         await storage.user.knex('notifications').insert({
           user_id: complaint.target_user_id,
-          type: 'system',
+          type: 'system_announcement',
           title: 'Предупреждение',
-          content: `Вы получили предупреждение по жалобе: ${complaint.reason}`,
-          data: JSON.stringify({
+          message: `Вы получили предупреждение по жалобе: ${complaint.reason}`,
+          metadata: JSON.stringify({
             complaint_id: complaint.id,
             type: 'warning',
           }),
         });
       }
+      break;
+
+    case 'no_action':
       break;
   }
 }

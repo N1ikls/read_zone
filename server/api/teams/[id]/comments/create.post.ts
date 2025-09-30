@@ -1,4 +1,5 @@
 import errors from '../../../../utils/errors';
+import { canUserComment } from '../../../../utils/user-status';
 
 export default defineApiHandler(async (event: any) => {
   try {
@@ -8,6 +9,12 @@ export default defineApiHandler(async (event: any) => {
     // Проверяем авторизацию
     if (!user) {
       throw new errors.Unauthorized('Необходима авторизация');
+    }
+
+    // Проверяем, может ли пользователь комментировать
+    const canComment = await canUserComment(storage, user.id);
+    if (!canComment) {
+      throw new errors.Forbidden('Вы не можете оставлять комментарии');
     }
 
     // Проверим что storage доступен
