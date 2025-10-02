@@ -32,6 +32,7 @@ export default defineApiHandler(async (event: any) => {
       user_id: user.id,
       type: body.type,
       reason: body.reason.trim(),
+      comment: body.comment ? body.comment.trim() : null,
     };
 
     switch (body.type) {
