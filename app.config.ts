@@ -14,5 +14,18 @@ export default defineAppConfig({
         tbody: 'divide-y-0',
       },
     },
+    input: {
+      slots: {
+        base: 'focus:bg-[none] placeholder:text-[#C2C2C2] placeholder:italic placeholder-text-base',
+      },
+      variants: {
+        variant: {
+          subtle: 'ring-0',
+        },
+        color: {
+          secondary: 'bg-[#F5F5F5]',
+        },
+      },
+    },
   },
 });

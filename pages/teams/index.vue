@@ -3,7 +3,7 @@ import numeral from 'numeral';
 import { WORK_BY_FORMAT, TEAM_BY_SIZE, PLATFORM_BY } from './consts';
 import { debounce } from 'es-toolkit';
 import { isEmpty } from 'es-toolkit/compat';
-
+import { ModalCreate } from '@/entities/teams';
 const route = useRoute();
 const setRouteQueries = useSetRouteQuery();
 const queries = useGetRouteQuery({
@@ -57,6 +57,10 @@ watch(
     </template>
 
     <template #title> Команды </template>
+
+    <template #title-extra>
+      <modal-create />
+    </template>
 
     <div class="flex gap-4 items-center mb-4">
       <UInput

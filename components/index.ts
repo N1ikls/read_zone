@@ -13,3 +13,4 @@ export { RCardStatus } from './r-card-status';
 export { RCardDefault } from './r-card-default';
 export { RButtonsList } from './r-buttons-list';
 export { RBreadcrumb } from './r-breadcrumb';
+export { RTipTapEditor } from './r-tip-tap-editor';

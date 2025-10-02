@@ -3,9 +3,12 @@ import numeral from 'numeral';
 import { TABS } from './consts';
 import { TeamInfo, TeamWorks } from '@/entities/teams';
 import type { TeamsApiResponse, Team } from '@/shared/types';
+import { useAuth } from '~/entities/auth';
 
 const route = useRoute();
 const router = useRouter();
+
+const { user } = useAuth();
 
 const ROUTES = [
   { label: 'Главная', to: '/' },
@@ -156,8 +159,8 @@ const active = computed({
                   </div>
                 </div>
 
-                <div class="flex-1">
-                  <div class="flex items-center gap-2 flex-wrap">
+                <div class="flex-1 flex justify-between">
+                  <div class="flex flex-1 items-center gap-2 flex-wrap">
                     <span class="text-[12px] text-[#5E5E5E]">Частые теги</span>
 
                     <div
@@ -172,8 +175,25 @@ const active = computed({
                       Романтика 9
                     </div>
                   </div>
+
+                  <div class="flex items-end">
+                    <u-button
+                      :to="`/teams/${guid}/edit`"
+                      class="size-13"
+                      color="info"
+                      variant="ghost"
+                      icon="my-icons:pencil-line"
+                      :ui="{
+                        leadingIcon: 'size-10',
+                      }"
+                    />
+                  </div>
                 </div>
-                <div class="team__header__actions flex gap-2 items-center">
+
+                <div
+                  v-if="false"
+                  class="team__header__actions flex gap-2 items-center"
+                >
                   <u-button
                     class="font-bold"
                     color="info"
