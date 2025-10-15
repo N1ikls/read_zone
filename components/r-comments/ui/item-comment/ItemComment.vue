@@ -3,9 +3,16 @@ import { isEmpty } from 'es-toolkit/compat';
 import numeral from 'numeral';
 import { useFormatDate } from '~/shared/lib';
 import type { TeamComment } from '~/shared/types';
-import { ITEMS } from './consts';
 
-const { comment, guid } = defineProps<{
+import { ModalComplaint } from '../modal-complaint';
+import type { FormReportType, FormReportTypeWithGuid } from '../../types';
+
+const {
+  comment,
+  guid,
+  isUser = true,
+} = defineProps<{
+  isUser: boolean;
   guid?: string;
   comment: TeamComment;
 }>();
@@ -15,12 +22,13 @@ const { smartFormat } = useFormatDate();
 const reply = ref(false);
 const content = ref('');
 
-const isEdit = computed(() => comment.created_by !== guid);
+const isEdit = computed(() => comment.created_by !== guid && isUser);
 const createdAt = computed(() => smartFormat(comment.created_at));
 
 const emit = defineEmits<{
   (e: 'reply', id: string, value: string): void;
   (e: 'like', id: string, isLike: boolean): void;
+  (e: 'report', v: FormReportTypeWithGuid): void;
 }>();
 
 const handleReply = () => {
@@ -37,6 +45,10 @@ const onReply = () => {
 const onLike = () => {
   if (!isEdit.value) return;
   emit('like', comment.id, !comment.is_liked);
+};
+
+const onReport = (value: FormReportType) => {
+  emit('report', { id: comment.id, ...value });
 };
 </script>
 
@@ -63,17 +75,10 @@ const onLike = () => {
             </p>
           </div>
 
-          <UDropdownMenu
+          <ModalComplaint
             v-if="isEdit"
-            :items="ITEMS"
-          >
-            <u-button
-              size="sm"
-              icon="my-icons:more"
-              color="info"
-              variant="ghost"
-            />
-          </UDropdownMenu>
+            @report="onReport"
+          />
         </div>
 
         <p class="text-[12px] leading-[1.15]">{{ comment.content }}</p>
@@ -140,6 +145,7 @@ const onLike = () => {
             v-for="(item, index) in comment?.replies"
             :key="index"
             :comment="item"
+            :is-user="isUser"
             :guid="guid"
             @reply="onReply"
             @like="onLike"

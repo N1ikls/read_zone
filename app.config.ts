@@ -14,5 +14,15 @@ export default defineAppConfig({
         tbody: 'divide-y-0',
       },
     },
+    input: {
+      slots: {
+        base: 'placeholder:text-[#C2C2C2] placeholder-text-base',
+      },
+    },
+    textarea: {
+      slots: {
+        base: 'placeholder:text-[#C2C2C2]  placeholder-text-base',
+      },
+    },
   },
 });

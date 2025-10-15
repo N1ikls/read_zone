@@ -1,15 +1,16 @@
 <script setup lang="ts">
+import type { FormReportTypeWithGuid } from './types';
 import { ItemComment } from './ui';
 import type { TeamComment } from '~/shared/types';
 
 const {
   items = [],
   count = 0,
-  isEdit = true,
+  isUser = true,
 } = defineProps<{
   items: TeamComment[];
   count: number;
-  isEdit?: boolean;
+  isUser?: boolean;
   guid?: string;
 }>();
 
@@ -17,6 +18,7 @@ const emits = defineEmits<{
   create: [v: string];
   like: [v: string, e: boolean];
   reply: [id: string, v: string];
+  report: [v: FormReportTypeWithGuid];
 }>();
 
 const content = ref('');
@@ -32,6 +34,10 @@ const onCreate = () => {
 
 const onLike = (id: string, isLike: boolean) => {
   emits('like', id, isLike);
+};
+
+const onReport = (value: FormReportTypeWithGuid) => {
+  emits('report', value);
 };
 
 const groupedComments = computed(() => {
@@ -60,7 +66,7 @@ const groupedComments = computed(() => {
     <div class="text-[16px] mb-4">Комментарии {{ count || '' }}</div>
 
     <UTextarea
-      v-if="isEdit"
+      v-if="isUser"
       v-model="content"
       color="info"
       class="w-full text-[#999999]"
@@ -88,8 +94,10 @@ const groupedComments = computed(() => {
         :key="index"
         :guid="guid"
         :comment="comment"
+        :is-user="isUser"
         @reply="onReply"
         @like="onLike"
+        @report="onReport"
       />
     </div>
   </div>

@@ -1,18 +1,11 @@
 <script setup lang="ts">
 import numeral from 'numeral';
 import { TABS } from './consts';
-import { TeamInfo, TeamWorks } from '@/entities/teams';
+import { TeamInfo, TeamWorks, ApplyModal, TeamRequest } from '@/entities/teams';
 import type { TeamsApiResponse, Team } from '@/shared/types';
 
 const route = useRoute();
 const router = useRouter();
-
-const ROUTES = [
-  { label: 'Главная', to: '/' },
-  { label: 'Сообщество', to: '/catalog' },
-  { label: 'Команды' },
-  { label: 'Название команды' },
-];
 
 const guid = computed(() => route.params?.id);
 
@@ -43,6 +36,12 @@ const active = computed({
     });
   },
 });
+
+const ROUTES = computed(() => [
+  { label: 'Главная', to: '/' },
+  { label: 'Команды', to: '/teams' },
+  { label: data.value.name },
+]);
 </script>
 
 <template>
@@ -88,14 +87,17 @@ const active = computed({
                         {{ data?.name }}
                       </span>
 
-                      <div class="flex flex-wrap gap-1 items-center">
+                      <div
+                        v-if="data?.rate"
+                        class="flex flex-wrap gap-1 items-center"
+                      >
                         <u-icon
                           mode="svg"
                           class="rate text-[#0862e0]"
                           name="my-icons:rate"
                         />
 
-                        <p class="font-bold">{{ (4.85).toFixed(2) }}</p>
+                        <p class="font-bold">{{ data.rate.toFixed(2) }}</p>
                       </div>
                     </div>
 
@@ -140,10 +142,15 @@ const active = computed({
                     <div
                       class="bg-[#FFFFFF] text-center px-5 py-2.5 font-bold text-[16px] rounded-[5px] leading-md"
                     >
-                      270 тайтлов
+                      {{
+                        numeral(data?.books_count)
+                          .format('0.[0]a')
+                          .toUpperCase()
+                      }}
+                      тайтлов
                     </div>
 
-                    <div
+                    <!-- <div
                       class="bg-[#FFFFFF] text-center px-5 py-2.5 font-bold text-[16px] rounded-[5px] leading-md"
                     >
                       Топ команд:
@@ -152,7 +159,7 @@ const active = computed({
                         to="/"
                         >#10</nuxt-link
                       >
-                    </div>
+                    </div> -->
                   </div>
                 </div>
 
@@ -180,17 +187,13 @@ const active = computed({
                     block
                     size="xl"
                   >
-                    Подписаться</u-button
-                  >
-                  <u-button
-                    class="font-bold"
-                    color="info"
-                    variant="outline"
-                    block
-                    size="xl"
-                  >
-                    Подать заявку</u-button
-                  >
+                    Подписаться
+                  </u-button>
+
+                  <ApplyModal
+                    :guid="data.id"
+                    :name="data.name"
+                  />
                 </div>
               </div>
             </div>
@@ -220,6 +223,9 @@ const active = computed({
           </template>
           <template #work>
             <TeamWorks />
+          </template>
+          <template #request>
+            <TeamRequest />
           </template>
         </UTabs>
       </section>
