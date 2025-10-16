@@ -14,9 +14,9 @@ export const TABS: TabsItem[] = [
     slot: 'work' as const,
   },
   {
-    label: 'Новости',
-    value: 'news',
+    label: 'Заявки',
+    value: 'request',
     icon: '',
-    slot: 'news' as const,
+    slot: 'request' as const,
   },
 ];

@@ -2,42 +2,73 @@
 import { h, resolveComponent } from 'vue';
 import type { TableColumn, TableRow } from '@nuxt/ui';
 import { ItemModal } from '../item-modal';
+import type { Complaint, ComplaintsResponse } from '../types';
+import { STATUS, statusLabels } from '../consts';
+import { format } from 'date-fns';
+import { debounce } from 'es-toolkit';
 
 const UCheckbox = resolveComponent('UCheckbox');
 const UButton = resolveComponent('UButton');
 const UDropdownMenu = resolveComponent('UDropdownMenu');
-
 const table = useTemplateRef('table');
-
+const queries = useGetRouteQuery({
+  status: 'all',
+  page: 1,
+  limit: 10,
+});
+const toast = useToast();
+const setRouteQueries = useSetRouteQuery();
+const debounceParsedQueries = ref(unref(queries));
 const rowSelection = ref<Record<string, boolean>>({});
+const statusValue = ref(splitQueryValue(queries.value.status));
 
-const data = ref([
+const { data, refresh } = useFetch<ComplaintsResponse>(
+  '/api/admin/complaints',
   {
-    id: '4600',
-    name: 'MangaLover2007',
-    date: '13.07.2025-18.07.2025',
-    status: 'Активен',
-    reason: 'Оскорбление',
+    method: 'get',
+    query: queries,
+    transform: (reports) => {
+      return {
+        ...reports,
+        complaints: reports?.complaints?.map((item) => ({
+          ...item,
+          status: statusLabels[item.status],
+          created_at: format(new Date(item.created_at), 'dd.MM.yyyy HH:mm'),
+        })),
+      };
+    },
   },
-  {
-    id: '4600',
-    name: 'MangaLover2007',
-    date: '13.07.2025-18.07.2025',
-    status: 'Завершен',
-    reason: 'Неуважение',
-  },
-  {
-    id: '4600',
-    name: 'MangaLover2007',
-    date: '13.07.2025-18.07.2025',
-    status: 'Завершен',
-    reason: 'Оскорбление',
-  },
-]);
+);
+
+async function handleResolveComplaint(
+  guid: string,
+  action: 'ban_user' | 'mute_user' | 'warning' | 'delete_comment' | 'no_action',
+  adminComment: string,
+) {
+  try {
+    await $fetch(`/api/admin/complaints/${guid}/resolve`, {
+      method: 'POST',
+      body: {
+        status: 'resolved',
+        admin_comment: adminComment,
+        action: action,
+      },
+    });
+
+    toast.add({
+      title: 'Жалоба успешно обработана',
+    });
+
+    refresh();
+  } catch (error) {
+    toast.add({ title: 'Ошибка при обработке жалобы' });
+    console.error('Ошибка при обработке жалобы:', error);
+  }
+}
 
 const columns: TableColumn<unknown>[] = [
   {
-    accessorKey: 'name',
+    accessorKey: 'target_user_name',
     header: 'Никнейм пользователя',
     meta: {
       class: {
@@ -46,7 +77,7 @@ const columns: TableColumn<unknown>[] = [
     },
   },
   {
-    accessorKey: 'date',
+    accessorKey: 'created_at',
     header: 'Дата и время',
   },
   {
@@ -113,22 +144,61 @@ function onSelect(row: TableRow<unknown>, e?: Event) {
   console.log(e);
 }
 
-function getRowItems(row: TableRow<unknown>) {
+function getRowItems(row: TableRow<Complaint>) {
   return [
     {
-      label: 'Copy payment ID',
-      onSelect() {},
+      label: 'Заблокировать',
+      onSelect: () =>
+        handleResolveComplaint(
+          row.original.id,
+          'ban_user',
+          'Пользователь заблокирован',
+        ),
     },
     {
-      label: 'View customer',
+      label: 'Заглушить',
+      onSelect: () =>
+        handleResolveComplaint(
+          row.original.id,
+          'mute_user',
+          'Пользователь заблокирован',
+        ),
     },
     {
-      label: 'View payment details',
+      label: 'Вынести предупреждение',
+      onSelect: () =>
+        handleResolveComplaint(
+          row.original.id,
+          'warning',
+          'Вынесено предупреждение',
+        ),
+    },
+    {
+      label: 'Удалить',
+      onSelect: () =>
+        handleResolveComplaint(
+          row.original.id,
+          'delete_comment',
+          'Комментарий удален',
+        ),
     },
   ];
 }
 
-const items = ['145625'];
+const onUpdateArray = (key: string, value: string[] | string | Event) => {
+  setRouteQueries(
+    resetPaginationQuery({
+      [key]: Array.isArray(value) ? value.join(',') : (value as string),
+    }),
+  );
+};
+
+watch(
+  queries,
+  debounce((newValue) => {
+    debounceParsedQueries.value = newValue;
+  }, 1000),
+);
 </script>
 
 <template>
@@ -144,16 +214,22 @@ const items = ['145625'];
           }"
           variant="soft"
           :model-value="
-            table?.tableApi?.getColumn('name')?.getFilterValue() as string
+            table?.tableApi
+              ?.getColumn('target_user_name')
+              ?.getFilterValue() as string
           "
           class="max-w-sm"
-          placeholder="Романтика"
+          placeholder="Никнейм"
           @update:model-value="
-            table?.tableApi?.getColumn('name')?.setFilterValue($event)
+            table?.tableApi
+              ?.getColumn('target_user_name')
+              ?.setFilterValue($event)
           "
         >
           <template
-            v-if="table?.tableApi?.getColumn('name')?.getFilterValue()"
+            v-if="
+              table?.tableApi?.getColumn('target_user_name')?.getFilterValue()
+            "
             #trailing
           >
             <UButton
@@ -162,7 +238,11 @@ const items = ['145625'];
               size="sm"
               icon="i-lucide-circle-x"
               aria-label="Clear input"
-              @click="table?.tableApi?.getColumn('name')?.setFilterValue('')"
+              @click="
+                table?.tableApi
+                  ?.getColumn('target_user_name')
+                  ?.setFilterValue('')
+              "
             />
           </template>
         </UInput>
@@ -171,54 +251,14 @@ const items = ['145625'];
           placeholder="Статус"
           size="lg"
           multiple
-          :model-value="
-            table?.tableApi?.getColumn('status')?.getFilterValue() as string[]
-          "
-          :items="items"
+          v-model="statusValue"
+          :items="STATUS"
           :ui="{
             placeholder: 'text-highlighted font-semibold ',
             trailingIcon: 'text-highlighted',
-            base: 'light:bg-[#FFFFFF] ring-0 rounded-[10px] min-w-[100px] font-semibold',
+            base: 'light:bg-[#FFFFFF] ring-0 rounded-[10px] w-48 font-semibold',
           }"
-          @update:model-value="
-            table?.tableApi?.getColumn('status')?.setFilterValue($event)
-          "
-        />
-
-        <u-select
-          placeholder="Причина"
-          size="lg"
-          multiple
-          :items="items"
-          :model-value="
-            table?.tableApi?.getColumn('reason')?.getFilterValue() as string[]
-          "
-          :ui="{
-            placeholder: 'text-highlighted font-semibold',
-            trailingIcon: 'text-highlighted',
-            base: 'light:bg-[#FFFFFF] ring-0 rounded-[10px] min-w-[100px] font-semibold ',
-          }"
-          @update:model-value="
-            table?.tableApi?.getColumn('reason')?.setFilterValue($event)
-          "
-        />
-
-        <u-select
-          placeholder="Дата и время"
-          size="lg"
-          multiple
-          :items="items"
-          :model-value="
-            table?.tableApi?.getColumn('date')?.getFilterValue() as string[]
-          "
-          :ui="{
-            placeholder: 'text-highlighted font-semibold',
-            trailingIcon: 'text-highlighted',
-            base: 'light:bg-[#FFFFFF] ring-0 rounded-[10px] min-w-[100px] font-semibold ',
-          }"
-          @update:model-value="
-            table?.tableApi?.getColumn('date')?.setFilterValue($event)
-          "
+          @update:model-value="(value: any) => onUpdateArray('status', value)"
         />
       </div>
 
@@ -240,7 +280,7 @@ const items = ['145625'];
       ref="table"
       sticky
       v-model:row-selection="rowSelection"
-      :data="data"
+      :data="data?.complaints"
       :columns="columns"
       @select="onSelect"
       :ui="{

@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { ItemCard } from '@/entities/catalog';
 import type { Team } from '@/shared/types';
+import type { FormReportTypeWithGuid } from '~/components/r-comments';
 import { useAuth } from '~/entities/auth';
 
 const { item } = defineProps<{
@@ -11,6 +12,7 @@ const emits = defineEmits<{
   refresh: [];
 }>();
 
+const toast = useToast();
 const route = useRoute();
 const { isAuth } = useAuthToast();
 const { isUser, user } = storeToRefs(useAuth());
@@ -59,6 +61,28 @@ const onLike = async (id: string, positive: boolean) => {
     });
     emits('refresh');
   } catch {}
+};
+
+const onReport = async (value: FormReportTypeWithGuid) => {
+  if (!isAuth()) return;
+
+  try {
+    await $fetch('/api/complaints/create', {
+      method: 'POST',
+      body: {
+        type: 'comment',
+        reason: value.reason,
+        target_comment_id: value.id,
+      },
+    });
+
+    toast.add({
+      title: 'Жалоба подана',
+      description: 'Ваша жалоба будет рассмотрена модераторами',
+    });
+  } catch {
+    toast.add({ title: 'Жалоба не подана' });
+  }
 };
 </script>
 
@@ -142,11 +166,12 @@ const onLike = async (id: string, positive: boolean) => {
     <r-comments
       :items="item.comments"
       :count="item.comments_count"
-      :is-edit="isUser"
+      :is-user="isUser"
       :guid="user?.id"
       @create="onCreateComment"
       @like="onLike"
       @reply="onReply"
+      @report="onReport"
     />
   </div>
 </template>
